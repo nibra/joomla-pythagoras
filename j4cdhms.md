@@ -75,7 +75,9 @@ The CDH milestone will show how to access the "article" component from different
 Chris Davenport's [Service Layer](https://github.com/chrisdavenport/service) is used to provide a CommandBus and a QueryBus,
 based on Tactician.
 
-It will showcase the interaction with the system as now is being handled by plugins
+## Event system
+
+There will be various events triggered during a request. What will be the equivalent of the JPluign in JoomlaX and how can an extension itself hook into the event system. This will be shown with an example.
 
 #NOTE
 
