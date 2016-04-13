@@ -8,7 +8,6 @@
 
 namespace Joomla\Http\Middleware;
 
-use Interop\Container\ContainerInterface;
 use Joomla\DI\Container;
 use Joomla\Http\MiddlewareInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -55,8 +54,8 @@ class ContainerSetupMiddleware implements MiddlewareInterface
 {
 	/** @var Container */
 	private $container;
-	
-	public function __construct(ContainerInterface $container)
+
+	public function __construct(Container $container)
 	{
 		$this->container = $container;
 	}
@@ -75,7 +74,6 @@ class ContainerSetupMiddleware implements MiddlewareInterface
 	public function handle(ServerRequestInterface $request, ResponseInterface $response, callable $next)
 	{
 		$services = parse_ini_file('config/services.ini', true);
-		print_r($services);
 		foreach ($services['provider'] as $alias => $service)
 		{
 			$this->container->registerServiceProvider(new $service, $alias);
