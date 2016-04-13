@@ -36,37 +36,38 @@ class EventDispatcherServiceProvider implements ServiceProviderInterface
 
 		// @todo Needs to be refactored with a lazy loading plugin manifest
 		// reader
-		if ($container->has('JPATH_ROOT'))
+		$fs = $container->has('JPATH_ROOT') ? $container->get('JPATH_ROOT') : null;
+		if (! $fs && $container->has('config') && $container->get('config')->get('JPATH_ROOT'))
 		{
-			$fs = $container->get('JPATH_ROOT');
-			if (is_string($fs))
-			{
-				// It is only the path
-				$fs = new Local($fs);
-			}
+			$fs = $container->get('config')->get('JPATH_ROOT');
+		}
+		if (is_string($fs))
+		{
+			// It is only the path
+			$fs = new Local($fs);
+		}
 
-			if ($fs instanceof AdapterInterface)
+		if ($fs instanceof AdapterInterface)
+		{
+			foreach ($fs->listContents('plugins', true) as $file)
 			{
-				foreach ($fs->listContents('plugins', true) as $file)
+				if (strpos($file['path'], 'plugin.yml') === false)
 				{
-					if (strpos($file['path'], 'plugin.yml') === false)
-					{
-						continue;
-					}
+					continue;
+				}
 
-					$config = Yaml::parse($fs->read($file['path']), true);
-					if (key_exists('listeners', $config))
+				$config = Yaml::parse($fs->read($file['path'])['contents'], true);
+				if (key_exists('listeners', $config))
+				{
+					foreach ($config['listeners'] as $listener)
 					{
-						foreach ($config['listeners'] as $listener)
+						$listenerInstance = new $listener['class']();
+						foreach ($listener['events'] as $eventName => $method)
 						{
-							$listenerInstance = new $listener['class']();
-							foreach ($listener['events'] as $eventName => $method)
-							{
-								$dispatcher->addListener($eventName, [
-										$listenerInstance,
-										$method
-								]);
-							}
+							$dispatcher->addListener($eventName, [
+									$listenerInstance,
+									$method
+							]);
 						}
 					}
 				}

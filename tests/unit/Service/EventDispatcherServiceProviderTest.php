@@ -53,7 +53,7 @@ EOL;
 						'path' => 'plugin.yml'
 				]
 		]);
-		$fs->method('read')->willReturn($pluginManifest);
+		$fs->method('read')->willReturn(['contents'=>$pluginManifest]);
 		$container = new Container();
 		$container->set('JPATH_ROOT', $fs);
 
