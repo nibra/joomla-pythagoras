@@ -14,17 +14,13 @@ use Joomla\Http\Middleware\ResponseSenderMiddleware;
 use Joomla\Http\Middleware\RouterMiddleware;
 use Joomla\Http\ServerRequestFactory;
 use Joomla\J3Compatibility\Http\Middleware\RouterMiddleware as LegacyRouterMiddleware;
+use Joomla\DI\Loader\IniLoader;
 
 require_once 'libraries/vendor/autoload.php';
 
 $root = __DIR__;
 $container = new \Joomla\DI\Container();
-
-$services = parse_ini_file($root . '/config/services.ini', true);
-foreach ($services['provider'] as $alias => $service)
-{
-	$container->registerServiceProvider(new $service, $alias);
-}
+(new IniLoader($container))->loadFromFile($root . '/config/services.ini');
 
 $app  = new Application(
 	[
