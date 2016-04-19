@@ -14,7 +14,7 @@ use Joomla\DI\Container;
  * service provider.
  * The structure of the ini string must be:
  *
- * [provider]
+ * [providers]
  * dispatcher = "\\MyApp\\Service\\MyServiceProvider"
  */
 class IniLoader implements LoaderInterface
@@ -41,12 +41,12 @@ class IniLoader implements LoaderInterface
 	public function load ($content)
 	{
 		$services = parse_ini_string($content, true);
-		if (! key_exists('provider', $services))
+		if (! key_exists('providers', $services))
 		{
 			return;
 		}
 
-		foreach ($services['provider'] as $alias => $service)
+		foreach ($services['providers'] as $alias => $service)
 		{
 			if (! class_exists($service))
 			{

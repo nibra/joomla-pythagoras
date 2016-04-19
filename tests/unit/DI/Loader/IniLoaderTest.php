@@ -9,7 +9,7 @@ use Joomla\DI\Loader\IniLoader;
 include_once __DIR__ . '/../Stubs/SimpleServiceProvider.php';
 
 /**
- * Tests for Container class.
+ * Tests for the IniLoader class.
  */
 class IniLoaderTest extends \PHPUnit_Framework_TestCase
 {
@@ -20,7 +20,7 @@ class IniLoaderTest extends \PHPUnit_Framework_TestCase
 	public function testLoadString ()
 	{
 		$content = <<<EOF
-[provider]
+[providers]
 foo = "\\SimpleServiceProvider"
 EOF;
 		$container = new Container();
@@ -37,7 +37,7 @@ EOF;
 	public function testLoadInvalidString ()
 	{
 		$content = <<<EOF
-[provider]
+[providers]
 foo unit test
 EOF;
 		$container = new Container();
@@ -54,7 +54,7 @@ EOF;
 	public function testLoadWithInvalidClass ()
 	{
 		$content = <<<EOF
-[provider]
+[providers]
 foo = "\\NotAvailableServiceProvider"
 EOF;
 		$container = new Container();

@@ -1,0 +1,4 @@
+providers:
+    config:
+        class: \Joomla\Service\ConfigServiceProvider
+        arguments: ['ConfigDirectory']
