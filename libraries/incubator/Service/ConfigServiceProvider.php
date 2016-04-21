@@ -6,9 +6,9 @@
  */
 namespace Joomla\Service;
 use Dotenv\Dotenv;
+use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
 use Joomla\Registry\Registry;
-use Joomla\DI\Container;
 
 /**
  * Load the Configuration Data.
@@ -21,29 +21,14 @@ use Joomla\DI\Container;
 class ConfigServiceProvider implements ServiceProviderInterface
 {
 
-	/** @var string Path to `.env` file */
-	private $path;
-
-	/** @var string Name of the `.env` file */
-	private $file;
-
-	/**
-	 * ConfigServiceProvider constructor.
-	 *
-	 * @param string $path
-	 *        	Path to `.env` file
-	 * @param string $file
-	 *        	Name of the `.env` file
-	 */
-	public function __construct ($path, $file = '.env')
-	{
-		$this->path = $path;
-		$this->file = $file;
-	}
-
 	public function register (Container $container, $alias = 'config')
 	{
-		$dotenv = new Dotenv($this->path, $this->file);
+		$file = '.env';
+		if ($container->has('ConfigFileName'))
+		{
+			$file = $container->get('ConfigFileName');
+		}
+		$dotenv = new Dotenv($container->get('ConfigDirectory'), $file);
 		$dotenv->overload();
 
 		$container->set($alias, new Registry($_ENV), true);

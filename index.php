@@ -6,7 +6,6 @@
  * @license    GNU General Public License version 2 or later; see LICENSE
  */
 use Joomla\DI\Loader\IniLoader;
-use Joomla\DI\Loader\YamlLoader;
 use Joomla\Http\Application;
 use Joomla\Http\Middleware\CommandBusMiddleware;
 use Joomla\Http\Middleware\RendererMiddleware;
@@ -21,7 +20,6 @@ $container = new \Joomla\DI\Container();
 $container->set('ConfigDirectory', __DIR__);
 
 (new IniLoader($container))->loadFromFile(__DIR__ . '/config/services.ini');
-(new YamlLoader($container))->loadFromFile(__DIR__ . '/config/services.yml');
 
 if (! defined('JPATH_ROOT'))
 {

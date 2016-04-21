@@ -14,7 +14,7 @@ class ConfigServiceProviderTest extends \PHPUnit_Framework_TestCase
 	 */
 	public function testTheTestConfigServiceProviderImplementsTheServiceProviderInterface ()
 	{
-		$this->assertInstanceOf(ServiceProviderInterface::class, new ConfigServiceProvider(__DIR__ . '/data', 'env.txt'));
+		$this->assertInstanceOf(ServiceProviderInterface::class, new ConfigServiceProvider());
 	}
 
 	/**
@@ -23,8 +23,10 @@ class ConfigServiceProviderTest extends \PHPUnit_Framework_TestCase
 	public function testConfigServiceProviderCreatesConfig ()
 	{
 		$container = new Container();
+		$container->set('ConfigDirectory', __DIR__ . '/data');
+		$container->set('ConfigFileName', 'env.txt');
 
-		$service = new ConfigServiceProvider(__DIR__ . '/data', 'env.txt');
+		$service = new ConfigServiceProvider();
 		$service->register($container);
 
 		$this->assertInstanceOf(Registry::class, $container->get('config'));
@@ -37,8 +39,10 @@ class ConfigServiceProviderTest extends \PHPUnit_Framework_TestCase
 	public function testConfigServiceProviderCreatesConfigFromEnv ()
 	{
 		$container = new Container();
+		$container->set('ConfigDirectory', __DIR__ . '/data');
+		$container->set('ConfigFileName', 'env.txt');
 
-		$service = new ConfigServiceProvider(__DIR__ . '/data', 'env.txt');
+		$service = new ConfigServiceProvider();
 		$service->register($container);
 
 		/** @var Registry $config **/
