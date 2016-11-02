@@ -9,6 +9,9 @@
 
 namespace Joomla\Service;
 
+use Joomla\Event\DispatcherAwareTrait;
+use Joomla\Event\DispatcherInterface;
+
 /**
  * Abstract base class for command handlers.
  *
@@ -17,10 +20,12 @@ namespace Joomla\Service;
  *
  * @package  Joomla/Service
  *
- * @since  __DEPLOY_VERSION__
+ * @since    __DEPLOY_VERSION__
  */
 abstract class CommandHandler
 {
+	use DispatcherAwareTrait;
+
 	/** @var CommandBus The command bus */
 	private $commandBus = null;
 
@@ -30,13 +35,15 @@ abstract class CommandHandler
 	/**
 	 * Constructor.
 	 *
-	 * @param   CommandBus  $commandBus  A command bus.
+	 * @param   CommandBus          $commandBus A command bus
+	 * @param   DispatcherInterface $dispatcher A dispatcher
 	 *
 	 * @since   __DEPLOY_VERSION__
 	 */
-	public function __construct(CommandBus $commandBus)
+	public function __construct(CommandBus $commandBus, DispatcherInterface $dispatcher)
 	{
 		$this->commandBus = $commandBus;
+		$this->setDispatcher($dispatcher);
 	}
 
 	/**
@@ -50,25 +57,11 @@ abstract class CommandHandler
 	}
 
 	/**
-	 * Raise a domain event.
-	 *
-	 * @param   DomainEvent  $event  Domain event object.
-	 *
-	 * @return  void
-	 *
-	 * @since   __DEPLOY_VERSION__
-	 */
-	public function raiseEvent(DomainEvent $event)
-	{
-		$this->pendingEvents[] = $event;
-	}
-
-	/**
 	 * Release all pending domain events.
 	 *
 	 * As a convenience, a new event can also be raised at the same time.
 	 *
-	 * @param   DomainEvent  $event  An event to be raised.
+	 * @param   DomainEvent $event An event to be raised.
 	 *
 	 * @return  array of DomainEvent objects.
 	 *
@@ -81,9 +74,23 @@ abstract class CommandHandler
 			$this->raiseEvent($event);
 		}
 
-		$events = $this->pendingEvents;
+		$events              = $this->pendingEvents;
 		$this->pendingEvents = array();
 
 		return $events;
+	}
+
+	/**
+	 * Raise a domain event.
+	 *
+	 * @param   DomainEvent $event Domain event object.
+	 *
+	 * @return  void
+	 *
+	 * @since   __DEPLOY_VERSION__
+	 */
+	public function raiseEvent(DomainEvent $event)
+	{
+		$this->pendingEvents[] = $event;
 	}
 }

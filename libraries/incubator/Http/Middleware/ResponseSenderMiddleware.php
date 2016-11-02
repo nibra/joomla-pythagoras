@@ -17,7 +17,7 @@ use Psr\Http\Message\ServerRequestInterface;
  *
  * @package  Joomla/HTTP
  *
- * @since    1.0
+ * @since    __DEPLOY_VERSION__
  */
 class ResponseSenderMiddleware implements MiddlewareInterface
 {
@@ -103,6 +103,7 @@ class ResponseSenderMiddleware implements MiddlewareInterface
 	{
 		$stream = $response->getBody();
 
+		// @todo emit onBeforeOutput event
 		if ($stream->isSeekable())
 		{
 			$stream->rewind();

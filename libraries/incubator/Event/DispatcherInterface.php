@@ -18,9 +18,9 @@ interface DispatcherInterface
 	/**
 	 * Attaches a listener to an event
 	 *
-	 * @param   string    $eventName  The event to listen to.
-	 * @param   callable  $callback   A callable function.
-	 * @param   integer   $priority   The priority at which the $callback executed.
+	 * @param   string   $eventName The event to listen to.
+	 * @param   callable $callback  A callable function.
+	 * @param   integer  $priority  The priority at which the $callback executed.
 	 *
 	 * @return  boolean
 	 *
@@ -31,22 +31,19 @@ interface DispatcherInterface
 	/**
 	 * Dispatches an event to all registered listeners.
 	 *
-	 * @param   string          $name   The name of the event to dispatch.
-	 *                                  The name of the event is the name of the method that is invoked on listeners.
-	 * @param   EventInterface  $event  The event to pass to the event handlers/listeners.
-	 *                                  If not supplied, an empty EventInterface instance is created.
+	 * @param   EventInterface $event The event to pass to the event handlers/listeners.
 	 *
 	 * @return  EventInterface
 	 *
 	 * @since   __DEPLOY_VERSION__
 	 */
-	public function dispatch($name, EventInterface $event = null);
+	public function dispatch(EventInterface $event);
 
 	/**
 	 * Removes an event listener from the specified event.
 	 *
-	 * @param   string    $eventName  The event to remove a listener from.
-	 * @param   callable  $listener   The listener to remove.
+	 * @param   string   $eventName The event to remove a listener from.
+	 * @param   callable $listener  The listener to remove.
 	 *
 	 * @return  void
 	 *

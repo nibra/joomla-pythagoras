@@ -1,6 +1,6 @@
 <?php
 /**
- * Part of the Joomla Framework Renderer Package
+ * Part of the Joomla Framework Content Package
  *
  * @copyright  Copyright (C) 2015 - 2016 Open Source Matters, Inc. All rights reserved.
  * @license    GNU General Public License version 2 or later; see LICENSE
@@ -9,52 +9,38 @@
 namespace Joomla\Content\Type;
 
 use Joomla\Content\ContentTypeInterface;
-use Joomla\Renderer\RendererInterface;
+use Joomla\Content\ContentTypeVisitorInterface;
 
 /**
- * Headline ContentType
+ * Compound ContentType
  *
  * @package  Joomla/Content
- * @since    1.0
+ * @since    __DEPLOY_VERSION__
  *
- * @property string $type
- * @property ContentTypeInterface[] $items
+ * @property string                 $type
+ * @property ContentTypeInterface[] $elements
  */
-class Compound extends AbstractContentType
+class Compound extends AbstractCompoundType
 {
 	/**
 	 * Compound constructor.
 	 *
-	 * @param   string                  $type   The type represented by this class. In HTML, it is rendered as enclosing tag.
-	 * @param   ContentTypeInterface[]  $items  The items enclosed by this tag
+	 * @param   string $type The type represented by this class. In HTML, it is rendered as enclosing tag.
 	 */
-	public function __construct($type, $items)
+	public function __construct($type)
 	{
 		$this->type = $type;
-		$this->items = array_filter($items);
 	}
 
 	/**
-	 * Add content items to the compound.
+	 * Visits the content type.
 	 *
-	 * @param   ContentTypeInterface  $content  The content to add
+	 * @param   ContentTypeVisitorInterface $visitor The Visitor
 	 *
-	 * @return  void
+	 * @return  mixed
 	 */
-	public function add(ContentTypeInterface $content)
+	public function accept(ContentTypeVisitorInterface $visitor)
 	{
-		$this->items[] = $content;
-	}
-
-	/**
-	 * Render the output
-	 *
-	 * @param   RendererInterface  $renderer  The Renderer
-	 *
-	 * @return  integer  Length of rendered content
-	 */
-	public function accept(RendererInterface $renderer)
-	{
-		return $renderer->visitCompound($this);
+		return $visitor->visitCompound($this);
 	}
 }

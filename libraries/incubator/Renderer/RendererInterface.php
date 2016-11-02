@@ -8,10 +8,7 @@
 
 namespace Joomla\Renderer;
 
-use Joomla\Content\Type\Attribution;
-use Joomla\Content\Type\Compound;
-use Joomla\Content\Type\Headline;
-use Joomla\Content\Type\Paragraph;
+use Joomla\Content\ContentTypeVisitorInterface;
 use Psr\Http\Message\StreamInterface;
 
 /**
@@ -19,51 +16,20 @@ use Psr\Http\Message\StreamInterface;
  *
  * @package  Joomla/Renderer
  *
- * @since    1.0
+ * @since    __DEPLOY_VERSION__
  */
-interface RendererInterface extends StreamInterface
+interface RendererInterface extends ContentTypeVisitorInterface, StreamInterface
 {
 	/**
-	 * @param   string   $type     The content type
-	 * @param   callable $handler  The handler for that type
+	 * @param   string                $type    The content type
+	 * @param   callable|array|string $handler The handler for that type
 	 *
 	 * @return  void
 	 */
-	public function registerContentType($type, callable $handler);
+	public function registerContentType($type, $handler);
 
 	/**
-	 * Render a headline.
-	 *
-	 * @param   Headline  $headline  The headline
-	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return string
 	 */
-	public function visitHeadline(Headline $headline);
-
-	/**
-	 * Render a compound (block) element
-	 *
-	 * @param   Compound  $compound  The compound
-	 *
-	 * @return  integer Number of bytes written to the output
-	 */
-	public function visitCompound(Compound $compound);
-
-	/**
-	 * Render an attribution to an author
-	 *
-	 * @param   Attribution  $attribution  The attribution
-	 *
-	 * @return  integer Number of bytes written to the output
-	 */
-	public function visitAttribution(Attribution $attribution);
-
-	/**
-	 * Render a paragraph
-	 *
-	 * @param   Paragraph  $paragraph  The paragraph
-	 *
-	 * @return  integer Number of bytes written to the output
-	 */
-	public function visitParagraph(Paragraph $paragraph);
+	public function getClass();
 }

@@ -1,6 +1,6 @@
 <?php
 /**
- * Part of the Joomla Framework Renderer Package
+ * Part of the Joomla Framework Content Package
  *
  * @copyright  Copyright (C) 2015 - 2016 Open Source Matters, Inc. All rights reserved.
  * @license    GNU General Public License version 2 or later; see LICENSE
@@ -8,15 +8,15 @@
 
 namespace Joomla\Content\Type;
 
-use Joomla\Renderer\RendererInterface;
+use Joomla\Content\ContentTypeVisitorInterface;
 
 /**
  * Paragraph ContentType
  *
  * @package  Joomla/Content
- * @since    1.0
+ * @since    __DEPLOY_VERSION__
  *
- * @property string $text
+ * @property string  $text
  * @property integer $variant One of the class constants
  */
 class Paragraph extends AbstractContentType
@@ -27,8 +27,8 @@ class Paragraph extends AbstractContentType
 	/**
 	 * Paragraph constructor.
 	 *
-	 * @param   string   $text     The copy of the paragraph
-	 * @param   integer  $variant  Emphasis variant, see class constants
+	 * @param   string  $text    The copy of the paragraph
+	 * @param   integer $variant Emphasis variant, see class constants
 	 */
 	public function __construct($text, $variant = self::PLAIN)
 	{
@@ -37,14 +37,14 @@ class Paragraph extends AbstractContentType
 	}
 
 	/**
-	 * Render the output
+	 * Visits the content type.
 	 *
-	 * @param   RendererInterface  $renderer  The Renderer
+	 * @param   ContentTypeVisitorInterface $visitor The Visitor
 	 *
-	 * @return  integer  Length of rendered content
+	 * @return  mixed
 	 */
-	public function accept(RendererInterface $renderer)
+	public function accept(ContentTypeVisitorInterface $visitor)
 	{
-		return $renderer->visitParagraph($this);
+		return $visitor->visitParagraph($this);
 	}
 }

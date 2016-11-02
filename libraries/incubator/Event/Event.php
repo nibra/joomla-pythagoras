@@ -20,8 +20,8 @@ class Event extends AbstractEvent
 	/**
 	 * Add an event argument, only if it is not existing.
 	 *
-	 * @param   string  $name   The argument name.
-	 * @param   mixed   $value  The argument value.
+	 * @param   string $name  The argument name.
+	 * @param   mixed  $value The argument value.
 	 *
 	 * @return  $this
 	 *
@@ -38,45 +38,6 @@ class Event extends AbstractEvent
 	}
 
 	/**
-	 * Add argument to event.
-	 *
-	 * @param   string  $name   Argument name.
-	 * @param   mixed   $value  Value.
-	 *
-	 * @return  $this
-	 *
-	 * @since   1.0
-	 */
-	public function setArgument($name, $value)
-	{
-		$this->arguments[$name] = $value;
-
-		return $this;
-	}
-
-	/**
-	 * Remove an event argument.
-	 *
-	 * @param   string  $name  The argument name.
-	 *
-	 * @return  mixed  The old argument value or null if it is not existing.
-	 *
-	 * @since   1.0
-	 */
-	public function removeArgument($name)
-	{
-		$return = null;
-
-		if (isset($this->arguments[$name]))
-		{
-			$return = $this->arguments[$name];
-			unset($this->arguments[$name]);
-		}
-
-		return $return;
-	}
-
-	/**
 	 * Clear all event arguments.
 	 *
 	 * @return  array  The old arguments.
@@ -85,8 +46,8 @@ class Event extends AbstractEvent
 	 */
 	public function clearArguments()
 	{
-		$arguments = $this->arguments;
-		$this->arguments = array();
+		$arguments       = $this->arguments;
+		$this->arguments = [];
 
 		return $arguments;
 	}
@@ -96,8 +57,8 @@ class Event extends AbstractEvent
 	 *
 	 * @return  void
 	 *
-	 * @since   1.0
-	 * @deprecated  3.0  Use stopPropogation instead
+	 * @since       1.0
+	 * @deprecated  3.0  Use stopPropagation instead
 	 */
 	public function stop()
 	{
@@ -107,8 +68,8 @@ class Event extends AbstractEvent
 	/**
 	 * Set the value of an event argument.
 	 *
-	 * @param   string  $name   The argument name.
-	 * @param   mixed   $value  The argument value.
+	 * @param   string $name  The argument name.
+	 * @param   mixed  $value The argument value.
 	 *
 	 * @return  void
 	 *
@@ -126,9 +87,26 @@ class Event extends AbstractEvent
 	}
 
 	/**
+	 * Add argument to event.
+	 *
+	 * @param   string $name  Argument name.
+	 * @param   mixed  $value Value.
+	 *
+	 * @return  $this
+	 *
+	 * @since   1.0
+	 */
+	public function setArgument($name, $value)
+	{
+		$this->arguments[$name] = $value;
+
+		return $this;
+	}
+
+	/**
 	 * Remove an event argument.
 	 *
-	 * @param   string  $name  The argument name.
+	 * @param   string $name The argument name.
 	 *
 	 * @return  void
 	 *
@@ -137,5 +115,27 @@ class Event extends AbstractEvent
 	public function offsetUnset($name)
 	{
 		$this->removeArgument($name);
+	}
+
+	/**
+	 * Remove an event argument.
+	 *
+	 * @param   string $name The argument name.
+	 *
+	 * @return  mixed  The old argument value or null if it is not existing.
+	 *
+	 * @since   1.0
+	 */
+	public function removeArgument($name)
+	{
+		$return = null;
+
+		if (isset($this->arguments[$name]))
+		{
+			$return = $this->arguments[$name];
+			unset($this->arguments[$name]);
+		}
+
+		return $return;
 	}
 }

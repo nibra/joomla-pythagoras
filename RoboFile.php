@@ -6,6 +6,8 @@
  * @license    GNU General Public License version 2 or later; see LICENSE
  */
 
+use Doctrine\DBAL\DriverManager;
+use Doctrine\DBAL\Schema\Table;
 use Symfony\Component\Yaml\Yaml;
 
 /**
@@ -17,7 +19,7 @@ use Symfony\Component\Yaml\Yaml;
 class RoboFile extends \Robo\Tasks
 {
 	private $config = [
-		'title'    => "Joomla Next (4)",
+		'title'    => "Joomla X (Pythagoras)",
 		'reports'  => 'build/reports',
 		'apidocs'  => 'build/docs',
 		'userdocs' => 'docs',
@@ -26,12 +28,12 @@ class RoboFile extends \Robo\Tasks
 
 	private $ignoredDirs = [
 		'build',
+		'cache',
 		'docs',
-		'etc',
 		'logs',
 		'tests',
 		'tmp',
-		'vendor',
+		'libraries/vendor',
 	];
 	private $ignoredFiles = [
 		'RoboFile.php',
@@ -42,6 +44,9 @@ class RoboFile extends \Robo\Tasks
 
 	use \Robo\Task\Testing\loadTasks;
 
+	/**
+	 * RoboFile constructor.
+	 */
 	public function __construct()
 	{
 		$config          = json_decode(file_get_contents(__DIR__ . '/composer.json'), true);
@@ -49,27 +54,15 @@ class RoboFile extends \Robo\Tasks
 		$this->binDir    = $this->vendorDir . '/bin';
 	}
 
-	private function init()
-	{
-		if (!file_exists($this->config['apidocs']))
-		{
-			$this->_mkdir($this->config['apidocs']);
-		}
-		if (!file_exists($this->config['reports']))
-		{
-			$this->_mkdir($this->config['reports']);
-		}
-	}
-
 	/**
 	 * Measures the size and analyses the structure of the project.
 	 */
 	public function checkLoc()
 	{
-		$this->init();
+		$this->initReports();
 		$phploc = $this->taskExec($this->binDir . '/phploc')
-					   ->arg('--names-exclude=' . implode(',', $this->ignoredFiles))
-					   ->arg('--log-xml=' . $this->config['reports'] . '/phploc.xml');
+		               ->arg('--names-exclude=' . implode(',', $this->ignoredFiles))
+		               ->arg('--log-xml=' . $this->config['reports'] . '/phploc.xml');
 
 		foreach ($this->ignoredDirs as $dir)
 		{
@@ -84,11 +77,11 @@ class RoboFile extends \Robo\Tasks
 	 */
 	public function checkCpd()
 	{
-		$this->init();
+		$this->initReports();
 		$phploc = $this->taskExec($this->binDir . '/phpcpd')
-					   ->arg('--names-exclude=' . implode(',', $this->ignoredFiles))
-					   ->arg('--log-pmd=' . $this->config['reports'] . '/pmd-cpd.xml')
-					   ->arg('--fuzzy');
+		               ->arg('--names-exclude=' . implode(',', $this->ignoredFiles))
+		               ->arg('--log-pmd=' . $this->config['reports'] . '/pmd-cpd.xml')
+		               ->arg('--fuzzy');
 
 		foreach ($this->ignoredDirs as $dir)
 		{
@@ -103,14 +96,14 @@ class RoboFile extends \Robo\Tasks
 	 */
 	public function checkDepend()
 	{
-		$this->init();
+		$this->initReports();
 		$pdepend = $this->taskExec($this->binDir . '/pdepend')
-						->arg('--dependency-xml=' . $this->config['reports'] . '/dependency.xml')
-						->arg('--jdepend-chart=' . $this->config['reports'] . '/jdepend.svg')
-						->arg('--jdepend-xml=' . $this->config['reports'] . '/jdepend.xml')
-						->arg('--overview-pyramid=' . $this->config['reports'] . '/pyramid.svg')
-						->arg('--summary-xml=' . $this->config['reports'] . '/summary.xml')
-						->arg('--ignore=' . implode(',', $this->ignoredDirs));
+		                ->arg('--dependency-xml=' . $this->config['reports'] . '/dependency.xml')
+		                ->arg('--jdepend-chart=' . $this->config['reports'] . '/jdepend.svg')
+		                ->arg('--jdepend-xml=' . $this->config['reports'] . '/jdepend.xml')
+		                ->arg('--overview-pyramid=' . $this->config['reports'] . '/pyramid.svg')
+		                ->arg('--summary-xml=' . $this->config['reports'] . '/summary.xml')
+		                ->arg('--ignore=' . implode(',', $this->ignoredDirs));
 
 		if (file_exists('' . $this->config['reports'] . '/coverage.xml'))
 		{
@@ -120,28 +113,32 @@ class RoboFile extends \Robo\Tasks
 		$pdepend->arg('.')->run();
 	}
 
-	protected function checkMd()
-	{
-		$this->init();
-		$this->taskExec($this->binDir . '/phpmd')
-			 ->arg(__DIR__)
-			 ->arg('xml')
-			 ->arg($this->config['toolcfg'] . '/phpmd.xml')
-			 ->arg('--reportfile=' . $this->config['reports'] . '/pmd.xml')
-			 ->arg('--exclude=' . implode(',', $this->ignoredDirs))
-			 ->run();
-	}
-
 	/**
 	 * Detects violations of the coding standard.
 	 */
 	public function checkStyle()
 	{
-		$this->init();
+		$this->initReports();
+		$this->stopOnFail();
 		$this->taskStyle($this->binDir . '/phpcs')
-			 ->arg('--report=full')
-			 ->arg('--report-checkstyle=' . $this->config['reports'] . '/checkstyle.xml')
-			 ->run();
+		     ->arg('--report=full')
+		     ->arg('--report-checkstyle=' . $this->config['reports'] . '/checkstyle.xml')
+		     ->run();
+	}
+
+	/**
+	 * Sets the common parameters for CodeSniffer and CodeBeautifier
+	 *
+	 * @param   string $bin One of 'phpcs' or 'phpcbf'
+	 *
+	 * @return \Robo\Task\Base\Exec
+	 */
+	private function taskStyle($bin)
+	{
+		return $this->taskExec($bin)
+		            ->arg('--standard=' . $this->vendorDir . '/greencape/coding-standards/src/Joomla')
+		            ->arg('--ignore=' . implode(',', $this->ignoredDirs))
+		            ->arg(__DIR__);
 	}
 
 	/**
@@ -159,13 +156,13 @@ class RoboFile extends \Robo\Tasks
 	 */
 	public function documentApi()
 	{
-		$this->init();
+		$this->initApiDocs();
 		$this->taskApiGen($this->binDir . '/apigen')
-			 ->arg('generate')
-			 ->config($this->config['toolcfg'] . '/apigen.api.yml')
-			 ->arg('--title="' . $this->config['title'] . ' API Documentation"')
-			 ->arg('--destination="' . $this->config['apidocs'] . '/api"')
-			 ->run();
+		     ->arg('generate')
+		     ->config($this->config['toolcfg'] . '/apigen.api.yml')
+		     ->arg('--title "' . $this->config['title'] . ' API Documentation"')
+		     ->arg('--destination "' . $this->config['apidocs'] . '/api"')
+		     ->run();
 	}
 
 	/**
@@ -174,14 +171,14 @@ class RoboFile extends \Robo\Tasks
 	 */
 	public function documentFull()
 	{
-		$this->init();
+		$this->initApiDocs();
 		$this->taskApiGen($this->binDir . '/apigen')
-			 ->arg('generate')
-			 ->config($this->config['toolcfg'] . '/apigen.full.yml')
-			 ->arg('--title="' . $this->config['title'] . ' Developer Documentation"')
-			 ->arg('--destination="' . $this->config['apidocs'] . '/full"')
-			 ->arg('--annotation-groups=package')
-			 ->run();
+		     ->arg('generate')
+		     ->config($this->config['toolcfg'] . '/apigen.full.yml')
+		     ->arg('--title="' . $this->config['title'] . ' Developer Documentation"')
+		     ->arg('--destination="' . $this->config['apidocs'] . '/full"')
+		     ->arg('--annotation-groups=package')
+		     ->run();
 	}
 
 	/**
@@ -189,10 +186,11 @@ class RoboFile extends \Robo\Tasks
 	 */
 	public function documentStyle()
 	{
+		$this->initApiDocs();
 		$this->taskStyle($this->binDir . '/phpcs')
-			 ->arg('--generator=Markdown')
-			 ->arg('> "' . $this->config['apidocs'] . '/coding-standard.md"')
-			 ->run();
+		     ->arg('--generator=Markdown')
+		     ->arg('> "' . $this->config['apidocs'] . '/coding-standard.md"')
+		     ->run();
 	}
 
 	/**
@@ -200,9 +198,8 @@ class RoboFile extends \Robo\Tasks
 	 */
 	public function fixStyle()
 	{
-		$this->init();
 		$this->taskStyle($this->binDir . '/phpcbf')
-			 ->run();
+		     ->run();
 	}
 
 	/**
@@ -210,14 +207,14 @@ class RoboFile extends \Robo\Tasks
 	 */
 	public function reportCb()
 	{
-		$this->init();
+		$this->initReports();
 		$phpcb = $this->taskExec($this->binDir . '/phpcb')
-					  ->arg('--log "' . $this->config['reports'] . '"')
-					  ->arg('--source .')
-					  ->arg('--extensions ".php"')
-					  ->arg('--exclude "*.md"')
-					  ->arg('--exclude "*.dtd"')
-					  ->arg('--output "' . $this->config['reports'] . '/code"');
+		              ->arg('--log "' . $this->config['reports'] . '"')
+		              ->arg('--source .')
+		              ->arg('--extensions ".php"')
+		              ->arg('--exclude "*.md"')
+		              ->arg('--exclude "*.dtd"')
+		              ->arg('--output "' . $this->config['reports'] . '/code"');
 
 		foreach (array_merge($this->ignoredDirs, $this->ignoredFiles) as $dir)
 		{
@@ -232,12 +229,11 @@ class RoboFile extends \Robo\Tasks
 	 */
 	public function reportMetrics()
 	{
-		$this->init();
+		$this->initReports();
 		$this->taskExec($this->binDir . '/phpmetrics')
-			 ->arg('--config="' . $this->config['toolcfg'] . '/phpmetrics.yml"')
-			#->arg('--template-title="' . $this->config['title'] . ' Metrics Report"')
-			 ->arg('.')
-			 ->run();
+		     ->arg('--config="' . $this->config['toolcfg'] . '/phpmetrics.yml"')
+		     ->arg('.')
+		     ->run();
 	}
 
 	/**
@@ -254,28 +250,7 @@ class RoboFile extends \Robo\Tasks
 		'coverage' => false
 	])
 	{
-		$this->init();
-
 		$this->test('unit', $option);
-	}
-
-	/**
-	 * Performs the tests from the `acceptance` suite.
-	 *
-	 * **Note**: The `acceptance` suite contains all tests,
-	 * that involve a browser.
-	 *
-	 * @param array $option
-	 *
-	 * @option $coverage Whether or not to generate a code coverage report
-	 */
-	public function testSystem($option = [
-		'coverage' => false
-	])
-	{
-		$this->init();
-
-		$this->test('acceptance', $option);
 	}
 
 	/**
@@ -290,13 +265,17 @@ class RoboFile extends \Robo\Tasks
 		'coverage' => false
 	])
 	{
+		$this->stopOnFail();
+		$this->initReports();
+		$this->createTestdata();
+
 		$tempConfigFile = $this->buildConfig($this->config['toolcfg'], $option['coverage']);
 
 		try
 		{
-			$codecept = $this->taskCodecept($this->binDir . '/codecept')
-							 ->configFile($tempConfigFile)
-							 ->html($suite . '-test-results.html');
+			$codecept = $this
+				->taskCodecept($this->binDir . '/codecept')
+				->configFile($tempConfigFile);
 
 			if ($suite != 'all')
 			{
@@ -310,27 +289,20 @@ class RoboFile extends \Robo\Tasks
 					->coverageHtml('coverage');
 			}
 
-			$codecept->run();
-		} finally
+			$codecept->option('verbose')->run();
+
+			$return = 0;
+		}
+		catch(\Exception $e)
+		{
+			$return = 1;
+		}
+		finally
 		{
 			$this->_remove($tempConfigFile);
 		}
-	}
 
-	/**
-	 * Sets the common parameters for CodeSniffer and CodeBeautifier
-	 *
-	 * @param   string $bin One of 'phpcs' or 'phpcbf'
-	 *
-	 * @return \Robo\Task\Base\Exec
-	 */
-	private function taskStyle($bin)
-	{
-		return $this->taskExec($bin)
-			#->arg('--standard=PSR2')
-					->arg('--standard=' . $this->vendorDir . '/greencape/coding-standards/src/Joomla')
-					->arg('--ignore=' . implode(',', $this->ignoredDirs))
-					->arg(__DIR__);
+		return $return;
 	}
 
 	/**
@@ -354,11 +326,15 @@ class RoboFile extends \Robo\Tasks
 		$config['coverage']['enabled']   = $enableCoverage;
 		$config['coverage']['whitelist'] = [
 			'include' => [
-				'app/*',
-				'bin/*',
-				'inst/*',
-				'lib/*',
-				'web/*',
+				'administrator/*.php',
+				'bin/*.php',
+				'cli/*.php',
+				'components/*.php',
+				'installation/*.php',
+				'layouts/*.php',
+				'libraries/incubator/*.php',
+				'modules/*.php',
+				'plugins/*.php',
 			],
 		];
 		$config['paths']['log']          = $this->config['reports'];
@@ -367,5 +343,172 @@ class RoboFile extends \Robo\Tasks
 		file_put_contents($tempConfigFile, Yaml::dump($config));
 
 		return $tempConfigFile;
+	}
+
+	/**
+	 * Performs the tests from the `acceptance` suite.
+	 *
+	 * **Note**: The `acceptance` suite contains all tests,
+	 * that involve a browser.
+	 *
+	 * @param array $option
+	 *
+	 * @option $coverage Whether or not to generate a code coverage report
+	 */
+	public function testSystem($option = [
+		'coverage' => false
+	])
+	{
+		$this->test('acceptance', $option);
+	}
+
+	/**
+	 * Disabled due to MD 2.4.3 internal problems
+	 */
+	protected function checkMd()
+	{
+		$this->initReports();
+		$this->taskExec($this->binDir . '/phpmd')
+		     ->arg(__DIR__)
+		     ->arg('xml')
+		     ->arg($this->config['toolcfg'] . '/phpmd.xml')
+		     ->arg('--reportfile=' . $this->config['reports'] . '/pmd.xml')
+		     ->arg('--exclude=' . implode(',', $this->ignoredDirs))
+		     ->run();
+	}
+
+	private function initApiDocs()
+	{
+		if (!file_exists($this->config['apidocs']))
+		{
+			$this->_mkdir($this->config['apidocs']);
+		}
+	}
+
+	private function initReports()
+	{
+		if (!file_exists($this->config['reports']))
+		{
+			$this->_mkdir($this->config['reports']);
+		}
+	}
+
+	/**
+	 * Creates the sqlite unit test database
+	 */
+	public function createSqlData()
+	{
+		$dataDir = __DIR__ . '/tests/unit/ORM/data';
+		$database   = $dataDir . '/original/sqlite.test.db';
+
+		$this->say('Creating test database in ' . $database);
+
+		if (file_exists($database))
+		{
+			$this->say('Removing old test database');
+			$this->_remove($database);
+		}
+
+		$connection = DriverManager::getConnection(['url' => 'sqlite:///' . $database]);
+
+		$files = glob($dataDir . '/original/*.csv');
+
+		foreach ($files as $file)
+		{
+			$tableName = basename($file, '.csv');
+			$table     = new Table($tableName);
+			$records   = $this->loadData($file);
+			$columns   = array_keys(reset($records));
+
+			foreach ($columns as $column)
+			{
+				$type = preg_match('~\bid$~i', $column) ? 'integer' : 'string';
+				$table->addColumn(
+					$column,
+					$type,
+					[
+						'Notnull' => false,
+					]
+				);
+			}
+
+			if ($table->hasColumn('id'))
+			{
+				$table->setPrimaryKey(['id']);
+			}
+
+			$this->say('Creating table ' . $tableName);
+			$connection->getSchemaManager()->createTable($table);
+
+			$this->say('Adding ' . count($records) . ' records');
+			foreach ($records as $record)
+			{
+				$connection->insert($tableName, $record);
+			}
+		}
+	}
+
+	/**
+	 * Creates the unit test database
+	 */
+	public function createTestdata()
+	{
+		$dataDir  = __DIR__ . '/tests/unit/ORM/data';
+		$database = 'sqlite.test.db';
+
+		$originalDatabase = $dataDir . '/original/' . $database;
+		$workingDatabase = $dataDir . '/' . $database;
+
+		if (!file_exists($originalDatabase))
+		{
+			$this->createSqlData();
+		}
+
+		$this->say('Creating test database in ' . $database);
+
+		if (file_exists($workingDatabase))
+		{
+			#$this->_remove($workingDatabase);
+		}
+
+		$this->_copy($originalDatabase, $workingDatabase);
+
+		$files = glob($dataDir . '/original/*.csv');
+
+		foreach ($files as $file)
+		{
+			$csvFilename = $dataDir . '/' . basename($file);
+			$this->_remove($csvFilename);
+			$this->_copy($file, $csvFilename);
+		}
+	}
+
+	/**
+	 * Load the data from the file
+	 *
+	 * @return  array
+	 */
+	private function loadData($dataFile)
+	{
+		$fh   = fopen($dataFile, 'r');
+		$keys = fgetcsv($fh);
+
+		$rows = [];
+
+		while (!feof($fh))
+		{
+			$row = fgetcsv($fh);
+
+			if ($row === false)
+			{
+				break;
+			}
+
+			$rows[] = array_combine($keys, $row);
+		}
+
+		fclose($fh);
+
+		return $rows;
 	}
 }

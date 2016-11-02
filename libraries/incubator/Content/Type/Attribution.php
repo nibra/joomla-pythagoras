@@ -1,6 +1,6 @@
 <?php
 /**
- * Part of the Joomla Framework Renderer Package
+ * Part of the Joomla Framework Content Package
  *
  * @copyright  Copyright (C) 2015 - 2016 Open Source Matters, Inc. All rights reserved.
  * @license    GNU General Public License version 2 or later; see LICENSE
@@ -8,13 +8,13 @@
 
 namespace Joomla\Content\Type;
 
-use Joomla\Renderer\RendererInterface;
+use Joomla\Content\ContentTypeVisitorInterface;
 
 /**
  * Attribution ContentType
  *
  * @package  Joomla/Content
- * @since    1.0
+ * @since    __DEPLOY_VERSION__
  *
  * @property string $label
  * @property string $name
@@ -24,8 +24,8 @@ class Attribution extends AbstractContentType
 	/**
 	 * Attribution constructor.
 	 *
-	 * @param   string  $label  The text before the author's name
-	 * @param   string  $name   The author's name
+	 * @param   string $label The text before the author's name
+	 * @param   string $name  The author's name
 	 */
 	public function __construct($label, $name)
 	{
@@ -34,14 +34,14 @@ class Attribution extends AbstractContentType
 	}
 
 	/**
-	 * Render the output
+	 * Visits the content type.
 	 *
-	 * @param   RendererInterface  $renderer  The Renderer
+	 * @param   ContentTypeVisitorInterface $visitor The Visitor
 	 *
-	 * @return  integer  Length of rendered content
+	 * @return  mixed
 	 */
-	public function accept(RendererInterface $renderer)
+	public function accept(ContentTypeVisitorInterface $visitor)
 	{
-		return $renderer->visitAttribution($this);
+		return $visitor->visitAttribution($this);
 	}
 }

@@ -8,15 +8,16 @@
 
 namespace Joomla\Renderer;
 
+use Interop\Container\ContainerInterface;
 use Joomla\Content\ContentTypeInterface;
-use Joomla\Content\Type\Compound;
+use Joomla\Renderer\Exception\NotFoundException;
 
 /**
  * Class Renderer
  *
  * @package  Joomla/Renderer
  *
- * @since    1.0
+ * @since    __DEPLOY_VERSION__
  */
 abstract class Renderer implements RendererInterface
 {
@@ -29,6 +30,9 @@ abstract class Renderer implements RendererInterface
 	/** @var string The output buffer */
 	protected $output = '';
 
+	/** @var  ContainerInterface */
+	protected $container;
+
 	/** @var callable[] Content type handlers */
 	private $handlers = [];
 
@@ -38,27 +42,54 @@ abstract class Renderer implements RendererInterface
 	/**
 	 * Renderer constructor.
 	 *
-	 * @param   array $options Accepted range, ie., MIME type ('token') and quality ('q')
+	 * @param   array               $options    Accepted range, ie., MIME type ('token') and quality ('q')
+	 * @param   ContainerInterface  $container  The container
 	 */
-	public function __construct($options)
+	public function __construct(array $options, ContainerInterface $container)
 	{
-		$this->options = $options;
+		$this->options   = $options;
+		$this->container = $container;
+
+		$this->registerFallback();
 	}
 
 	/**
-	 * @param   string   $type     The content type
-	 * @param   callable $handler  The handler for that type
+	 * Register a content type
+	 *
+	 * @param   string                $type    The content type
+	 * @param   callable|array|string $handler The handler for that type
 	 *
 	 * @return  void
 	 */
-	public function registerContentType($type, callable $handler)
+	public function registerContentType($type, $handler)
 	{
+		if (is_string($handler))
+		{
+			$handler = function (ContentTypeInterface $contentItem) use ($handler) {
+				return call_user_func([$contentItem, $handler]);
+			};
+		}
+		elseif (is_array($handler))
+		{
+			$handler = function (ContentTypeInterface $contentItem) use ($handler) {
+				return call_user_func($handler, $contentItem);
+			};
+		}
+
 		$this->handlers[strtolower($type)] = $handler;
 	}
 
 	/**
-	 * @param   string  $method     Method name; must start with 'visit'
-	 * @param   array   $arguments  Method arguments
+	 * @return string
+	 */
+	public function getClass()
+	{
+		return get_class($this);
+	}
+
+	/**
+	 * @param   string $method    Method name; must start with 'visit'
+	 * @param   array  $arguments Method arguments
 	 *
 	 * @return  void
 	 */
@@ -80,7 +111,7 @@ abstract class Renderer implements RendererInterface
 			}
 			else
 			{
-				echo "\nLogWarn: Unknown content type {$match[1]}, no default\n";
+				throw new NotFoundException("Unknown content type {$match[1]}, no default\n");
 			}
 		}
 	}
@@ -102,7 +133,7 @@ abstract class Renderer implements RendererInterface
 	 */
 	public function __toString()
 	{
-		return get_class($this);
+		return $this->output;
 	}
 
 	/**
@@ -182,11 +213,12 @@ abstract class Renderer implements RendererInterface
 	 *
 	 * @link http://www.php.net/manual/en/function.fseek.php
 	 *
-	 * @param   int   $offset  Stream offset
-	 * @param   int   $whence  Specifies how the cursor position will be calculated
+	 * @param   int $offset    Stream offset
+	 * @param   int $whence    Specifies how the cursor position will be calculated
 	 *                         based on the seek offset. Valid values are identical to the built-in
-	 *                         PHP $whence values for `fseek()`.  SEEK_SET: Set position equal to
-	 *                         offset bytes SEEK_CUR: Set position to current location plus offset
+	 *                         PHP $whence values for `fseek()`.
+	 *                         SEEK_SET: Set position equal to offset bytes
+	 *                         SEEK_CUR: Set position to current location plus offset
 	 *                         SEEK_END: Set position to end-of-stream plus offset.
 	 *
 	 * @return  void
@@ -248,7 +280,7 @@ abstract class Renderer implements RendererInterface
 	/**
 	 * Read data from the stream.
 	 *
-	 * @param   int  $length  Read up to $length bytes from the object and return
+	 * @param   int $length   Read up to $length bytes from the object and return
 	 *                        them. Fewer than $length bytes may be returned if underlying stream
 	 *                        call returns fewer bytes.
 	 *
@@ -287,7 +319,7 @@ abstract class Renderer implements RendererInterface
 	 *
 	 * @link http://php.net/manual/en/function.stream-get-meta-data.php
 	 *
-	 * @param   string  $key  Specific metadata to retrieve.
+	 * @param   string $key Specific metadata to retrieve.
 	 *
 	 * @return  array|mixed|null  Returns an associative array if no key is
 	 *                            provided. Returns a specific key value if a key is provided and the
@@ -348,5 +380,21 @@ abstract class Renderer implements RendererInterface
 	public function isSeekable()
 	{
 		return true;
+	}
+
+	/**
+	 * Define a fallback for non-registered content types.
+	 * The fallback will just ignore the content type.
+	 *
+	 * @return  void
+	 */
+	private function registerFallback()
+	{
+		$this->registerContentType(
+			'default',
+			function () {
+				return '';
+			}
+		);
 	}
 }

@@ -1,6 +1,6 @@
 <?php
 /**
- * Part of the Joomla Framework Renderer Package
+ * Part of the Joomla Framework Content Package
  *
  * @copyright  Copyright (C) 2015 - 2016 Open Source Matters, Inc. All rights reserved.
  * @license    GNU General Public License version 2 or later; see LICENSE
@@ -8,15 +8,15 @@
 
 namespace Joomla\Content\Type;
 
-use Joomla\Renderer\RendererInterface;
+use Joomla\Content\ContentTypeVisitorInterface;
 
 /**
  * Headline ContentType
  *
  * @package  Joomla/Content
- * @since    1.0
+ * @since    __DEPLOY_VERSION__
  *
- * @property string $text
+ * @property string  $text
  * @property integer $level
  */
 class Headline extends AbstractContentType
@@ -24,8 +24,8 @@ class Headline extends AbstractContentType
 	/**
 	 * Headline constructor.
 	 *
-	 * @param   string   $text   The copy of the headline
-	 * @param   integer  $level  The Level of the headline
+	 * @param   string  $text  The copy of the headline
+	 * @param   integer $level The Level of the headline
 	 */
 	public function __construct($text, $level = 1)
 	{
@@ -34,14 +34,14 @@ class Headline extends AbstractContentType
 	}
 
 	/**
-	 * Render the output
+	 * Visits the content type.
 	 *
-	 * @param   RendererInterface  $renderer  The Renderer
+	 * @param   ContentTypeVisitorInterface $visitor The Visitor
 	 *
-	 * @return  integer  Length of rendered content
+	 * @return  mixed
 	 */
-	public function accept(RendererInterface $renderer)
+	public function accept(ContentTypeVisitorInterface $visitor)
 	{
-		return $renderer->visitHeadline($this);
+		return $visitor->visitHeadline($this);
 	}
 }

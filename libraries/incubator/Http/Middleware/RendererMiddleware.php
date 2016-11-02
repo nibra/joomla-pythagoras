@@ -8,7 +8,10 @@
 
 namespace Joomla\Http\Middleware;
 
+use Interop\Container\ContainerInterface;
+use Joomla\Event\Dispatcher;
 use Joomla\Http\MiddlewareInterface;
+use Joomla\Renderer\EventDecorator;
 use Joomla\Renderer\Factory as RendererFactory;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -21,10 +24,28 @@ use Psr\Http\Message\ServerRequestInterface;
  *
  * @package  Joomla/HTTP
  *
- * @since    1.0
+ * @since    __DEPLOY_VERSION__
  */
 class RendererMiddleware implements MiddlewareInterface
 {
+	/** @var Dispatcher  */
+	private $dispatcher;
+
+	/** @var  ContainerInterface */
+	private $container;
+
+	/**
+	 * RendererMiddleware constructor.
+	 *
+	 * @param   Dispatcher         $dispatcher The event dispatcher
+	 * @param   ContainerInterface $container  The container
+	 */
+	public function __construct(Dispatcher $dispatcher, ContainerInterface $container)
+	{
+		$this->dispatcher = $dispatcher;
+		$this->container  = $container;
+	}
+
 	/**
 	 * Execute the middleware. Don't call this method directly; it is used by the `Application` internally.
 	 *
@@ -45,9 +66,18 @@ class RendererMiddleware implements MiddlewareInterface
 			$acceptHeader = 'text/plain';
 		}
 
-		$mapping = parse_ini_file(JPATH_ROOT . '/config/renderer.ini');
+		$mapping  = parse_ini_file(JPATH_ROOT . '/config/renderer.ini');
+		$renderer = (new RendererFactory($mapping))->create($acceptHeader, $this->container);
 
-		$renderer = (new RendererFactory($mapping))->create($acceptHeader);
+		foreach ($this->container->get('extension_factory')->getExtensions() as $extension)
+		{
+			foreach ($extension->getContentTypes() as $contentTypeClass)
+			{
+				(new $contentTypeClass)->register($renderer);
+			}
+		}
+
+		$renderer = new EventDecorator($renderer, $this->dispatcher);
 
 		$response = $next($request, $response->withBody($renderer));
 

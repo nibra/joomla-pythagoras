@@ -8,9 +8,14 @@
 
 namespace Joomla\Tests\Unit\Http;
 
+use Joomla\Cms\ServiceProvider\EventDispatcherServiceProvider;
+use Joomla\Cms\ServiceProvider\ExtensionFactoryServiceProvider;
+use Joomla\DI\Container;
+use Joomla\Event\Dispatcher;
 use Joomla\Http\Application;
 use Joomla\Http\Middleware\RendererMiddleware;
-use Joomla\Renderer\PlainRenderer;
+use Joomla\ORM\Service\StorageServiceProvider;
+use Joomla\Renderer\EventDecorator;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use UnitTester;
@@ -18,27 +23,34 @@ use Zend\Diactoros\ServerRequest;
 
 class RendererCest
 {
-    public function _before(UnitTester $I)
-    {
-    }
+	public function _before(UnitTester $I)
+	{
+	}
 
-    public function _after(UnitTester $I)
-    {
-    }
+	public function _after(UnitTester $I)
+	{
+	}
 
-    public function RendererDefaultsToPlainText(UnitTester $I)
-    {
-        $app = new Application([
-            new RendererMiddleware,
-            function (ServerRequestInterface $request, ResponseInterface $response, callable $next) use ($I) {
-                $body = $response->getBody();
+	public function RendererAddsTheEventDecorator(UnitTester $I)
+	{
+		$container = new Container();
+		$container->set('ConfigDirectory', JPATH_ROOT);
+		$container->registerServiceProvider(new StorageServiceProvider, 'repository');
+		$container->registerServiceProvider(new EventDispatcherServiceProvider, 'dispatcher');
+		$container->registerServiceProvider(new ExtensionFactoryServiceProvider, 'extension_factory');
 
-                $I->assertTrue($body instanceof PlainRenderer);
+		$app       = new Application([
+			new RendererMiddleware(new Dispatcher(), $container),
+			function (ServerRequestInterface $request, ResponseInterface $response, callable $next) use ($I)
+			{
+				$body = $response->getBody();
 
-                return $next($request, $response);
-            }
-        ]);
+				$I->assertEquals(EventDecorator::class, get_class($body));
 
-        $app->run(new ServerRequest());
-    }
+				return $next($request, $response);
+			}
+		]);
+
+		$app->run(new ServerRequest());
+	}
 }

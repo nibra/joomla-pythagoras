@@ -26,7 +26,7 @@ final class DelegatingDispatcher implements DispatcherInterface
 	/**
 	 * Constructor.
 	 *
-	 * @param   DispatcherInterface  $dispatcher  The delegated dispatcher.
+	 * @param   DispatcherInterface $dispatcher The delegated dispatcher.
 	 *
 	 * @since   1.0
 	 */
@@ -38,9 +38,9 @@ final class DelegatingDispatcher implements DispatcherInterface
 	/**
 	 * Attaches a listener to an event
 	 *
-	 * @param   string    $eventName  The event to listen to.
-	 * @param   callable  $callback   A callable function
-	 * @param   integer   $priority   The priority at which the $callback executed
+	 * @param   string   $eventName The event to listen to.
+	 * @param   callable $callback  A callable function
+	 * @param   integer  $priority  The priority at which the $callback executed
 	 *
 	 * @return  boolean
 	 *
@@ -52,25 +52,10 @@ final class DelegatingDispatcher implements DispatcherInterface
 	}
 
 	/**
-	 * Dispatches an event to all registered listeners.
-	 *
-	 * @param   string          $name   The name of the event to dispatch.
-	 * @param   EventInterface  $event  The event to pass to the event handlers/listeners.
-	 *
-	 * @return  EventInterface  The event after being passed through all listeners.
-	 *
-	 * @since   __DEPLOY_VERSION__
-	 */
-	public function dispatch($name, EventInterface $event = null)
-	{
-		return $this->dispatcher->dispatch($name, $event);
-	}
-
-	/**
 	 * Removes an event listener from the specified event.
 	 *
-	 * @param   string    $eventName  The event to remove a listener from.
-	 * @param   callable  $listener   The listener to remove.
+	 * @param   string   $eventName The event to remove a listener from.
+	 * @param   callable $listener  The listener to remove.
 	 *
 	 * @return  void
 	 *
@@ -84,14 +69,34 @@ final class DelegatingDispatcher implements DispatcherInterface
 	/**
 	 * Trigger an event.
 	 *
-	 * @param   EventInterface|string  $event  The event object or name.
+	 * @param   EventInterface|string $event The event object or name.
 	 *
 	 * @return  EventInterface  The event after being passed through all listeners.
 	 *
-	 * @since   1.0
+	 * @since       1.0
+	 * @deprecated  3.0  Use dispatch() instead.
 	 */
 	public function triggerEvent($event)
 	{
-		return $this->dispatcher->triggerEvent($event);
+		if (!($event instanceof EventInterface))
+		{
+			$event = new Event($event);
+		}
+
+		return $this->dispatch($event);
+	}
+
+	/**
+	 * Dispatches an event to all registered listeners.
+	 *
+	 * @param   EventInterface $event The event to pass to the event handlers/listeners.
+	 *
+	 * @return  EventInterface  The event after being passed through all listeners.
+	 *
+	 * @since   __DEPLOY_VERSION__
+	 */
+	public function dispatch(EventInterface $event)
+	{
+		return $this->dispatcher->dispatch($event);
 	}
 }

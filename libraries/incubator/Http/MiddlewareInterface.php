@@ -16,7 +16,7 @@ use Psr\Http\Message\ServerRequestInterface;
  *
  * @package  Joomla/HTTP
  *
- * @since    1.0
+ * @since    __DEPLOY_VERSION__
  */
 interface MiddlewareInterface
 {
@@ -25,9 +25,9 @@ interface MiddlewareInterface
 	 *
 	 * @internal
 	 *
-	 * @param   ServerRequestInterface $request   The request object
-	 * @param   ResponseInterface      $response  The response object
-	 * @param   callable               $next      The next middleware handler
+	 * @param   ServerRequestInterface $request  The request object
+	 * @param   ResponseInterface      $response The response object
+	 * @param   callable               $next     The next middleware handler
 	 *
 	 * @return  ResponseInterface
 	 */

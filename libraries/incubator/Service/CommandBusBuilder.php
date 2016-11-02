@@ -9,15 +9,15 @@
 
 namespace Joomla\Service;
 
+use Joomla\Event\DispatcherInterface;
 use League\Tactician\Handler\CommandHandlerMiddleware;
 use League\Tactician\Handler\CommandNameExtractor\ClassNameExtractor;
 use League\Tactician\Handler\CommandNameExtractor\CommandNameExtractor;
-use League\Tactician\Handler\Locator\HandlerLocator;
 use League\Tactician\Handler\Locator\CallableLocator;
-use League\Tactician\Handler\MethodNameInflector\MethodNameInflector;
+use League\Tactician\Handler\Locator\HandlerLocator;
 use League\Tactician\Handler\MethodNameInflector\HandleInflector;
+use League\Tactician\Handler\MethodNameInflector\MethodNameInflector;
 use League\Tactician\Middleware;
-use League\Tactician\Plugins\LockingMiddleware;
 
 /**
  * Command Bus Builder.
@@ -25,19 +25,19 @@ use League\Tactician\Plugins\LockingMiddleware;
  * Builds a command bus with the specified configuration and middleware.
  *
  * Unless overridden, this will return a default command bus with the following configuration:-
- * 		Command name extractor:	ClassNameExtractor
- * 		Handler locator:		Callable which replaces "Command" with "CommandHandler" and
- * 								"Query" with "QueryHandler" in the command name.
- * 		Method name inflector:	HandleInflector
- * 		Middleware stack:		CommandLockingMiddleware which locks only for Commands, not Queries.
- * 								DomainEventMiddleware which publishes all DomainEvents, provided
- * 								that a dispatcher was specified when the builder was instantiated.
+ *        Command name extractor: ClassNameExtractor
+ *        Handler locator:        Callable which replaces "Command" with "CommandHandler" and
+ *                                "Query" with "QueryHandler" in the command name.
+ *        Method name inflector:  HandleInflector
+ *        Middleware stack:       CommandLockingMiddleware which locks only for Commands, not Queries.
+ *                                DomainEventMiddleware which publishes all DomainEvents, provided
+ *                                that a dispatcher was specified when the builder was instantiated.
  *
  * This class also helps isolate our dependency on a particular command bus implementation.
  *
  * @package  Joomla/Service
  *
- * @since  __DEPLOY_VERSION__
+ * @since    __DEPLOY_VERSION__
  */
 class CommandBusBuilder
 {
@@ -56,18 +56,18 @@ class CommandBusBuilder
 	/**
 	 * Constructor.
 	 *
-	 * @param   object  $dispatcher  Optional domain event dispatcher.
+	 * @param   DispatcherInterface $dispatcher Optional domain event dispatcher.
 	 *
 	 * @since  __DEPLOY_VERSION__
 	 */
-	public function __construct($dispatcher = null)
+	public function __construct(DispatcherInterface $dispatcher = null)
 	{
 		// Set the default command name extractor.
 		$this->commandNameExtractor = new ClassNameExtractor;
 
 		// Set the default handler locator.
 		$this->handlerLocator = new CallableLocator(
-			function($commandName)
+			function ($commandName) use ($dispatcher)
 			{
 				// Break apart the fully-qualified class name.
 				// We do this so that the namespace path is not modified.
@@ -83,7 +83,7 @@ class CommandBusBuilder
 				// Construct the fully-qualified class name of the handler.
 				$serviceName = implode('\\', $parts) . '\\' . $handlerName;
 
-				return new $serviceName($this->getCommandBus());
+				return new $serviceName($this->getCommandBus(), $dispatcher);
 			}
 		);
 
@@ -145,7 +145,7 @@ class CommandBusBuilder
 	/**
 	 * Set the command name extractor, overriding the default.
 	 *
-	 * @param   CommandNameExtractor  $commandNameExtractor  Command name extractor.
+	 * @param   CommandNameExtractor $commandNameExtractor Command name extractor.
 	 *
 	 * @return  CommandBusBuilder  This object for method chaining.
 	 *
@@ -161,7 +161,7 @@ class CommandBusBuilder
 	/**
 	 * Set the handler locator, overriding the default.
 	 *
-	 * @param   HandlerLocator  $handlerLocator  Handler locator.
+	 * @param   HandlerLocator $handlerLocator Handler locator.
 	 *
 	 * @return  CommandBusBuilder  This object for method chaining.
 	 *
@@ -177,7 +177,7 @@ class CommandBusBuilder
 	/**
 	 * Set the method name inflector, overriding the default.
 	 *
-	 * @param   MethodNameInflector  $methodNameInflector  Method name inflector.
+	 * @param   MethodNameInflector $methodNameInflector Method name inflector.
 	 *
 	 * @return  CommandBusBuilder  This object for method chaining.
 	 *
@@ -193,7 +193,7 @@ class CommandBusBuilder
 	/**
 	 * Set the middleware stack, overriding or modifying the default stack.
 	 *
-	 * @param   Middleware[]  $middleware  An array of Middleware objects.
+	 * @param   Middleware[] $middleware An array of Middleware objects.
 	 *
 	 * @return  CommandBusBuilder  This object for method chaining.
 	 *
