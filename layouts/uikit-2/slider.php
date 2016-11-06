@@ -10,35 +10,15 @@
  * @codingStandardsIgnoreStart
  */
 
-if (!isset($content->params))
-{
-	$content->params = new stdClass;
-}
-
-if (!isset($content->params->class))
-{
-	$content->params->class = 'slide';
-}
 ?>
+<div id="<?php echo $content->id; ?>">
 
-<div id="<?php echo $content->id; ?>" class="uk-slidenav-position <?php echo $content->params->class; ?>" data-uk-slideshow>
-	
-	<!-- Wrapper for slides -->
-	<ul class="uk-slideshow">
-		<?php foreach ($content->elements as $i => $element) : ?>
-		<li class="item<?php echo $i == 0 ? ' active' : ''; ?>">
-			<?php echo $element->html; ?>
-		</li>
-		<?php endforeach; ?>
-	</ul>
-
-	<!-- Left and right controls -->
-	<a href="" class="uk-slidenav uk-slidenav-contrast uk-slidenav-previous" data-uk-slideshow-item="previous"></a>
-    	<a href="" class="uk-slidenav uk-slidenav-contrast uk-slidenav-next" data-uk-slideshow-item="next"></a>
-    
-	<ul class="uk-dotnav uk-dotnav-contrast uk-position-bottom uk-flex-center">
-    	<?php for ($i=0, $n = count($content->elements); $i < $n; ++$i) : ?>
-        	<li data-uk-slideshow-item="<?php echo $i; ?>"><a href=""></a></li>
-        <?php endfor; ?>
-	</ul>
+    <ul class="uk-slideshow" data-uk-slideshow="{autoplay:true}">
+        <?php foreach ($content->elements as $i => $element) : ?>
+            <li>
+                <?php echo $element->html; ?>
+            </li>
+        <?php endforeach; ?>
+    </ul>
 </div>
+<script src="templates/uikit2/js/components/slideshow.min.js"></script>

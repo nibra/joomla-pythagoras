@@ -16,7 +16,7 @@ if (!isset($content->params))
 
 if (!isset($content->params->class))
 {
-	$content->params->class = 'navbar navbar-inverse';
+	$content->params->class = 'uk-navbar';
 }
 
 if (!isset($content->params->levels))

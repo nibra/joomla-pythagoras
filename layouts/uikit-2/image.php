@@ -61,24 +61,29 @@ if (!isset($content->alt))
 }
 
 $style = [];
+$attr  = [];
 
 if (!empty($content->params->width))
 {
 	$measure = marshalMeasure($content->params->width);
 	$style[] = "width: {$measure};";
+	$attr[]  = "width=\"$measure\"";
 }
 
 if (!empty($content->params->height))
 {
 	$measure = marshalMeasure($content->params->height);
 	$style[] = "height: {$measure};";
+	$attr[]  = "height=\"$measure\"";
 }
 
-$inlineCSS = implode(' ', $style);
+$inlineCSS  = implode(' ', $style);
 
 if (!empty($inlineCSS))
 {
-	$inlineCSS = " style=\"{$inlineCSS}\"";
+	$attr[] = " style=\"{$inlineCSS}\"";
 }
+
+$attributes = implode(' ', $attr);
 ?>
-<img class="<?php echo $content->params->class; ?>" src="<?php echo $url; ?>" alt="<?php echo $content->alt; ?>"<?php echo $inlineCSS; ?>/>
+<img class="<?php echo $content->params->class; ?>" src="<?php echo $url; ?>" alt="<?php echo $content->alt; ?>" <?php echo $attributes; ?>/>

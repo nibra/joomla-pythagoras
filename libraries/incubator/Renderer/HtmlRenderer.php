@@ -48,22 +48,19 @@ class HtmlRenderer extends Renderer
 	/** @var string  Layout directory */
 	protected $layoutDirectory = 'bootstrap-3';
 
-	/** @var  ScriptStrategyInterface */
-	private $clientScript;
-
 	/** @var  string[]  Javascript code to add to output */
 	private $javascript = [];
 
 	use DumpTrait;
 
 	/**
-	 * @param   ScriptStrategyInterface $strategy The scripting strategy (library) to use
+	 * @param   string $strategy The scripting strategy (layout path) to use
 	 *
 	 * @return  void
 	 */
-	public function setScriptStrategy(ScriptStrategyInterface $strategy)
+	public function setScriptStrategy($strategy)
 	{
-		$this->clientScript = $strategy;
+		$this->layoutDirectory = $strategy;
 	}
 
 	/**
@@ -105,7 +102,7 @@ class HtmlRenderer extends Renderer
 	protected function collectMetadata()
 	{
 		$metaData                                  = parent::collectMetadata();
-		$metaData['wrapper_data']['client_script'] = empty($this->clientScript) ? null : get_class($this->clientScript);
+		$metaData['wrapper_data']['client_script'] = $this->layoutDirectory;
 
 		return $metaData;
 	}

@@ -5,9 +5,9 @@ id,name,content_type,content_args,ordering,component,reference,selection,params,
 4,teaser,Joomla\Content\Type\Compound,{"type":"div"},2,,,,{"class":"pull-right"},2,2,0
 5,main,Joomla\Content\Type\Columns,"{""type"":""main""}",2,,,,,1,2,0
 6,footer,Joomla\Content\Type\Columns,"{""type"":""footer""}",3,,,,,1,2,0
-7,menu,Joomla\Content\Type\Compound,"{""type"":""div""}",1,,,,"{""class"":""col-md-2""}",5,0,1
-8,workspace,Joomla\Content\Type\Compound,"{""type"":""div""}",2,,,,"{""class"":""col-md-6""}",5,0,1
-9,toolbox,Joomla\Content\Type\Tabs,,3,,,,"{""class"":""col-md-4""}",5,0,1
+7,menu,Joomla\Content\Type\Compound,"{""type"":""div""}",1,,,,{"class":"col-md-2 uk-width-medium-2-10"},5,0,1
+8,workspace,Joomla\Content\Type\Compound,"{""type"":""div""}",2,,,,{"class":"col-md-6 uk-width-medium-5-10"},5,0,1
+9,toolbox,Joomla\Content\Type\Tabs,,3,,,,{"class":"col-md-4 uk-width-medium-3-10"},5,0,1
 10,templates,Joomla\PageBuilder\ContentType\TemplateSelector,,1,,,,"{""title"":""Templates""}",9,0,1
 11,layouts,Joomla\Content\Type\Accordion,,2,,,,"{""title"":""Layouts""}",9,0,1
 12,contents,Joomla\Content\Type\Accordion,,3,,,,"{""title"":""Contents""}",9,0,1
@@ -31,6 +31,6 @@ id,name,content_type,content_args,ordering,component,reference,selection,params,
 30,"teaser-2",Joomla\Content\Type\Image,,2,Image,,"{""id"":2}","{""width"":""100%"",""height"":""auto""}",26,0,3
 31,"teaser-3",Joomla\Content\Type\Image,,3,Image,,"{""id"":3}","{""width"":""100%"",""height"":""auto""}",26,0,3
 32,logo-image,Joomla\Content\Type\Image,,1,Image,,"{""id"":5}",{"class":"pull-left"},25,3,0
-33,menu,Joomla\Content\Type\DefaultMenu,,1,Page,,"{""id"":3}","{""levels"":2,""class"":""navbar navbar-inverse""}",27,3,0
+33,menu,Joomla\Content\Type\DefaultMenu,,1,Page,,"{""id"":3}","{""levels"":2,""class"":""navbar navbar-inverse uk-navbar""}",27,3,0
 34,content,Joomla\Content\Type\Compound,"{""type"":""main""}",2,,,,,27,3,0
 35,logo-jd16de,Joomla\Content\Type\Image,,2,Image,,"{""id"":6}",{"class":"pull-right"},25,3,0

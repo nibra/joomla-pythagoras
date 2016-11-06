@@ -9,11 +9,11 @@
  * @codingStandardsIgnoreStart
  */
 
+$class = $element->params->class ?? '';
 ?>
-<div class="uk-container">
+<div class="uk-grid">
 	<?php foreach ($content->elements as $i => $element) : ?>
-		<?php $class = $element->params->class ?? ''; ?>
-		<div class="clearfix <?php echo $class; ?>">
+		<div class="<?php echo $class; ?>">
 			<?php echo $element->html; ?>
 		</div>
 	<?php endforeach; ?>

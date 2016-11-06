@@ -85,6 +85,7 @@ class DisplayPageCommandHandler extends CommandHandler
 			// @todo Retrieve the title
 		}
 
+		$this->output->setScriptStrategy($page->layout->template->scripting);
 		$template = $this->loadTemplate(JPATH_ROOT . '/' . $page->layout->template->path . '/index.php', $data);
 		$parts    = preg_split('~</body>~', $template, 2);
 		$parts[1] = '</body>' . $parts[1];
