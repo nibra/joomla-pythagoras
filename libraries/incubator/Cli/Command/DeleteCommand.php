@@ -44,6 +44,8 @@ class DeleteCommand extends EntityAwareCommand
 	 */
 	protected function doIt(InputInterface $input, OutputInterface $output, $finder, $entity)
 	{
+		/* @todo Utilise CommandBus and Renderer! */
+
 		$count              = 0;
 		$force              = $input->getOption('no-interaction');
 		$repository         = $this->repositoryFactory->forEntity($entity);

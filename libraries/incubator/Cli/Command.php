@@ -34,25 +34,13 @@ abstract class Command extends BaseCommand
 	/**
 	 * Constructor.
 	 *
-	 * @param   string  $name  The name of the command
+	 * @param   string $name The name of the command
 	 */
 	public function __construct($name = null)
 	{
 		parent::__construct($name);
 
 		$this->addGlobalOptions();
-	}
-
-	/**
-	 * Sets a Dependancy Injection Container
-	 *
-	 * @param   ContainerInterface $container The container
-	 *
-	 * @return  void
-	 */
-	public function setContainer(ContainerInterface $container)
-	{
-		$this->container = $container;
 	}
 
 	/**
@@ -73,10 +61,22 @@ abstract class Command extends BaseCommand
 	}
 
 	/**
+	 * Sets a Dependancy Injection Container
+	 *
+	 * @param   ContainerInterface $container The container
+	 *
+	 * @return  void
+	 */
+	public function setContainer(ContainerInterface $container)
+	{
+		$this->container = $container;
+	}
+
+	/**
 	 * Setup the environment
 	 *
-	 * @param   InputInterface   $input  An InputInterface instance
-	 * @param   OutputInterface  $output An OutputInterface instance
+	 * @param   InputInterface  $input  An InputInterface instance
+	 * @param   OutputInterface $output An OutputInterface instance
 	 *
 	 * @return  void
 	 */
@@ -88,8 +88,8 @@ abstract class Command extends BaseCommand
 	/**
 	 * Read the base path from the options
 	 *
-	 * @param   InputInterface   $input   An InputInterface instance
-	 * @param   OutputInterface  $output  An OutputInterface instance
+	 * @param   InputInterface  $input  An InputInterface instance
+	 * @param   OutputInterface $output An OutputInterface instance
 	 *
 	 * @return  string  The base path
 	 */
@@ -110,10 +110,10 @@ abstract class Command extends BaseCommand
 	/**
 	 * Proxy for OutputInterface::writeln()
 	 *
-	 * @param   OutputInterface  $output   An OutputInterface instance
-	 * @param   string|array     $message  The message
-	 * @param   int              $level    One of OutputInterface::VERBOSITY_*
-	 * @param   int              $mode     One of OutputInterface::OUTPUT_*
+	 * @param   OutputInterface $output  An OutputInterface instance
+	 * @param   string|array    $message The message
+	 * @param   int             $level   One of OutputInterface::VERBOSITY_*
+	 * @param   int             $mode    One of OutputInterface::OUTPUT_*
 	 *
 	 * @return  void
 	 */

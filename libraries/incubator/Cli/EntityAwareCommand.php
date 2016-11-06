@@ -15,7 +15,6 @@ use Joomla\Cli\Exception\NoRecordsException;
 use Joomla\ORM\Service\RepositoryFactory;
 use Joomla\ORM\Storage\CollectionFinderInterface;
 use Joomla\String\Inflector;
-use PDO;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -106,16 +105,6 @@ abstract class EntityAwareCommand extends Command
 	}
 
 	/**
-	 * @param   InputInterface            $input  An InputInterface instance
-	 * @param   OutputInterface           $output An OutputInterface instance
-	 * @param   CollectionFinderInterface $finder The finder
-	 * @param   string                    $entity The entity name
-	 *
-	 * @return  void
-	 */
-	abstract protected function doIt(InputInterface $input, OutputInterface $output, $finder, $entity);
-
-	/**
 	 * Normalises the entity name.
 	 *
 	 * @param   string $entity The entity name (singular or plural)
@@ -158,23 +147,14 @@ abstract class EntityAwareCommand extends Command
 	}
 
 	/**
-	 * Retrieves the selected records.
-	 *
+	 * @param   InputInterface            $input  An InputInterface instance
+	 * @param   OutputInterface           $output An OutputInterface instance
 	 * @param   CollectionFinderInterface $finder The finder
+	 * @param   string                    $entity The entity name
 	 *
-	 * @return  object[]
+	 * @return  void
 	 */
-	protected function getRecords($finder)
-	{
-		$records = $finder->getItems();
-
-		if (empty($records))
-		{
-			throw new NoRecordsException("No matching records found");
-		}
-
-		return $records;
-	}
+	abstract protected function doIt(InputInterface $input, OutputInterface $output, $finder, $entity);
 
 	/**
 	 * @param   InputInterface  $input  The input
@@ -184,6 +164,11 @@ abstract class EntityAwareCommand extends Command
 	 */
 	protected function dumpSql(InputInterface $input, OutputInterface $output)
 	{
+		if (!$input->getOption('dump-sql'))
+		{
+			return;
+		}
+
 		$connection = $this->repositoryFactory->getConnection();
 
 		if (!$connection instanceof Connection)
@@ -213,18 +198,38 @@ abstract class EntityAwareCommand extends Command
 
 			ksort($params);
 
-			$sql     = preg_replace_callback(
+			$sql = preg_replace_callback(
 				'~\?~',
-				function () use (&$params) {
+				function () use (&$params)
+				{
 					return array_shift($params);
 				},
 				$sql
 			);
-			$sql     = preg_replace('~(WHERE|LIMIT|INNER\s+JOIN|LEFT\s+JOIN)~', "\n  \\1", $sql);
-			$sql     = preg_replace('~(AND|OR)~', "\n    \\1", $sql);
+			$sql = preg_replace('~(WHERE|LIMIT|INNER\s+JOIN|LEFT\s+JOIN)~', "\n  \\1", $sql);
+			$sql = preg_replace('~(AND|OR)~', "\n    \\1", $sql);
 			$table->addRow([$index, "$sql\n", sprintf('%.3f ms', 1000 * $query['executionMS'])]);
 		}
 
 		$table->render();
+	}
+
+	/**
+	 * Retrieves the selected records.
+	 *
+	 * @param   CollectionFinderInterface $finder The finder
+	 *
+	 * @return  object[]
+	 */
+	protected function getRecords($finder)
+	{
+		$records = $finder->getItems();
+
+		if (empty($records))
+		{
+			throw new NoRecordsException("No matching records found");
+		}
+
+		return $records;
 	}
 }

@@ -6,6 +6,7 @@
  * @license    GNU General Public License version 2 or later; see LICENSE
  */
 
+use Joomla\Cms\ContainerFactory;
 use Joomla\Http\Application;
 use Joomla\Http\Middleware\CommandBusMiddleware;
 use Joomla\Http\Middleware\RendererMiddleware;
@@ -19,7 +20,7 @@ ini_set('date.timezone', 'UTC');
 require_once 'libraries/vendor/autoload.php';
 require_once 'init.php';
 
-$container = initContainer();
+$container = ContainerFactory::getInstance();
 
 $app = new Application(
 	[

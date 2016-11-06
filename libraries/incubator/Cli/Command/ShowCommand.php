@@ -9,9 +9,7 @@
 namespace Joomla\Cli\Command;
 
 use Joomla\Cli\EntityAwareCommand;
-use Joomla\ORM\Definition\Parser\Relation;
 use Joomla\ORM\Storage\CollectionFinderInterface;
-use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -58,6 +56,8 @@ class ShowCommand extends EntityAwareCommand
 	 */
 	protected function doIt(InputInterface $input, OutputInterface $output, $finder, $entity)
 	{
+		/* @todo Utilise CommandBus and Renderer! */
+
 		$entityBuilder = $this->repositoryFactory->getEntityBuilder();
 		$meta          = $entityBuilder->getMeta($entity);
 		$fields        = array_merge($meta->fields, $meta->relations['belongsTo']);
