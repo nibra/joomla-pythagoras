@@ -34,7 +34,7 @@ class StorageServiceProvider implements ServiceProviderInterface
 	 */
 	public function register(Container $container, $alias = null)
 	{
-		$container->set('Repository', [$this, 'createRepositoryFactory'], true, true);
+		$container->set('Repository', [$this, 'createRepositoryFactory'], true);
 
 		if (!empty($alias))
 		{
