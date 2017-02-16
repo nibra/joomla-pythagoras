@@ -75,17 +75,17 @@ class Container implements ContainerInterface
 	{
 		$key = $this->resolveAlias($resourceName);
 
-		if (!isset($this->resources[$key]))
+		if (isset($this->resources[$key]))
 		{
-			if ($this->parent instanceof ContainerInterface && $this->parent->has($key))
-			{
-				return $this->parent->get($key);
-			}
-
-			throw new KeyNotFoundException(sprintf("Resource '%s' has not been registered with the container.", $resourceName));
+			return $this->resources[$key]->getInstance();
 		}
 
-		return $this->resources[$key]->getInstance();
+		if ($this->parent instanceof ContainerInterface && $this->parent->has($key))
+		{
+			return $this->parent->get($key);
+		}
+
+		throw new KeyNotFoundException(sprintf("Resource '%s' has not been registered with the container.", $resourceName));
 	}
 
 	/**
@@ -101,32 +101,17 @@ class Container implements ContainerInterface
 	{
 		$key = $this->resolveAlias($resourceName);
 
-		if (!isset($this->resources[$key]))
+		if (isset($this->resources[$key]))
 		{
-			if ($this->parent instanceof ContainerInterface)
-			{
-				return $this->parent->has($key);
-			}
-
-			return false;
+			return true;
 		}
 
-		return true;
-	}
+		if ($this->parent instanceof ContainerInterface)
+		{
+			return $this->parent->has($key);
+		}
 
-	/**
-	 * Method to check if specified dataStore key exists.
-	 *
-	 * @param   string $key Name of the dataStore key to check.
-	 *
-	 * @return  boolean  True for success
-	 *
-	 * @since       1.0
-	 * @deprecated  3.0  Use ContainerInterface::has() instead
-	 */
-	public function exists($key)
-	{
-		return $this->has($key);
+		return false;
 	}
 
 	/**
@@ -439,7 +424,8 @@ class Container implements ContainerInterface
 		{
 			throw new ProtectedKeyException(sprintf("Key %s is protected and can't be overwritten.", $key));
 		}
-		elseif ($this->has($key) && $value === null)
+
+		if ($this->has($key) && $value === null)
 		{
 			unset($this->resources[$key]);
 
@@ -503,11 +489,13 @@ class Container implements ContainerInterface
 		{
 			return $this->resources[$key];
 		}
-		elseif ($this->parent instanceof Container)
+
+		if ($this->parent instanceof Container)
 		{
 			return $this->parent->getResource($key);
 		}
-		elseif ($this->parent instanceof ContainerInterface && $this->parent->has($key))
+
+		if ($this->parent instanceof ContainerInterface && $this->parent->has($key))
 		{
 			return new Resource($this, $this->parent->get($key), Resource::SHARE | Resource::PROTECT);
 		}
