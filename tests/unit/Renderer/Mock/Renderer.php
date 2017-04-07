@@ -6,6 +6,7 @@ use Joomla\Content\ContentTypeInterface;
 use Joomla\Content\Type\Accordion;
 use Joomla\Content\Type\Article;
 use Joomla\Content\Type\Columns;
+use Joomla\Content\Type\DataTable;
 use Joomla\Content\Type\DefaultMenu;
 use Joomla\Content\Type\Dump;
 use Joomla\Content\Type\Image;
@@ -203,5 +204,17 @@ class Renderer extends \Joomla\Renderer\Renderer
 	public function visitDefaultMenu(DefaultMenu $defaultMenu)
 	{
 		throw new \LogicException(__METHOD__ . ' is not implemented.');
+	}
+
+	/**
+	 * Render a data table
+	 *
+	 * @param   DataTable $dataTable The data table
+	 *
+	 * @return  integer Number of bytes written to the output
+	 */
+	public function visitDataTable(DataTable $dataTable)
+	{
+		return 0;
 	}
 }

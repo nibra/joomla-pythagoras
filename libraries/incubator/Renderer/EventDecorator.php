@@ -14,6 +14,7 @@ use Joomla\Content\Type\Article;
 use Joomla\Content\Type\Attribution;
 use Joomla\Content\Type\Columns;
 use Joomla\Content\Type\Compound;
+use Joomla\Content\Type\DataTable;
 use Joomla\Content\Type\DefaultMenu;
 use Joomla\Content\Type\Dump;
 use Joomla\Content\Type\Headline;
@@ -517,5 +518,17 @@ class EventDecorator implements RendererInterface
 	public function getClass()
 	{
 		return $this->renderer->getClass();
+	}
+
+	/**
+	 * Render a data table
+	 *
+	 * @param   DataTable $dataTable The data table
+	 *
+	 * @return  integer Number of bytes written to the output
+	 */
+	public function visitDataTable(DataTable $dataTable)
+	{
+		throw new \LogicException(__METHOD__ . ' is not implemented.');
 	}
 }

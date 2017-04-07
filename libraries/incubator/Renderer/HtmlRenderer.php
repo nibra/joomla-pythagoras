@@ -15,6 +15,7 @@ use Joomla\Content\Type\Article;
 use Joomla\Content\Type\Attribution;
 use Joomla\Content\Type\Columns;
 use Joomla\Content\Type\Compound;
+use Joomla\Content\Type\DataTable;
 use Joomla\Content\Type\DefaultMenu;
 use Joomla\Content\Type\Headline;
 use Joomla\Content\Type\HorizontalLine;
@@ -31,7 +32,6 @@ use Joomla\Content\Type\Tabs;
 use Joomla\Content\Type\Teaser;
 use Joomla\Content\Type\Tree;
 use Joomla\ORM\Operator;
-use Joomla\ORM\Repository\RepositoryInterface;
 use Joomla\PageBuilder\Entity\Layout;
 use Joomla\PageBuilder\Entity\Page;
 use Joomla\Renderer\Exception\NotFoundException;
@@ -79,7 +79,7 @@ class HtmlRenderer extends Renderer
 	/**
 	 * Sets the template
 	 *
-	 * @param   string  $template  The template
+	 * @param   string $template The template
 	 *
 	 * @return  void
 	 */
@@ -89,8 +89,8 @@ class HtmlRenderer extends Renderer
 	}
 
 	/**
-	 * @param   string  $label  An identifier
-	 * @param   string  $code   The code associated with that identifier
+	 * @param   string $label An identifier
+	 * @param   string $code  The code associated with that identifier
 	 *
 	 * @return  void
 	 */
@@ -138,42 +138,6 @@ class HtmlRenderer extends Renderer
 	}
 
 	/**
-	 * @return  array
-	 */
-	protected function collectMetadata()
-	{
-		$metaData                                  = parent::collectMetadata();
-		$metaData['wrapper_data']['client_script'] = empty($this->clientScript) ? null : get_class($this->clientScript);
-
-		return $metaData;
-	}
-
-	/**
-	 * Apply a layout
-	 *
-	 * @param   string                      $filename The filename of the layout file
-	 * @param   object|ContentTypeInterface $content  The content
-	 *
-	 * @return  integer
-	 */
-	private function applyLayout($filename, $content)
-	{
-		$renderer = $this;
-		$layout   = JPATH_ROOT . '/' . $this->template . '/overrides/' . $filename;
-
-		if (!file_exists($layout))
-		{
-			$layout = JPATH_ROOT . '/layouts/' . $this->layoutDirectory . '/' . $filename;
-		}
-
-		ob_start();
-		include $layout;
-		$html = ob_get_clean();
-
-		return $this->write($html);
-	}
-
-	/**
 	 * Render a headline.
 	 *
 	 * @param   Headline $headline The headline
@@ -182,19 +146,60 @@ class HtmlRenderer extends Renderer
 	 */
 	public function visitHeadline(Headline $headline)
 	{
-		return $this->applyLayout('headline.php', $headline);
+		return $this->applyLayout('Headline', $headline);
 	}
 
 	/**
-	 * Render a horizontal line.
+	 * Apply a layout
 	 *
-	 * @param   HorizontalLine $headline The horizontal line
+	 * @param   string                      $contentType The filename of the layout file
+	 * @param   object|ContentTypeInterface $content     The content
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  integer
 	 */
-	public function visitHorizontalLine(HorizontalLine $headline)
+	private function applyLayout($contentType, $content)
 	{
-		return $this->write("<hr>\n");
+		return $this->write($this->createLayout($contentType, $content)->render());
+	}
+
+	/**
+	 * @param $contentType
+	 *
+	 * @param $content
+	 *
+	 * @return LayoutInterface
+	 */
+	private function createLayout($contentType, $content)
+	{
+		$paths      = [$this->template . '/layouts', 'layouts/' . $this->layoutDirectory];
+		$namespaces = $this->getNamespaces($paths);
+
+		foreach ($namespaces as $namespace)
+		{
+			$className = $namespace . $contentType;
+
+			if (class_exists($className))
+			{
+				return new $className($content);
+			}
+		}
+
+		return new LayoutWrapper($contentType, $content, $paths);
+	}
+
+	private function getNamespaces($paths)
+	{
+		$namespaces = [];
+
+		foreach ($paths as $path)
+		{
+			$word         = str_replace('/', ' ', $path);
+			$word         = ucwords($word);
+			$word         = str_replace(' ', '\\', $word);
+			$namespaces[] = $word;
+		}
+
+		return $namespaces;
 	}
 
 	/**
@@ -206,7 +211,7 @@ class HtmlRenderer extends Renderer
 	 */
 	public function visitAttribution(Attribution $attribution)
 	{
-		return $this->applyLayout('attribution.php', $attribution);
+		return $this->applyLayout('Attribution', $attribution);
 	}
 
 	/**
@@ -218,19 +223,7 @@ class HtmlRenderer extends Renderer
 	 */
 	public function visitParagraph(Paragraph $paragraph)
 	{
-		return $this->applyLayout('paragraph.php', $paragraph);
-	}
-
-	/**
-	 * Render a span element
-	 *
-	 * @param   Span $span The text
-	 *
-	 * @return  integer Number of bytes written to the output
-	 */
-	public function visitSpan(Span $span)
-	{
-		return $this->applyLayout('span.php', $span);
+		return $this->applyLayout('Paragraph', $paragraph);
 	}
 
 	/**
@@ -252,7 +245,6 @@ class HtmlRenderer extends Renderer
 		}
 
 		$len = 0;
-		$len += $this->write("<!-- Compound -->\n");
 		$len += $this->write("<{$compound->getType()}{$id}{$class}>\n");
 
 		foreach ($compound->elements as $item)
@@ -261,49 +253,8 @@ class HtmlRenderer extends Renderer
 		}
 
 		$len += $this->write("</{$compound->getType()}>\n");
-		$len += $this->write("<!-- /Compound -->\n");
 
 		return $len;
-	}
-
-	/**
-	 * Render an OnePager
-	 *
-	 * @param   OnePager $page The page
-	 *
-	 * @return  integer Number of bytes written to the output
-	 */
-	public function visitOnePager(OnePager $page)
-	{
-		$this->preRenderChildElements($page);
-
-		return $this->applyLayout('onepager.php', $page);
-	}
-
-	/**
-	 * Render an OnePager section
-	 *
-	 * @param   OnePagerSection $section The page
-	 *
-	 * @return  integer Number of bytes written to the output
-	 */
-	public function visitOnePagerSection(OnePagerSection $section)
-	{
-		$this->preRenderChildElements($section);
-
-		return $this->applyLayout('onepagerSection.php', $section);
-	}
-
-	/**
-	 * Render an icon
-	 *
-	 * @param   Icon $icon The icon
-	 *
-	 * @return  integer Number of bytes written to the output
-	 */
-	public function visitIcon(Icon $icon)
-	{
-		return $this->applyLayout('icon.php', $icon);
 	}
 
 	/**
@@ -315,19 +266,7 @@ class HtmlRenderer extends Renderer
 	 */
 	public function visitImage(Image $image)
 	{
-		return $this->applyLayout('image.php', $image);
-	}
-
-	/**
-	 * Render a link
-	 *
-	 * @param Link $link
-	 *
-	 * @return int Number of bytes written to the output
-	 */
-	public function visitLink(Link $link)
-	{
-		return $this->applyLayout('link.php', $link);
+		return $this->applyLayout('Image', $image);
 	}
 
 	/**
@@ -343,156 +282,7 @@ class HtmlRenderer extends Renderer
 
 		$this->preRenderChildElements($slider);
 
-		return $this->applyLayout('slider.php', $slider);
-	}
-
-	/**
-	 * Render an accordion
-	 *
-	 * @param   Accordion $accordion The accordion
-	 *
-	 * @return  integer Number of bytes written to the output
-	 */
-	public function visitAccordion(Accordion $accordion)
-	{
-		$accordion->setId('accordion-' . spl_object_hash($accordion));
-
-		$this->preRenderChildElements($accordion);
-
-		return $this->applyLayout('accordion.php', $accordion);
-	}
-
-	/**
-	 * Render a tree
-	 *
-	 * @param   Tree $tree The tree
-	 *
-	 * @return  integer Number of bytes written to the output
-	 */
-	public function visitTree(Tree $tree)
-	{
-		$tree->setId('tree-' . spl_object_hash($tree));
-
-		$this->preRenderChildElements($tree);
-
-		return $this->applyLayout('tree.php', $tree);
-	}
-
-	/**
-	 * Render tabs
-	 *
-	 * @param   Tabs $tabs The tabs
-	 *
-	 * @return  integer Number of bytes written to the output
-	 */
-	public function visitTabs(Tabs $tabs)
-	{
-		$tabs->setId('tabs-' . spl_object_hash($tabs));
-
-		$this->preRenderChildElements($tabs);
-
-		return $this->applyLayout('tabs.php', $tabs);
-	}
-
-	/**
-	 * Dump an item
-	 *
-	 * @param   ContentTypeInterface $dump The dump
-	 *
-	 * @return  integer Number of bytes written to the output
-	 */
-	public function visitDump(ContentTypeInterface $dump)
-	{
-		return $this->write('<pre>' . $this->dumpEntity($dump->item) . '</pre>');
-	}
-
-	/**
-	 * Render rows
-	 *
-	 * @param   Rows $rows The rows
-	 *
-	 * @return  integer Number of bytes written to the output
-	 */
-	public function visitRows(Rows $rows)
-	{
-		$this->preRenderChildElements($rows);
-
-		return $this->applyLayout('rows.php', $rows);
-	}
-
-	/**
-	 * Render columns
-	 *
-	 * @param   Columns $columns The columns
-	 *
-	 * @return  integer Number of bytes written to the output
-	 */
-	public function visitColumns(Columns $columns)
-	{
-		$this->preRenderChildElements($columns);
-
-		return $this->applyLayout('columns.php', $columns);
-	}
-
-	/**
-	 * Render an article
-	 *
-	 * @param   Article $article The article
-	 *
-	 * @return  integer Number of bytes written to the output
-	 */
-	public function visitArticle(Article $article)
-	{
-		return $this->applyLayout('article.php', $article);
-	}
-
-	/**
-	 * Render a teaser
-	 *
-	 * @param   Teaser $teaser The teaser
-	 *
-	 * @return  integer Number of bytes written to the output
-	 */
-	public function visitTeaser(Teaser $teaser)
-	{
-		$teaser->url = $this->getFullUrl($teaser->article);
-
-		return $this->applyLayout('teaser.php', $teaser);
-	}
-
-	/**
-	 * Render a defaultMenu
-	 *
-	 * @param   DefaultMenu $defaultMenu The defaultMenu
-	 *
-	 * @return  integer Number of bytes written to the output
-	 */
-	public function visitDefaultMenu(DefaultMenu $defaultMenu)
-	{
-		$menu = $this->convertPageTreeToMenu($defaultMenu->item);
-		$defaultMenu->item = $menu;
-
-		return $this->applyLayout('defaultMenu.php', $defaultMenu);
-	}
-
-	/**
-	 * @param   Page  $page  The page
-	 *
-	 * @return  Menu
-	 */
-	private function convertPageTreeToMenu($page)
-	{
-		$menu = new Menu(
-			$page->title,
-			$this->expandUrl($page->url, $page)
-		);
-
-		foreach ($page->children->getAll() as $child)
-		{
-			$menu->add($this->convertPageTreeToMenu($child));
-		}
-
-		return $menu;
+		return $this->applyLayout('Slider', $slider);
 	}
 
 	/**
@@ -520,40 +310,121 @@ class HtmlRenderer extends Renderer
 	}
 
 	/**
-	 * @param   string  $url   The URL
-	 * @param   Page    $page  The page
+	 * Render an accordion
 	 *
-	 * @return string
+	 * @param   Accordion $accordion The accordion
+	 *
+	 * @return  integer Number of bytes written to the output
 	 */
-	private function expandUrl($url, $page)
+	public function visitAccordion(Accordion $accordion)
 	{
-		if (empty($url))
-		{
-			return '/index.php';
-		}
+		$accordion->setId('accordion-' . spl_object_hash($accordion));
 
-		while ($url[0] != '/' && !empty($page->parent))
-		{
-			// @todo refactor
-			if ($page->parent instanceof Layout)
-			{
-				break;
-			}
+		$this->preRenderChildElements($accordion);
 
-			$page = $page->parent;
-			$url  = $page->url . '/' . $url;
-		}
-
-		if ($url[0] != '/')
-		{
-			$url = '/' . $url;
-		}
-
-		return '/index.php' . $url;
+		return $this->applyLayout('Accordion', $accordion);
 	}
 
 	/**
-	 * @param   object $object  The content object
+	 * Render a tree
+	 *
+	 * @param   Tree $tree The tree
+	 *
+	 * @return  integer Number of bytes written to the output
+	 */
+	public function visitTree(Tree $tree)
+	{
+		$tree->setId('tree-' . spl_object_hash($tree));
+
+		$this->preRenderChildElements($tree);
+
+		return $this->applyLayout('Tree', $tree);
+	}
+
+	/**
+	 * Render tabs
+	 *
+	 * @param   Tabs $tabs The tabs
+	 *
+	 * @return  integer Number of bytes written to the output
+	 */
+	public function visitTabs(Tabs $tabs)
+	{
+		$tabs->setId('tabs-' . spl_object_hash($tabs));
+
+		$this->preRenderChildElements($tabs);
+
+		return $this->applyLayout('Tabs', $tabs);
+	}
+
+	/**
+	 * Dump an item
+	 *
+	 * @param   ContentTypeInterface $dump The dump
+	 *
+	 * @return  integer Number of bytes written to the output
+	 */
+	public function visitDump(ContentTypeInterface $dump)
+	{
+		return $this->write('<pre>' . $this->dumpEntity($dump->item) . '</pre>');
+	}
+
+	/**
+	 * Render rows
+	 *
+	 * @param   Rows $rows The rows
+	 *
+	 * @return  integer Number of bytes written to the output
+	 */
+	public function visitRows(Rows $rows)
+	{
+		$this->preRenderChildElements($rows);
+
+		return $this->applyLayout('Rows', $rows);
+	}
+
+	/**
+	 * Render columns
+	 *
+	 * @param   Columns $columns The columns
+	 *
+	 * @return  integer Number of bytes written to the output
+	 */
+	public function visitColumns(Columns $columns)
+	{
+		$this->preRenderChildElements($columns);
+
+		return $this->applyLayout('Columns', $columns);
+	}
+
+	/**
+	 * Render an article
+	 *
+	 * @param   Article $article The article
+	 *
+	 * @return  integer Number of bytes written to the output
+	 */
+	public function visitArticle(Article $article)
+	{
+		return $this->applyLayout('Article', $article);
+	}
+
+	/**
+	 * Render a teaser
+	 *
+	 * @param   Teaser $teaser The teaser
+	 *
+	 * @return  integer Number of bytes written to the output
+	 */
+	public function visitTeaser(Teaser $teaser)
+	{
+		$teaser->url = $this->getFullUrl($teaser->article);
+
+		return $this->applyLayout('Teaser', $teaser);
+	}
+
+	/**
+	 * @param   object $object The content object
 	 *
 	 * @return  string
 	 */
@@ -585,5 +456,172 @@ class HtmlRenderer extends Renderer
 		}
 
 		return $candidates[0];
+	}
+
+	/**
+	 * @param   string $url  The URL
+	 * @param   Page   $page The page
+	 *
+	 * @return string
+	 */
+	private function expandUrl($url, $page)
+	{
+		if (empty($url))
+		{
+			return '/index.php';
+		}
+
+		while ($url[0] != '/' && !empty($page->parent))
+		{
+			// @todo refactor
+			if ($page->parent instanceof Layout)
+			{
+				break;
+			}
+
+			$page = $page->parent;
+			$url  = $page->url . '/' . $url;
+		}
+
+		if ($url[0] != '/')
+		{
+			$url = '/' . $url;
+		}
+
+		return '/index.php' . $url;
+	}
+
+	/**
+	 * Render a defaultMenu
+	 *
+	 * @param   DefaultMenu $defaultMenu The defaultMenu
+	 *
+	 * @return  integer Number of bytes written to the output
+	 */
+	public function visitDefaultMenu(DefaultMenu $defaultMenu)
+	{
+		$menu              = $this->convertPageTreeToMenu($defaultMenu->item);
+		$defaultMenu->item = $menu;
+
+		return $this->applyLayout('DefaultMenu', $defaultMenu);
+	}
+
+	/**
+	 * @param   Page $page The page
+	 *
+	 * @return  Menu
+	 */
+	private function convertPageTreeToMenu($page)
+	{
+		$menu = new Menu(
+			$page->title,
+			$this->expandUrl($page->url, $page)
+		);
+
+		foreach ($page->children->getAll() as $child)
+		{
+			$menu->add($this->convertPageTreeToMenu($child));
+		}
+
+		return $menu;
+	}
+
+	/**
+	 * Render a data table
+	 *
+	 * @param   DataTable $dataTable The data table
+	 *
+	 * @return  integer Number of bytes written to the output
+	 */
+	public function visitDataTable(DataTable $dataTable)
+	{
+		throw new \LogicException(__METHOD__ . ' is not implemented.');
+	}
+
+	/**
+	 * @return  array
+	 */
+	protected function collectMetadata()
+	{
+		$metaData                                  = parent::collectMetadata();
+		$metaData['wrapper_data']['client_script'] = empty($this->clientScript) ? null : get_class($this->clientScript);
+
+		return $metaData;
+	}
+
+	/**
+	 * Render a horizontal line.
+	 *
+	 * @param   HorizontalLine $headline The horizontal line
+	 *
+	 * @return  integer Number of bytes written to the output
+	 */
+	public function visitHorizontalLine(HorizontalLine $headline)
+	{
+		return $this->write("<hr>\n");
+	}
+
+	/**
+	 * Render a span element
+	 *
+	 * @param   Span $span The text
+	 *
+	 * @return  integer Number of bytes written to the output
+	 */
+	public function visitSpan(Span $span)
+	{
+		return $this->applyLayout('Span', $span);
+	}
+
+	/**
+	 * Render an OnePager
+	 *
+	 * @param   OnePager $page The page
+	 *
+	 * @return  integer Number of bytes written to the output
+	 */
+	public function visitOnePager(OnePager $page)
+	{
+		$this->preRenderChildElements($page);
+
+		return $this->applyLayout('Onepager', $page);
+	}
+
+	/**
+	 * Render an OnePager section
+	 *
+	 * @param   OnePagerSection $section The page
+	 *
+	 * @return  integer Number of bytes written to the output
+	 */
+	public function visitOnePagerSection(OnePagerSection $section)
+	{
+		$this->preRenderChildElements($section);
+
+		return $this->applyLayout('OnepagerSection', $section);
+	}
+
+	/**
+	 * Render an icon
+	 *
+	 * @param   Icon $icon The icon
+	 *
+	 * @return  integer Number of bytes written to the output
+	 */
+	public function visitIcon(Icon $icon)
+	{
+		return $this->applyLayout('Icon', $icon);
+	}
+
+	/**
+	 * Render a link
+	 *
+	 * @param Link $link
+	 *
+	 * @return int Number of bytes written to the output
+	 */
+	public function visitLink(Link $link)
+	{
+		return $this->applyLayout('Link', $link);
 	}
 }
