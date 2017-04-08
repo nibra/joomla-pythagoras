@@ -64,6 +64,9 @@ class HtmlRenderer extends Renderer
 	/** @var  string[]  CSS code to add to output */
 	private $style = [];
 
+	/** @var  LayoutFactory */
+	private $layoutFactory;
+
 	use DumpTrait;
 
 	/**
@@ -85,7 +88,11 @@ class HtmlRenderer extends Renderer
 	 */
 	public function setTemplate($template)
 	{
-		$this->template = $template;
+		$this->template      = $template;
+		$this->layoutFactory = new LayoutFactory([
+			$this->template . '/layouts',
+			'layouts/' . $this->layoutDirectory,
+		]);
 	}
 
 	/**
@@ -159,47 +166,7 @@ class HtmlRenderer extends Renderer
 	 */
 	private function applyLayout($contentType, $content)
 	{
-		return $this->write($this->createLayout($contentType, $content)->render());
-	}
-
-	/**
-	 * @param $contentType
-	 *
-	 * @param $content
-	 *
-	 * @return LayoutInterface
-	 */
-	private function createLayout($contentType, $content)
-	{
-		$paths      = [$this->template . '/layouts', 'layouts/' . $this->layoutDirectory];
-		$namespaces = $this->getNamespaces($paths);
-
-		foreach ($namespaces as $namespace)
-		{
-			$className = $namespace . $contentType;
-
-			if (class_exists($className))
-			{
-				return new $className($content);
-			}
-		}
-
-		return new LayoutWrapper($contentType, $content, $paths);
-	}
-
-	private function getNamespaces($paths)
-	{
-		$namespaces = [];
-
-		foreach ($paths as $path)
-		{
-			$word         = str_replace('/', ' ', $path);
-			$word         = ucwords($word);
-			$word         = str_replace(' ', '\\', $word);
-			$namespaces[] = $word;
-		}
-
-		return $namespaces;
+		return $this->write($this->layoutFactory->createLayout($contentType, $content)->render());
 	}
 
 	/**
