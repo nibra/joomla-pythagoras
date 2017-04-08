@@ -42,9 +42,11 @@ class LayoutWrapper implements LayoutInterface
 	 */
 	public function __construct($contentType, ContentTypeInterface $content, array $paths)
 	{
+		$filename = lcfirst($contentType) . '.php';
+
 		foreach ($paths as $path)
 		{
-			$layoutFile = JPATH_ROOT . '/' . $path . '/' . lcfirst($contentType) . '.php';
+			$layoutFile = $path . '/' . $filename;
 
 			if (file_exists($layoutFile))
 			{
@@ -55,7 +57,7 @@ class LayoutWrapper implements LayoutInterface
 
 		if (empty($this->layoutFile))
 		{
-			throw new NotFoundException(sprintf('Unable to find layout file %s.php (search path %s)', $contentType, implode(':', $paths)));
+			throw new NotFoundException(sprintf('Unable to find layout file %s (search path %s)', $filename, implode(':', $paths)));
 		}
 
 		$this->content = $content;

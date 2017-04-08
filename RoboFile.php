@@ -9,9 +9,9 @@
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Schema\Table;
 use SebastianBergmann\CodeCoverage\CodeCoverage;
+use Symfony\Component\Yaml\Yaml;
 use SebastianBergmann\CodeCoverage\Report\Clover as XmlReport;
 use SebastianBergmann\CodeCoverage\Report\Html\Facade as HtmlReport;
-use Symfony\Component\Yaml\Yaml;
 
 /**
  * This is project's console commands configuration for Robo task runner.
@@ -24,7 +24,6 @@ class RoboFile extends \Robo\Tasks
 	private $config = [
 		'title'    => "Joomla X (Pythagoras)",
 		'reports'  => 'build/reports',
-		'logs'     => 'build/logs',
 		'apidocs'  => 'build/docs',
 		'userdocs' => 'docs',
 		'toolcfg'  => 'build/config'
@@ -74,14 +73,6 @@ class RoboFile extends \Robo\Tasks
 		}
 
 		$phploc->arg('.')->run();
-	}
-
-	private function initReports()
-	{
-		if (!file_exists($this->config['reports']))
-		{
-			$this->_mkdir($this->config['reports']);
-		}
 	}
 
 	/**
@@ -204,14 +195,6 @@ class RoboFile extends \Robo\Tasks
 		     ->run();
 	}
 
-	private function initApiDocs()
-	{
-		if (!file_exists($this->config['apidocs']))
-		{
-			$this->_mkdir($this->config['apidocs']);
-		}
-	}
-
 	/**
 	 * Automatically corrects coding standard violations.
 	 */
@@ -255,28 +238,6 @@ class RoboFile extends \Robo\Tasks
 		     ->run();
 	}
 
-	public function test($option = [
-		'coverage' => false
-	])
-	{
-		$this->testUnit($option);
-		$this->testCli($option);
-
-		if ($option['coverage'])
-		{
-			$coverage = $this->getCoverage('unit');
-			$this->mergeCoverage($coverage, $this->getCoverage('cli'));
-
-			$this->say("Writing XML report ...");
-			$writer = new XmlReport;
-			$writer->process($coverage, 'build/reports/junit.xml');
-
-			$this->say("Writing HTML report ...");
-			$writer = new HtmlReport;
-			$writer->process($coverage, 'build/reports/coverage');
-		}
-	}
-
 	/**
 	 * Performs the tests from the `unit` suite.
 	 *
@@ -309,8 +270,7 @@ class RoboFile extends \Robo\Tasks
 
 		if (!$inDocker)
 		{
-			$this->initLogs();
-			$containerInfo = json_decode(`docker inspect cli_cli`);
+			$containerInfo = json_decode(`docker inspect joomlapythagoras_cli`);
 			$build         = false;
 
 			if (empty($containerInfo))
@@ -333,10 +293,10 @@ class RoboFile extends \Robo\Tasks
 			if ($build)
 			{
 				$this->say('Building container.');
-				`docker-compose -f tests/cli/docker-compose.yml build`;
+				`docker-compose -f docker-compose-cli.yml build`;
 			}
 
-			$this->say(`docker-compose -f tests/cli/docker-compose.yml up`);
+			$this->say(`docker-compose -f docker-compose-cli.yml up`);
 
 			$this->remap('/var/test', __DIR__, 'build/reports/coverage.cli.php');
 
@@ -344,6 +304,28 @@ class RoboFile extends \Robo\Tasks
 		}
 
 		$this->runTest('cli', $option);
+	}
+
+	public function test($option = [
+		'coverage' => false
+	])
+	{
+		$this->testUnit($option);
+		$this->testCli($option);
+
+		if ($option['coverage'])
+		{
+			$coverage = $this->getCoverage('unit');
+			$this->mergeCoverage($coverage, $this->getCoverage('cli'));
+
+			$this->say("Writing XML report ...");
+			$writer = new XmlReport;
+			$writer->process($coverage, 'build/reports/junit.xml');
+
+			$this->say("Writing HTML report ...");
+			$writer = new HtmlReport;
+			$writer->process($coverage, 'build/reports/coverage');
+		}
 	}
 
 	/**
@@ -364,58 +346,6 @@ class RoboFile extends \Robo\Tasks
 		}
 
 		return $coverage;
-	}
-
-	/**
-	 * @param CodeCoverage $coverage
-	 * @param CodeCoverage $that
-	 */
-	private function mergeCoverage(CodeCoverage $coverage, CodeCoverage $that)
-	{
-		$filter = $coverage->filter();
-		$filter->setWhitelistedFiles(
-			array_merge($filter->getWhitelistedFiles(), $that->filter()->getWhitelistedFiles())
-		);
-
-		$thisData = $coverage->getData(true);
-		$thatData = $that->getData(true);
-
-		foreach ($thatData as $file => $lines)
-		{
-			if (!$this->hasCoverage($thatData, $file))
-			{
-				continue;
-			}
-
-			if (!$this->hasCoverage($thisData, $file))
-			{
-				if (!$filter->isFiltered($file))
-				{
-					$thisData[$file] = $lines;
-				}
-
-				continue;
-			}
-
-			foreach ($lines as $line => $data)
-			{
-				if ($data !== null)
-				{
-					if (!isset($thisData[$file][$line]))
-					{
-						$thisData[$file][$line] = $data;
-					}
-					else
-					{
-						$thisData[$file][$line] = array_unique(
-							array_merge($thisData[$file][$line], $data)
-						);
-					}
-				}
-			}
-		}
-		$coverage->setData($thisData);
-		$coverage->setTests(array_merge($coverage->getTests(), $that->getTests()));
 	}
 
 	/**
@@ -463,109 +393,6 @@ class RoboFile extends \Robo\Tasks
 		return $return;
 	}
 
-	private function initLogs()
-	{
-		if (!file_exists($this->config['logs']))
-		{
-			$this->_mkdir($this->config['logs']);
-		}
-	}
-
-	private function getMaxDate($directory)
-	{
-		$maxDate = 0;
-
-		foreach (glob($directory . '/*') as $file)
-		{
-			$date = is_dir($file) ? $this->getMaxDate($file) : filemtime($file);
-
-			if ($date > $maxDate)
-			{
-				$maxDate = $date;
-			}
-		}
-
-		return $maxDate;
-	}
-
-	/**
-	 * @param $old
-	 * @param $new
-	 * @param $file
-	 */
-	private function remap($old, $new, $file)
-	{
-		$search  = preg_quote("'$old/", '~');
-		$replace = preg_quote("'$new/", '~');
-		$cmd     = "sed --in-place s~{$search}~{$replace}~ {$file}";
-		`$cmd`;
-	}
-
-	/**
-	 * @param $coverageData
-	 * @param $file
-	 *
-	 * @return boolean
-	 */
-	private function hasCoverage($coverageData, $file)
-	{
-		if (!isset($coverageData[$file]))
-		{
-			return false;
-		}
-
-		$hasData = false;
-
-		foreach ($coverageData[$file] as $lines)
-		{
-			foreach ($lines as $data)
-			{
-				if (!is_array($data) || !empty($data))
-				{
-					$hasData = true;
-					break 2;
-				}
-			}
-		}
-
-		return $hasData;
-	}
-
-	/**
-	 * Creates the unit test database
-	 */
-	public function createTestdata()
-	{
-		$dataDir  = __DIR__ . '/tests/unit/ORM/data';
-		$database = 'sqlite.test.db';
-
-		$originalDatabase = $dataDir . '/original/' . $database;
-		$workingDatabase  = $dataDir . '/' . $database;
-
-		if (!file_exists($originalDatabase))
-		{
-			$this->createSqlData();
-		}
-
-		$this->say('Creating test database in ' . $database);
-
-		if (file_exists($workingDatabase))
-		{
-			#$this->_remove($workingDatabase);
-		}
-
-		$this->_copy($originalDatabase, $workingDatabase);
-
-		$files = glob($dataDir . '/original/*.csv');
-
-		foreach ($files as $file)
-		{
-			$csvFilename = $dataDir . '/' . basename($file);
-			$this->_remove($csvFilename);
-			$this->_copy($file, $csvFilename);
-		}
-	}
-
 	/**
 	 * @param $dir
 	 * @param $enableCoverage
@@ -604,6 +431,54 @@ class RoboFile extends \Robo\Tasks
 		file_put_contents($tempConfigFile, Yaml::dump($config));
 
 		return $tempConfigFile;
+	}
+
+	/**
+	 * Performs the tests from the `acceptance` suite.
+	 *
+	 * **Note**: The `acceptance` suite contains all tests,
+	 * that involve a browser.
+	 *
+	 * @param array $option
+	 *
+	 * @option $coverage Whether or not to generate a code coverage report
+	 */
+	public function testSystem($option = [
+		'coverage' => false
+	])
+	{
+		$this->runTest('acceptance', $option);
+	}
+
+	/**
+	 * Disabled due to MD 2.4.3 internal problems
+	 */
+	protected function checkMd()
+	{
+		$this->initReports();
+		$this->taskExec($this->binDir . '/phpmd')
+		     ->arg(__DIR__)
+		     ->arg('xml')
+		     ->arg($this->config['toolcfg'] . '/phpmd.xml')
+		     ->arg('--reportfile=' . $this->config['reports'] . '/pmd.xml')
+		     ->arg('--exclude=' . implode(',', $this->ignoredDirs))
+		     ->run();
+	}
+
+	private function initApiDocs()
+	{
+		if (!file_exists($this->config['apidocs']))
+		{
+			$this->_mkdir($this->config['apidocs']);
+		}
+	}
+
+	private function initReports()
+	{
+		if (!file_exists($this->config['reports']))
+		{
+			$this->_mkdir($this->config['reports']);
+		}
 	}
 
 	/**
@@ -662,6 +537,41 @@ class RoboFile extends \Robo\Tasks
 	}
 
 	/**
+	 * Creates the unit test database
+	 */
+	public function createTestdata()
+	{
+		$dataDir  = __DIR__ . '/tests/unit/ORM/data';
+		$database = 'sqlite.test.db';
+
+		$originalDatabase = $dataDir . '/original/' . $database;
+		$workingDatabase  = $dataDir . '/' . $database;
+
+		if (!file_exists($originalDatabase))
+		{
+			$this->createSqlData();
+		}
+
+		$this->say('Creating test database in ' . $database);
+
+		if (file_exists($workingDatabase))
+		{
+			#$this->_remove($workingDatabase);
+		}
+
+		$this->_copy($originalDatabase, $workingDatabase);
+
+		$files = glob($dataDir . '/original/*.csv');
+
+		foreach ($files as $file)
+		{
+			$csvFilename = $dataDir . '/' . basename($file);
+			$this->_remove($csvFilename);
+			$this->_copy($file, $csvFilename);
+		}
+	}
+
+	/**
 	 * Load the data from the file
 	 *
 	 * @return  array
@@ -690,35 +600,115 @@ class RoboFile extends \Robo\Tasks
 		return $rows;
 	}
 
-	/**
-	 * Performs the tests from the `acceptance` suite.
-	 *
-	 * **Note**: The `acceptance` suite contains all tests,
-	 * that involve a browser.
-	 *
-	 * @param array $option
-	 *
-	 * @option $coverage Whether or not to generate a code coverage report
-	 */
-	public function testSystem($option = [
-		'coverage' => false
-	])
+	private function getMaxDate($directory)
 	{
-		$this->runTest('acceptance', $option);
+		$maxDate = 0;
+
+		foreach (glob($directory . '/*') as $file)
+		{
+			$date = is_dir($file) ? $this->getMaxDate($file) : filemtime($file);
+
+			if ($date > $maxDate)
+			{
+				$maxDate = $date;
+			}
+		}
+
+		return $maxDate;
 	}
 
 	/**
-	 * Disabled due to MD 2.4.3 internal problems
+	 * @param $old
+	 * @param $new
+	 * @param $file
 	 */
-	protected function checkMd()
+	private function remap($old, $new, $file)
 	{
-		$this->initReports();
-		$this->taskExec($this->binDir . '/phpmd')
-		     ->arg(__DIR__)
-		     ->arg('xml')
-		     ->arg($this->config['toolcfg'] . '/phpmd.xml')
-		     ->arg('--reportfile=' . $this->config['reports'] . '/pmd.xml')
-		     ->arg('--exclude=' . implode(',', $this->ignoredDirs))
-		     ->run();
+		$search  = preg_quote("'$old/", '~');
+		$replace = preg_quote("'$new/", '~');
+		$cmd     = "sed --in-place s~{$search}~{$replace}~ {$file}";
+		`$cmd`;
+	}
+
+	/**
+	 * @param CodeCoverage $coverage
+	 * @param CodeCoverage $that
+	 */
+	private function mergeCoverage(CodeCoverage $coverage, CodeCoverage $that)
+	{
+		$filter = $coverage->filter();
+		$filter->setWhitelistedFiles(
+			array_merge($filter->getWhitelistedFiles(), $that->filter()->getWhitelistedFiles())
+		);
+
+		$thisData = $coverage->getData(true);
+		$thatData = $that->getData(true);
+
+		foreach ($thatData as $file => $lines)
+		{
+			if (!$this->hasCoverage($thatData, $file))
+			{
+				continue;
+			}
+
+			if (!$this->hasCoverage($thisData, $file))
+			{
+				if (!$filter->isFiltered($file))
+				{
+					$thisData[$file] = $lines;
+				}
+
+				continue;
+			}
+
+			foreach ($lines as $line => $data)
+			{
+				if ($data !== null)
+				{
+					if (!isset($thisData[$file][$line]))
+					{
+						$thisData[$file][$line] = $data;
+					}
+					else
+					{
+						$thisData[$file][$line] = array_unique(
+							array_merge($thisData[$file][$line], $data)
+						);
+					}
+				}
+			}
+		}
+		$coverage->setData($thisData);
+		$coverage->setTests(array_merge($coverage->getTests(), $that->getTests()));
+	}
+
+	/**
+	 * @param $coverageData
+	 * @param $file
+	 *
+	 * @return boolean
+	 */
+	private function hasCoverage($coverageData, $file)
+	{
+		if (!isset($coverageData[$file]))
+		{
+			return false;
+		}
+
+		$hasData = false;
+
+		foreach ($coverageData[$file] as $lines)
+		{
+			foreach ($lines as $data)
+			{
+				if (!is_array($data) || !empty($data))
+				{
+					$hasData = true;
+					break 2;
+				}
+			}
+		}
+
+		return $hasData;
 	}
 }

@@ -17,7 +17,7 @@ class LayoutTest extends \PHPUnit_Framework_TestCase
 	public function testLayoutWrapperEncapsulatesLayoutFiles()
 	{
 		$content = new Headline('Hello World!');
-		$paths = ['tests/unit/Content/Layout/fixtures'];
+		$paths = ['tests/unit/Renderer/fixtures'];
 		$wrapper = new LayoutWrapper('Headline', $content, $paths);
 
 		$result = $wrapper->render();

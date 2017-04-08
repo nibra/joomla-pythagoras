@@ -30,9 +30,9 @@ abstract class AbstractContentType implements ContentTypeInterface
 	/**
 	 * AbstractContentType constructor.
 	 *
-	 * @param string    $title  The title
-	 * @param string    $id     The identifier
-	 * @param \stdClass $params The parameters
+	 * @param string $title  The title
+	 * @param string $id     The identifier
+	 * @param array  $params The parameters
 	 */
 	public function __construct($title, $id, $params)
 	{
@@ -40,6 +40,18 @@ abstract class AbstractContentType implements ContentTypeInterface
 			->setTitle($title)
 			->setId($id)
 			->setParameters($params);
+	}
+
+	/**
+	 * @param \stdClass $params
+	 *
+	 * @return AbstractContentType
+	 */
+	public function setParameters($params)
+	{
+		$this->params = $params;
+
+		return $this;
 	}
 
 	public function __get($property)
@@ -108,18 +120,6 @@ abstract class AbstractContentType implements ContentTypeInterface
 	 */
 	public function getParameter($key, $default = null)
 	{
-		return isset($this->params->$key) ? $this->params->$key : $default;
-	}
-
-	/**
-	 * @param \stdClass $params
-	 *
-	 * @return AbstractContentType
-	 */
-	public function setParameters($params)
-	{
-		$this->params = $params;
-
-		return $this;
+		return isset($this->params[$key]) ? $this->params[$key] : $default;
 	}
 }

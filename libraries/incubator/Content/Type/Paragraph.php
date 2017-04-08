@@ -29,10 +29,12 @@ class Paragraph extends AbstractContentType
 	 *
 	 * @param   string  $text    The copy of the paragraph
 	 * @param   integer $variant Emphasis variant, see class constants
+	 * @param   array   $params  The parameters. Supported values:
+	 *                           'class': The CSS class
 	 */
-	public function __construct($text, $variant = self::PLAIN)
+	public function __construct($text, $variant = self::PLAIN, $params = [])
 	{
-		parent::__construct('Paragraph', 'paragraph-' . spl_object_hash($this), new \stdClass);
+		parent::__construct('Paragraph', 'paragraph-' . spl_object_hash($this), $params);
 
 		$this->text    = $text;
 		$this->variant = $variant;
