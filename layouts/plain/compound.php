@@ -10,9 +10,9 @@
 
 $tag   = $content->getType();
 $id    = $content->getId();
-$id = (isset($id)) ? " id=\"{$id}\"" : "";
+$id    = empty($id) ? "" : " id=\"{$id}\"";
 $class = $content->getParameter('class');
-$class = (isset($class)) ? " class=\"{$class}\"" : "";
+$class = empty($class) ? "" : " class=\"{$class}\"";
 $text  = var_export($content->elements, true);
 
 echo "<{$tag}{$id}{$class}>{$text}</{$tag}>";

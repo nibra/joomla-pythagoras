@@ -12,6 +12,7 @@ use Joomla\Content\Type\Accordion;
 use Joomla\Content\Type\Compound;
 use Joomla\Content\Type\Headline;
 use Joomla\Content\Type\Paragraph;
+use Joomla\Content\Type\Span;
 use Joomla\Renderer\LayoutFactory;
 
 class LayoutTestCases extends HtmlTestCase
@@ -187,9 +188,16 @@ class LayoutTestCases extends HtmlTestCase
 		$this->markTestIncomplete('Not implemented');
 	}
 
+	/**
+	 * @testdox Span: Enclosed in a span with an optional id and an optional class
+	 */
 	public function testSpan()
 	{
-		$this->markTestIncomplete('Not implemented');
+		$content = new Span('Text', ['class' => 'special']);
+		$id      = $content->getId();
+		$layout  = $this->layoutFactory->createLayout('Span', $content);
+
+		$this->assertHtmlEquals("<span id=\"{$id}\" class=\"special\">Text</span>", $layout->render());
 	}
 
 	public function testTabs()

@@ -20,6 +20,7 @@ use Joomla\Content\Type\Image;
 use Joomla\Content\Type\Paragraph;
 use Joomla\Content\Type\Rows;
 use Joomla\Content\Type\Slider;
+use Joomla\Content\Type\Span;
 use Joomla\Content\Type\Tabs;
 use Joomla\Content\Type\Teaser;
 use Joomla\Content\Type\Tree;
@@ -176,4 +177,13 @@ interface ContentTypeVisitorInterface
 	 * @return  integer Number of bytes written to the output
 	 */
 	public function visitDataTable(DataTable $dataTable);
+
+	/**
+	 * Render a span
+	 *
+	 * @param   Span $span The span
+	 *
+	 * @return  integer Number of bytes written to the output
+	 */
+	public function visitSpan(Span $span);
 }

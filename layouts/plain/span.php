@@ -8,9 +8,11 @@
  * @var \Joomla\Content\Type\Paragraph $content
  * @codingStandardsIgnoreStart
  */
-?>
-<!-- <?= __FILE__ ?> -->
-<span id="<?php echo $content->getId(); ?>"<?php echo (isset($content->getParameters()->class)) ? " class='{$content->getParameter()->class}'" : ""; ?>>
-	<?php echo $content->text; ?>
-</span>
-<!-- EOF <?= __FILE__ ?> -->
+
+$id    = $content->getId();
+$id    = empty($id) ? "" : " id=\"{$id}\"";
+$class = $content->getParameter('class');
+$class = empty($class) ? "" : " class=\"{$class}\"";
+$text  = $content->text;
+
+echo "<span{$id}{$class}>{$text}</span>";

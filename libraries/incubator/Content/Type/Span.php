@@ -16,20 +16,22 @@ use Joomla\Content\ContentTypeVisitorInterface;
  * @package  Joomla/Content
  * @since    __DEPLOY_VERSION__
  *
- * @property string  $text
+ * @property string $text
  */
 class Span extends AbstractContentType
 {
 	/**
 	 * Paragraph constructor.
 	 *
-	 * @param   string  $text    The copy of the paragraph
+	 * @param   string $text     The copy of the paragraph
+	 * @param   array  $params   The parameters. Supported values:
+	 *                           'class': The CSS class
 	 */
-	public function __construct($text)
+	public function __construct($text, $params = [])
 	{
-		parent::__construct('Span', 'span-' . spl_object_hash($this), new \stdClass);
+		parent::__construct('Span', 'span-' . spl_object_hash($this), $params);
 
-		$this->text    = $text;
+		$this->text = $text;
 	}
 
 	/**
