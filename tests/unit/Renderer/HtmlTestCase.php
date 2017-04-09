@@ -22,10 +22,29 @@ class HtmlTestCase extends \PHPUnit_Framework_TestCase
 		$this->assertXmlStringEqualsXmlString($this->normalise($expected), $this->normalise($actual), $message);
 	}
 
+	protected function assertHtmlHasRoot($expectedTag, $html)
+	{
+		$this->assertEquals($expectedTag, $this->getRootElement($html)->nodeName);
+	}
+
+	protected function assertHtmlRootHasId($expectedId, $html)
+	{
+		$this->assertEquals($expectedId, $this->getRootElement($html)
+											  ->getAttribute('id'));
+	}
+
+	protected function assertHtmlRootHasClass($expectedClass, $html)
+	{
+		$attribute = $this
+			->getRootElement($html)
+			->getAttribute('class');
+
+		$this->assertContains($expectedClass, explode(' ', $attribute));
+	}
+
 	private function normalise($html)
 	{
-		if (!class_exists(\Tidy::class))
-		{
+		if (!class_exists(\Tidy::class)) {
 			$this->markTestSkipped('Tidy is not available');
 
 			return $html;
@@ -50,5 +69,28 @@ class HtmlTestCase extends \PHPUnit_Framework_TestCase
 		$tidy->cleanRepair();
 
 		return (string) $tidy;
+	}
+
+	protected function match($selector, $html)
+	{
+		$dom    = FluentDOM($html, 'text/html');
+		$result = $dom->find($selector);
+
+		return $result->toArray();
+	}
+
+	/**
+	 * @param $html
+	 *
+	 * @return \FluentDOM\Element|null
+	 */
+	protected function getRootElement($html)
+	{
+		$document = new \FluentDOM\Document();
+		$document->loadHTML($html);
+
+		$element = $document->querySelector('body > *');
+
+		return $element;
 	}
 }

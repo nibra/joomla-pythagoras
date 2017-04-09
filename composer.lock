@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "9b156cf6fbe1737f1554272d03ecd190",
-    "content-hash": "9fde5b1ba459e549fa6caecd68e9edbd",
+    "hash": "252a0b3a733802b9e105638d8c947e4b",
+    "content-hash": "b469f2d647f1587a4c9ffbe18c3da1f7",
     "packages": [
         {
             "name": "aura/session",
@@ -2271,6 +2271,108 @@
                 "webdriver"
             ],
             "time": "2017-01-13 15:48:08"
+        },
+        {
+            "name": "fluentdom/fluentdom",
+            "version": "6.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/FluentDOM/FluentDOM.git",
+                "reference": "cb09b82bab34ad2f3e9daeb9087dff7b850106dc"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/FluentDOM/FluentDOM/zipball/cb09b82bab34ad2f3e9daeb9087dff7b850106dc",
+                "reference": "cb09b82bab34ad2f3e9daeb9087dff7b850106dc",
+                "shasum": ""
+            },
+            "require": {
+                "ext-dom": "*",
+                "php": ">=5.6.0"
+            },
+            "suggest": {
+                "fluentdom/css-selector": "Allows to use css selectors."
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "src/FluentDOM.php"
+                ],
+                "psr-4": {
+                    "FluentDOM\\": "src/FluentDOM"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "FluentDOM Contributors",
+                    "homepage": "https://github.com/FluentDOM/FluentDOM/contributors"
+                }
+            ],
+            "description": "A fluent api for the php dom extension.",
+            "homepage": "http://fluentdom.org",
+            "keywords": [
+                "Xpath",
+                "dom",
+                "jquery",
+                "xml"
+            ],
+            "time": "2016-12-24 19:07:45"
+        },
+        {
+            "name": "fluentdom/selectors-symfony",
+            "version": "2.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/FluentDOM/Selectors-Symfony.git",
+                "reference": "01c27f28fee521ff181663ee9c009a4c9e1d4301"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/FluentDOM/Selectors-Symfony/zipball/01c27f28fee521ff181663ee9c009a4c9e1d4301",
+                "reference": "01c27f28fee521ff181663ee9c009a4c9e1d4301",
+                "shasum": ""
+            },
+            "require": {
+                "fluentdom/fluentdom": "^5.3||^6.0",
+                "php": ">=5.5.0",
+                "symfony/css-selector": "~3.1"
+            },
+            "provide": {
+                "fluentdom/css-selector": "1.0.0"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "src/plugin.php"
+                ],
+                "psr-4": {
+                    "FluentDOM\\Symfony\\CssSelector\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "FluentDOM Contributors",
+                    "homepage": "https://github.com/FluentDOM/FluentDOM/contributors"
+                }
+            ],
+            "description": "Provides CSS selector for FluentDOM using Symfony CSS Selectors.",
+            "homepage": "http://fluentdom.org",
+            "keywords": [
+                "css",
+                "css selectors",
+                "dom",
+                "jquery",
+                "xml"
+            ],
+            "time": "2016-12-23 15:58:14"
         },
         {
             "name": "grasmash/yaml-expander",

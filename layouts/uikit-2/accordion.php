@@ -9,7 +9,7 @@
  * @codingStandardsIgnoreStart
  */
 
-$class = $content->params->class ?? '';
+$class = $content->getParameter('class', '');
 ?>
 <div class="uk-accordion  <?php echo $class; ?>"  id="<?php echo $content->id; ?>" data-uk-accordion>
 	<?php foreach ($content->elements as $i => $element) : ?>

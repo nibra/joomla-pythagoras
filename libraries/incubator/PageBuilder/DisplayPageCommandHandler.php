@@ -349,7 +349,7 @@ class DisplayPageCommandHandler extends CommandHandler
 			$groups    = [
 				'Available Templates' => $templates,
 			];
-			$accordion = new Accordion('Accordion Title', null, new \stdClass);
+			$accordion = new Accordion('Accordion Title', null, []);
 
 			foreach ($groups as $title => $group)
 			{

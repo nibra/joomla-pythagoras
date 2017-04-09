@@ -27,10 +27,11 @@ class Compound extends AbstractCompoundType
 	/**
 	 * Compound constructor.
 	 *
-	 * @param   string                 $type     The type represented by this class. In HTML, it is rendered as enclosing tag.
+	 * @param   string                 $type     The type represented by this class. In HTML, it is rendered as
+	 *                                           enclosing tag.
 	 * @param   string                 $title    The title
 	 * @param   string                 $id       The identifier
-	 * @param   \stdClass              $params   The parameters
+	 * @param   array                  $params   The parameters
 	 * @param   ContentTypeInterface[] $elements Content elements
 	 */
 	public function __construct($type, $title, $id, $params, $elements = [])

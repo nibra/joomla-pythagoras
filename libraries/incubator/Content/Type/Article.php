@@ -28,7 +28,7 @@ class Article extends AbstractContentType
 	 */
 	public function __construct($item)
 	{
-		parent::__construct($item->title, $item->alias, new \stdClass);
+		parent::__construct($item->title, $item->alias, []);
 
 		$this->article = $item;
 	}
