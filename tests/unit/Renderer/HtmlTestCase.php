@@ -8,7 +8,8 @@
 
 namespace Joomla\Tests\Unit\Renderer;
 
-use DOMDocument;
+use FluentDOM\Document;
+use Joomla\Renderer\Exception\NotFoundException;
 
 class HtmlTestCase extends \PHPUnit_Framework_TestCase
 {
@@ -22,29 +23,10 @@ class HtmlTestCase extends \PHPUnit_Framework_TestCase
 		$this->assertXmlStringEqualsXmlString($this->normalise($expected), $this->normalise($actual), $message);
 	}
 
-	protected function assertHtmlHasRoot($expectedTag, $html)
-	{
-		$this->assertEquals($expectedTag, $this->getRootElement($html)->nodeName);
-	}
-
-	protected function assertHtmlRootHasId($expectedId, $html)
-	{
-		$this->assertEquals($expectedId, $this->getRootElement($html)
-											  ->getAttribute('id'));
-	}
-
-	protected function assertHtmlRootHasClass($expectedClass, $html)
-	{
-		$attribute = $this
-			->getRootElement($html)
-			->getAttribute('class');
-
-		$this->assertContains($expectedClass, explode(' ', $attribute));
-	}
-
 	private function normalise($html)
 	{
-		if (!class_exists(\Tidy::class)) {
+		if (!class_exists(\Tidy::class))
+		{
 			$this->markTestSkipped('Tidy is not available');
 
 			return $html;
@@ -52,10 +34,10 @@ class HtmlTestCase extends \PHPUnit_Framework_TestCase
 
 		$html = str_replace("><", ">\n<", $html);
 
-		$xml = new DOMDocument('1.0', 'UTF-8');
-		$xml->loadHTML($html);
-		$xml->normalize();
-		$html = $xml->saveHTML();
+		$document = new Document();
+		$document->loadHTML($html);
+		$document->normalize();
+		$html = $document->saveHTML();
 
 		$tidy = new \Tidy();
 		$tidy->parseString($html, [
@@ -68,29 +50,70 @@ class HtmlTestCase extends \PHPUnit_Framework_TestCase
 		]);
 		$tidy->cleanRepair();
 
-		return (string) $tidy;
+		$html = (string) $tidy;
+		$html = preg_replace('~\>\s+~sm', '>', $html);
+
+		return $html;
 	}
 
-	protected function match($selector, $html)
+	protected function assertHtmlHasRoot($expectedTag, $html)
 	{
-		$dom    = FluentDOM($html, 'text/html');
-		$result = $dom->find($selector);
-
-		return $result->toArray();
+		try
+		{
+			$root = $this->getRootElement($html);
+			$this->assertEquals($expectedTag, $root->nodeName);
+		}
+		catch (NotFoundException $e)
+		{
+			$this->fail($e->getMessage());
+		}
 	}
 
 	/**
 	 * @param $html
 	 *
-	 * @return \FluentDOM\Element|null
+	 * @return \FluentDOM\Element
 	 */
 	protected function getRootElement($html)
 	{
-		$document = new \FluentDOM\Document();
+		$document = new Document();
 		$document->loadHTML($html);
 
-		$element = $document->querySelector('body > *');
+		$elements = $document->querySelectorAll('body > *');
 
-		return $element;
+		if ($elements->length != 1)
+		{
+			throw new NotFoundException('No root element found');
+		}
+
+		return $elements[0];
+	}
+
+	protected function assertHtmlRootHasId($expectedId, $html)
+	{
+		try
+		{
+			$root = $this->getRootElement($html);
+			$this->assertEquals($expectedId, $root->getAttribute('id'));
+		}
+		catch (NotFoundException $e)
+		{
+			$this->fail($e->getMessage());
+		}
+	}
+
+	protected function assertHtmlRootHasClass($expectedClass, $html)
+	{
+		try
+		{
+			$root      = $this->getRootElement($html);
+			$attribute = $root->getAttribute('class');
+
+			$this->assertContains($expectedClass, explode(' ', $attribute));
+		}
+		catch (NotFoundException $e)
+		{
+			$this->fail($e->getMessage());
+		}
 	}
 }

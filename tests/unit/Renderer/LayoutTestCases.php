@@ -9,7 +9,6 @@
 namespace Joomla\Tests\Unit\Renderer;
 
 use Joomla\Content\Type\Accordion;
-use Joomla\Content\Type\Article;
 use Joomla\Content\Type\Compound;
 use Joomla\Content\Type\Headline;
 use Joomla\Content\Type\Paragraph;
@@ -33,14 +32,15 @@ class LayoutTestCases extends HtmlTestCase
 	}
 
 	/**
-	 * Accordion: Enclosed in a div with the given id and an optional class
+	 * @testdox Accordion: Enclosed in a div with the given id and an optional class
 	 */
 	public function testAccordion()
 	{
 		$accordion = new Accordion('Accordion Title', 'accordion-id', ['class' => 'special']);
 
-		for ($i = 0; $i < 3; $i++) {
-			$compound = new Compound('div', 'Title ' . $i, null, []);
+		for ($i = 0; $i < 3; $i++)
+		{
+			$compound       = new Compound('div', 'Title ' . $i, null, []);
 			$compound->html = $this->layoutFactory->createLayout('Compound', $compound)->render();
 			$accordion->add($compound);
 		}
@@ -66,6 +66,11 @@ class LayoutTestCases extends HtmlTestCase
 	}
 
 	public function testColumns()
+	{
+		$this->markTestIncomplete('Not implemented');
+	}
+
+	public function testCompound()
 	{
 		$this->markTestIncomplete('Not implemented');
 	}
