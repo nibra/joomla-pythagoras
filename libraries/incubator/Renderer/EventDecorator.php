@@ -16,12 +16,12 @@ use Joomla\Content\Type\Columns;
 use Joomla\Content\Type\Compound;
 use Joomla\Content\Type\DataTable;
 use Joomla\Content\Type\DefaultMenu;
-use Joomla\Content\Type\Dump;
 use Joomla\Content\Type\Headline;
 use Joomla\Content\Type\Image;
 use Joomla\Content\Type\Paragraph;
 use Joomla\Content\Type\Rows;
 use Joomla\Content\Type\Slider;
+use Joomla\Content\Type\Span;
 use Joomla\Content\Type\Tabs;
 use Joomla\Content\Type\Teaser;
 use Joomla\Content\Type\Tree;
@@ -72,13 +72,11 @@ class EventDecorator implements RendererInterface
 	{
 		$this->dispatcher->dispatch(new RegisterContentTypeEvent($type, $handler));
 
-		try
-		{
+		try {
 			$this->renderer->registerContentType($type, $handler);
 			$this->dispatcher->dispatch(new RegisterContentTypeSuccessEvent($type, $handler));
 		}
-		catch (\Exception $exception)
-		{
+		catch (\Exception $exception) {
 			$this->dispatcher->dispatch(new RegisterContentTypeFailureEvent($type, $exception));
 			throw $exception;
 		}
@@ -308,26 +306,22 @@ class EventDecorator implements RendererInterface
 	 */
 	private function delegate($method, $arguments)
 	{
-		if (preg_match('~^visit(.+)~', $method, $match))
-		{
+		if (preg_match('~^visit(.+)~', $method, $match)) {
 			$type = $match[1];
 			$this->dispatcher->dispatch(new RenderContentTypeEvent($type, $arguments[0]));
 
-			try
-			{
+			try {
 				$result = call_user_func_array([$this->renderer, $method], $arguments);
 				$this->dispatcher->dispatch(new RenderContentTypeSuccessEvent($type, $this->renderer));
 
 				return $result;
 			}
-			catch (\Exception $exception)
-			{
+			catch (\Exception $exception) {
 				$this->dispatcher->dispatch(new RenderContentTypeFailureEvent($type, $exception));
 				throw $exception;
 			}
 		}
-		else
-		{
+		else {
 			return call_user_func_array([$this->renderer, $method], $arguments);
 		}
 	}
@@ -529,6 +523,18 @@ class EventDecorator implements RendererInterface
 	 */
 	public function visitDataTable(DataTable $dataTable)
 	{
-		throw new \LogicException(__METHOD__ . ' is not implemented.');
+		return $this->delegate('visitDataTable', [$dataTable]);
+	}
+
+	/**
+	 * Render a span
+	 *
+	 * @param   Span $span The span
+	 *
+	 * @return  integer Number of bytes written to the output
+	 */
+	public function visitSpan(Span $span)
+	{
+		return $this->delegate('visitSpan', [$span]);
 	}
 }

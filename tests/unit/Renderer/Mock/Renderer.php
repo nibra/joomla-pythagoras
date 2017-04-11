@@ -12,6 +12,7 @@ use Joomla\Content\Type\Dump;
 use Joomla\Content\Type\Image;
 use Joomla\Content\Type\Rows;
 use Joomla\Content\Type\Slider;
+use Joomla\Content\Type\Span;
 use Joomla\Content\Type\Tabs;
 use Joomla\Content\Type\Teaser;
 use Joomla\Content\Type\Tree;
@@ -214,6 +215,18 @@ class Renderer extends \Joomla\Renderer\Renderer
 	 * @return  integer Number of bytes written to the output
 	 */
 	public function visitDataTable(DataTable $dataTable)
+	{
+		return 0;
+	}
+
+	/**
+	 * Render a span
+	 *
+	 * @param   Span $span The span
+	 *
+	 * @return  integer Number of bytes written to the output
+	 */
+	public function visitSpan(Span $span)
 	{
 		return 0;
 	}
