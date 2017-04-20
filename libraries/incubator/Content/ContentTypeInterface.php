@@ -8,9 +8,6 @@
 
 namespace Joomla\Content;
 
-use Interop\Container\ContainerInterface;
-use Joomla\Renderer\RendererInterface;
-
 /**
  * ContentType Interface
  *
@@ -53,8 +50,8 @@ interface ContentTypeInterface
 	/**
 	 * Gets the parameters for the content
 	 *
-	 * @param   string  $key     The key
-	 * @param   mixed   $default The default value
+	 * @param   string $key     The key
+	 * @param   mixed  $default The default value
 	 *
 	 * @return  mixed
 	 */

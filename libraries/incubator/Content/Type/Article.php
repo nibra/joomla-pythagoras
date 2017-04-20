@@ -8,7 +8,6 @@
 
 namespace Joomla\Content\Type;
 
-use Joomla\Content\ContentTypeInterface;
 use Joomla\Content\ContentTypeVisitorInterface;
 
 /**
@@ -24,7 +23,7 @@ class Article extends AbstractContentType
 	/**
 	 * Article constructor.
 	 *
-	 * @param   object  $item  The article
+	 * @param   object $item The article
 	 */
 	public function __construct($item)
 	{

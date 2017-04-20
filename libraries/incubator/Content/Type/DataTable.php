@@ -25,9 +25,9 @@ class DataTable extends AbstractContentType
 	 *
 	 * @param   object[] $data   The data to be displayed in the table
 	 * @param string     $title  The title
-	 * @param \stdClass  $params The parameters
+	 * @param array      $params The parameters
 	 */
-	public function __construct($data, $title, $params)
+	public function __construct($data, $title, array $params)
 	{
 		parent::__construct($title, 'table-' . spl_object_hash($this), $params);
 

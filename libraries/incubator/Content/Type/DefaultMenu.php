@@ -8,7 +8,6 @@
 
 namespace Joomla\Content\Type;
 
-use Joomla\Content\ContentTypeInterface;
 use Joomla\Content\ContentTypeVisitorInterface;
 
 /**
@@ -28,7 +27,7 @@ class DefaultMenu extends AbstractContentType
 	 */
 	public function __construct($item)
 	{
-		parent::__construct('Menu', 'menu-' . spl_object_hash($this), new \stdClass);
+		parent::__construct('Menu', 'menu-' . spl_object_hash($this), []);
 		$this->item = $item;
 	}
 

@@ -33,7 +33,7 @@ class Icon extends AbstractContentType
 	 */
 	public function __construct($name)
 	{
-		parent::__construct($name, 'icon-' . spl_object_hash($this), new \stdClass);
+		parent::__construct($name, 'icon-' . spl_object_hash($this), []);
 
 		$this->name = $name;
 	}

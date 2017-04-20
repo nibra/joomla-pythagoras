@@ -30,7 +30,7 @@ class Image extends AbstractContentType
 	 */
 	public function __construct(ImageEntity $item, $alt = '')
 	{
-		parent::__construct($item->caption, 'img-' . spl_object_hash($this), new \stdClass);
+		parent::__construct($item->caption, 'img-' . spl_object_hash($this), []);
 
 		$this->image = $item;
 		$this->alt   = $alt;

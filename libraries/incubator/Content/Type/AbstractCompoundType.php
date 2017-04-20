@@ -34,7 +34,8 @@ abstract class AbstractCompoundType extends AbstractContentType implements Compo
 	{
 		parent::__construct($title, $id, $params);
 
-		foreach ($elements as $element) {
+		foreach ($elements as $element)
+		{
 			$this->add($element);
 		}
 	}

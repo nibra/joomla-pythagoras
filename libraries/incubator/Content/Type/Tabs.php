@@ -8,7 +8,6 @@
 
 namespace Joomla\Content\Type;
 
-use Joomla\Content\ContentTypeInterface;
 use Joomla\Content\ContentTypeVisitorInterface;
 
 /**

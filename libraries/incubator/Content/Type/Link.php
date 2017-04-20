@@ -36,7 +36,7 @@ class Link extends AbstractContentType
 	 */
 	public function __construct($href, $text)
 	{
-		parent::__construct('Link', 'link-' . spl_object_hash($this), new \stdClass);
+		parent::__construct('Link', 'link-' . spl_object_hash($this), []);
 
 		$this->href = $href;
 		$this->text = $text;

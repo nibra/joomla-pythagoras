@@ -29,7 +29,7 @@ class Attribution extends AbstractContentType
 	 */
 	public function __construct($label, $name)
 	{
-		parent::__construct($label, 'lbl-' . spl_object_hash($this), new \stdClass);
+		parent::__construct($label, 'lbl-' . spl_object_hash($this), []);
 
 		$this->label = $label;
 		$this->name  = $name;

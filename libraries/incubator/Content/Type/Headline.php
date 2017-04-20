@@ -29,9 +29,9 @@ class Headline extends AbstractContentType
 	 * @param   array   $params The parameters. Supported values:
 	 *                          'class': The CSS class
 	 */
-	public function __construct($text, $level = 1, $params = [])
+	public function __construct($text, $level = 1, array $params = [])
 	{
-		parent::__construct($text, 'headline-' . spl_object_hash($this), (object) $params);
+		parent::__construct($text, 'headline-' . spl_object_hash($this), $params);
 
 		$this->text  = $text;
 		$this->level = $level;
