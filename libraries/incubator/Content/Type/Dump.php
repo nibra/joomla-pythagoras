@@ -21,6 +21,11 @@ use Joomla\Content\ContentTypeVisitorInterface;
 class Dump extends AbstractContentType
 {
 	/**
+	 * @var object
+	 */
+	private $item;
+
+	/**
 	 * Dump constructor.
 	 *
 	 * @param   object $item The item to be displayed as a dump

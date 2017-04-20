@@ -16,6 +16,7 @@ use Joomla\Content\Type\Columns;
 use Joomla\Content\Type\Compound;
 use Joomla\Content\Type\DataTable;
 use Joomla\Content\Type\DefaultMenu;
+use Joomla\Content\Type\Dump;
 use Joomla\Content\Type\Headline;
 use Joomla\Content\Type\HorizontalLine;
 use Joomla\Content\Type\Icon;
@@ -138,8 +139,6 @@ class JsonRenderer extends Renderer
 	public function visitImage(Image $image)
 	{
 		throw new \LogicException(__METHOD__ . ' is not implemented.');
-
-		return 0;
 	}
 
 	/**
@@ -152,8 +151,6 @@ class JsonRenderer extends Renderer
 	public function visitSlider(Slider $slider)
 	{
 		throw new \LogicException(__METHOD__ . ' is not implemented.');
-
-		return 0;
 	}
 
 	/**
@@ -166,8 +163,6 @@ class JsonRenderer extends Renderer
 	public function visitAccordion(Accordion $accordion)
 	{
 		throw new \LogicException(__METHOD__ . ' is not implemented.');
-
-		return 0;
 	}
 
 	/**
@@ -180,8 +175,6 @@ class JsonRenderer extends Renderer
 	public function visitTree(Tree $tree)
 	{
 		throw new \LogicException(__METHOD__ . ' is not implemented.');
-
-		return 0;
 	}
 
 	/**
@@ -194,22 +187,18 @@ class JsonRenderer extends Renderer
 	public function visitTabs(Tabs $tabs)
 	{
 		throw new \LogicException(__METHOD__ . ' is not implemented.');
-
-		return 0;
 	}
 
 	/**
 	 * Dump an item
 	 *
-	 * @param   ContentTypeInterface $dump The dump
+	 * @param   Dump $dump The dump
 	 *
 	 * @return  integer Number of bytes written to the output
 	 */
-	public function visitDump(ContentTypeInterface $dump)
+	public function visitDump(Dump $dump)
 	{
 		throw new \LogicException(__METHOD__ . ' is not implemented.');
-
-		return 0;
 	}
 
 	/**
@@ -222,8 +211,6 @@ class JsonRenderer extends Renderer
 	public function visitRows(Rows $rows)
 	{
 		throw new \LogicException(__METHOD__ . ' is not implemented.');
-
-		return 0;
 	}
 
 	/**
@@ -236,8 +223,6 @@ class JsonRenderer extends Renderer
 	public function visitColumns(Columns $columns)
 	{
 		throw new \LogicException(__METHOD__ . ' is not implemented.');
-
-		return 0;
 	}
 
 	/**
@@ -250,8 +235,6 @@ class JsonRenderer extends Renderer
 	public function visitArticle(Article $article)
 	{
 		throw new \LogicException(__METHOD__ . ' is not implemented.');
-
-		return 0;
 	}
 
 	/**
@@ -264,8 +247,6 @@ class JsonRenderer extends Renderer
 	public function visitTeaser(Teaser $teaser)
 	{
 		throw new \LogicException(__METHOD__ . ' is not implemented.');
-
-		return 0;
 	}
 
 	/**
@@ -278,8 +259,6 @@ class JsonRenderer extends Renderer
 	public function visitDefaultMenu(DefaultMenu $defaultMenu)
 	{
 		throw new \LogicException(__METHOD__ . ' is not implemented.');
-
-		return 0;
 	}
 
 	/**

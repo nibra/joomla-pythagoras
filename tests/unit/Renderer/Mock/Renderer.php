@@ -147,7 +147,7 @@ class Renderer extends \Joomla\Renderer\Renderer
 	 *
 	 * @return  integer Number of bytes written to the output
 	 */
-	public function visitDump(ContentTypeInterface $dump)
+	public function visitDump(Dump $dump)
 	{
 		return 0;
 	}

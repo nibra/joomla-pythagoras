@@ -15,6 +15,7 @@ use Joomla\Content\Type\Columns;
 use Joomla\Content\Type\Compound;
 use Joomla\Content\Type\DataTable;
 use Joomla\Content\Type\DefaultMenu;
+use Joomla\Content\Type\Dump;
 use Joomla\Content\Type\Headline;
 use Joomla\Content\Type\HorizontalLine;
 use Joomla\Content\Type\Icon;
@@ -123,11 +124,11 @@ interface ContentTypeVisitorInterface
 	/**
 	 * Dump an item
 	 *
-	 * @param   ContentTypeInterface $dump The dump
+	 * @param   Dump $dump The dump
 	 *
 	 * @return  integer Number of bytes written to the output
 	 */
-	public function visitDump(ContentTypeInterface $dump);
+	public function visitDump(Dump $dump);
 
 	/**
 	 * Render rows

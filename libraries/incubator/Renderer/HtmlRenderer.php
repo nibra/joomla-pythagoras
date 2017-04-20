@@ -18,6 +18,7 @@ use Joomla\Content\Type\Columns;
 use Joomla\Content\Type\Compound;
 use Joomla\Content\Type\DataTable;
 use Joomla\Content\Type\DefaultMenu;
+use Joomla\Content\Type\Dump;
 use Joomla\Content\Type\Headline;
 use Joomla\Content\Type\HorizontalLine;
 use Joomla\Content\Type\Icon;
@@ -329,11 +330,11 @@ class HtmlRenderer extends Renderer
 	/**
 	 * Dump an item
 	 *
-	 * @param   ContentTypeInterface $dump The dump
+	 * @param   Dump $dump The dump
 	 *
 	 * @return  integer Number of bytes written to the output
 	 */
-	public function visitDump(ContentTypeInterface $dump)
+	public function visitDump(Dump $dump)
 	{
 		return $this->write('<pre>' . $this->dumpEntity($dump->item) . '</pre>');
 	}
@@ -470,8 +471,10 @@ class HtmlRenderer extends Renderer
 	 */
 	public function visitDefaultMenu(DefaultMenu $defaultMenu)
 	{
-		$menu              = $this->convertPageTreeToMenu($defaultMenu->item);
-		$defaultMenu->item = $menu;
+		if ($defaultMenu->item instanceof Page)
+		{
+			$defaultMenu->item = $this->convertPageTreeToMenu($defaultMenu->item);
+		}
 
 		return $this->applyLayout('DefaultMenu', $defaultMenu);
 	}
