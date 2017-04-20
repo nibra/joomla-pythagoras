@@ -42,8 +42,8 @@ abstract class Renderer implements RendererInterface
 	/**
 	 * Renderer constructor.
 	 *
-	 * @param   array               $options    Accepted range, ie., MIME type ('token') and quality ('q')
-	 * @param   ContainerInterface  $container  The container
+	 * @param   array              $options   Accepted range, ie., MIME type ('token') and quality ('q')
+	 * @param   ContainerInterface $container The container
 	 */
 	public function __construct(array $options, ContainerInterface $container)
 	{
@@ -51,6 +51,23 @@ abstract class Renderer implements RendererInterface
 		$this->container = $container;
 
 		$this->registerFallback();
+	}
+
+	/**
+	 * Define a fallback for non-registered content types.
+	 * The fallback will just ignore the content type.
+	 *
+	 * @return  void
+	 */
+	private function registerFallback()
+	{
+		$this->registerContentType(
+			'default',
+			function ()
+			{
+				return '';
+			}
+		);
 	}
 
 	/**
@@ -65,13 +82,15 @@ abstract class Renderer implements RendererInterface
 	{
 		if (is_string($handler))
 		{
-			$handler = function (ContentTypeInterface $contentItem) use ($handler) {
+			$handler = function (ContentTypeInterface $contentItem) use ($handler)
+			{
 				return call_user_func([$contentItem, $handler]);
 			};
 		}
 		elseif (is_array($handler))
 		{
-			$handler = function (ContentTypeInterface $contentItem) use ($handler) {
+			$handler = function (ContentTypeInterface $contentItem) use ($handler)
+			{
 				return call_user_func($handler, $contentItem);
 			};
 		}
@@ -85,35 +104,6 @@ abstract class Renderer implements RendererInterface
 	public function getClass()
 	{
 		return get_class($this);
-	}
-
-	/**
-	 * @param   string $method    Method name; must start with 'visit'
-	 * @param   array  $arguments Method arguments
-	 *
-	 * @return  void
-	 */
-	public function __call($method, $arguments)
-	{
-		if (preg_match('~^visit(.+)~', $method, $match))
-		{
-			$type = strtolower($match[1]);
-
-			if (!isset($this->handlers[$type]))
-			{
-				$type = 'default';
-			}
-
-			if (isset($this->handlers[$type]))
-			{
-				$handler = $this->handlers[$type];
-				$this->output .= $handler($arguments[0]);
-			}
-			else
-			{
-				throw new NotFoundException("Unknown content type {$match[1]}, no default\n");
-			}
-		}
 	}
 
 	/**
@@ -261,7 +251,7 @@ abstract class Renderer implements RendererInterface
 		else
 		{
 			$this->output .= $content;
-			$len = strlen($content);
+			$len          = strlen($content);
 		}
 
 		return $len;
@@ -383,18 +373,31 @@ abstract class Renderer implements RendererInterface
 	}
 
 	/**
-	 * Define a fallback for non-registered content types.
-	 * The fallback will just ignore the content type.
+	 * @param   string $method    Method name; must start with 'visit'
+	 * @param   array  $arguments Method arguments
 	 *
 	 * @return  void
 	 */
-	private function registerFallback()
+	public function __call($method, $arguments)
 	{
-		$this->registerContentType(
-			'default',
-			function () {
-				return '';
+		if (preg_match('~^visit(.+)~', $method, $match))
+		{
+			$type = strtolower($match[1]);
+
+			if (!isset($this->handlers[$type]))
+			{
+				$type = 'default';
 			}
-		);
+
+			if (isset($this->handlers[$type]))
+			{
+				$handler      = $this->handlers[$type];
+				$this->output .= $handler($arguments[0]);
+			}
+			else
+			{
+				throw new NotFoundException("Unknown content type {$match[1]}, no default\n");
+			}
+		}
 	}
 }

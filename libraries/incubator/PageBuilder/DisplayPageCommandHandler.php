@@ -296,7 +296,7 @@ class DisplayPageCommandHandler extends CommandHandler
 					foreach ($this->toContentType($node) as $child)
 					{
 						#echo "Result: " . get_class($child) . "\n";
-						$content->add($child);
+						$content->addChild($child);
 					}
 					#echo "</pre>";
 				}
@@ -360,9 +360,9 @@ class DisplayPageCommandHandler extends CommandHandler
 					$imageData      = new ImageEntity();
 					$imageData->url = '/' . $item->path . '/preview.png';
 					$image          = new Image($imageData, $item->path);
-					$compound->add($image);
+					$compound->addChild($image);
 				}
-				$accordion->add($compound);
+				$accordion->addChild($compound);
 			}
 
 			$accordion->accept($output);

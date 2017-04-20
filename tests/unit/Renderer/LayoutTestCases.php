@@ -43,7 +43,7 @@ class LayoutTestCases extends HtmlTestCase
 		{
 			$compound       = new Compound('div', 'Title ' . $i, null, []);
 			$compound->html = $this->layoutFactory->createLayout('Compound', $compound)->render();
-			$accordion->add($compound);
+			$accordion->addChild($compound);
 		}
 
 		$html = $this

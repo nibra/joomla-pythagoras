@@ -17,7 +17,12 @@ use Joomla\Content\Type\Compound;
 use Joomla\Content\Type\DataTable;
 use Joomla\Content\Type\DefaultMenu;
 use Joomla\Content\Type\Headline;
+use Joomla\Content\Type\HorizontalLine;
+use Joomla\Content\Type\Icon;
 use Joomla\Content\Type\Image;
+use Joomla\Content\Type\Link;
+use Joomla\Content\Type\OnePager;
+use Joomla\Content\Type\OnePagerSection;
 use Joomla\Content\Type\Paragraph;
 use Joomla\Content\Type\Rows;
 use Joomla\Content\Type\Slider;
@@ -72,26 +77,16 @@ class EventDecorator implements RendererInterface
 	{
 		$this->dispatcher->dispatch(new RegisterContentTypeEvent($type, $handler));
 
-		try {
+		try
+		{
 			$this->renderer->registerContentType($type, $handler);
 			$this->dispatcher->dispatch(new RegisterContentTypeSuccessEvent($type, $handler));
 		}
-		catch (\Exception $exception) {
+		catch (\Exception $exception)
+		{
 			$this->dispatcher->dispatch(new RegisterContentTypeFailureEvent($type, $exception));
 			throw $exception;
 		}
-	}
-
-	/**
-	 * @param   string $method    Method name; must start with 'visit'
-	 * @param   array  $arguments Method arguments
-	 *
-	 * @return  mixed
-	 * @throws  \Exception
-	 */
-	public function __call($method, $arguments)
-	{
-		return $this->delegate($method, $arguments);
 	}
 
 	/**
@@ -294,36 +289,6 @@ class EventDecorator implements RendererInterface
 	public function getMetadata($key = null)
 	{
 		return $this->renderer->getMetadata($key);
-	}
-
-	/**
-	 * @param   string $method    The name of the method
-	 * @param   array  $arguments The arguments
-	 *
-	 * @return  mixed
-	 *
-	 * @throws  \Exception
-	 */
-	private function delegate($method, $arguments)
-	{
-		if (preg_match('~^visit(.+)~', $method, $match)) {
-			$type = $match[1];
-			$this->dispatcher->dispatch(new RenderContentTypeEvent($type, $arguments[0]));
-
-			try {
-				$result = call_user_func_array([$this->renderer, $method], $arguments);
-				$this->dispatcher->dispatch(new RenderContentTypeSuccessEvent($type, $this->renderer));
-
-				return $result;
-			}
-			catch (\Exception $exception) {
-				$this->dispatcher->dispatch(new RenderContentTypeFailureEvent($type, $exception));
-				throw $exception;
-			}
-		}
-		else {
-			return call_user_func_array([$this->renderer, $method], $arguments);
-		}
 	}
 
 	/**
@@ -536,5 +501,111 @@ class EventDecorator implements RendererInterface
 	public function visitSpan(Span $span)
 	{
 		return $this->delegate('visitSpan', [$span]);
+	}
+
+	/**
+	 * Render a horizontal line
+	 *
+	 * @param   HorizontalLine $hr The horizontal line
+	 *
+	 * @return  integer Number of bytes written to the output
+	 */
+	public function visitHorizontalLine(HorizontalLine $hr)
+	{
+		return $this->delegate('visitHorizontalLine', [$hr]);
+	}
+
+	/**
+	 * Render an icon
+	 *
+	 * @param   Icon $icon The icon
+	 *
+	 * @return  integer Number of bytes written to the output
+	 */
+	public function visitIcon(Icon $icon)
+	{
+		return $this->delegate('visitIcon', [$icon]);
+	}
+
+	/**
+	 * Render a link
+	 *
+	 * @param   Link $link The link
+	 *
+	 * @return  integer Number of bytes written to the output
+	 */
+	public function visitLink(Link $link)
+	{
+		return $this->delegate('visitLink', [$link]);
+	}
+
+	/**
+	 * Render an one-pager
+	 *
+	 * @param   OnePager $onePager The one-pager
+	 *
+	 * @return  integer Number of bytes written to the output
+	 */
+	public function visitOnePager(OnePager $onePager)
+	{
+		return $this->delegate('visitOnePager', [$onePager]);
+	}
+
+	/**
+	 * Render an one-pager section
+	 *
+	 * @param   OnePagerSection $onePagerSection The section
+	 *
+	 * @return  integer Number of bytes written to the output
+	 */
+	public function visitOnePagerSection(OnePagerSection $onePagerSection)
+	{
+		return $this->delegate('visitOnePagerSection', [$onePagerSection]);
+	}
+
+	/**
+	 * @param   string $method    Method name; must start with 'visit'
+	 * @param   array  $arguments Method arguments
+	 *
+	 * @return  mixed
+	 * @throws  \Exception
+	 */
+	public function __call($method, $arguments)
+	{
+		return $this->delegate($method, $arguments);
+	}
+
+	/**
+	 * @param   string $method    The name of the method
+	 * @param   array  $arguments The arguments
+	 *
+	 * @return  mixed
+	 *
+	 * @throws  \Exception
+	 */
+	private function delegate($method, $arguments)
+	{
+		if (preg_match('~^visit(.+)~', $method, $match))
+		{
+			$type = $match[1];
+			$this->dispatcher->dispatch(new RenderContentTypeEvent($type, $arguments[0]));
+
+			try
+			{
+				$result = call_user_func_array([$this->renderer, $method], $arguments);
+				$this->dispatcher->dispatch(new RenderContentTypeSuccessEvent($type, $this->renderer));
+
+				return $result;
+			}
+			catch (\Exception $exception)
+			{
+				$this->dispatcher->dispatch(new RenderContentTypeFailureEvent($type, $exception));
+				throw $exception;
+			}
+		}
+		else
+		{
+			return call_user_func_array([$this->renderer, $method], $arguments);
+		}
 	}
 }

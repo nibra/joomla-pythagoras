@@ -36,7 +36,7 @@ abstract class AbstractCompoundType extends AbstractContentType implements Compo
 
 		foreach ($elements as $element)
 		{
-			$this->add($element);
+			$this->addChild($element);
 		}
 	}
 
@@ -47,7 +47,7 @@ abstract class AbstractCompoundType extends AbstractContentType implements Compo
 	 *
 	 * @return  void
 	 */
-	public function add(ContentTypeInterface $content)
+	public function addChild(ContentTypeInterface $content)
 	{
 		$this->elements[] = $content;
 	}

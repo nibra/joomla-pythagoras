@@ -9,6 +9,7 @@
 namespace Joomla\Renderer;
 
 use Joomla\Cms\Entity\Menu;
+use Joomla\Content\CompoundTypeInterface;
 use Joomla\Content\ContentTypeInterface;
 use Joomla\Content\Type\Accordion;
 use Joomla\Content\Type\Article;
@@ -32,6 +33,7 @@ use Joomla\Content\Type\Tabs;
 use Joomla\Content\Type\Teaser;
 use Joomla\Content\Type\Tree;
 use Joomla\ORM\Operator;
+use Joomla\ORM\Repository\Repository;
 use Joomla\PageBuilder\Entity\Layout;
 use Joomla\PageBuilder\Entity\Page;
 use Joomla\Renderer\Exception\NotFoundException;
@@ -259,14 +261,14 @@ class HtmlRenderer extends Renderer
 	 */
 	private function preRenderChildElements(ContentTypeInterface $content)
 	{
-		if (!isset($content->elements))
+		if (!($content instanceof CompoundTypeInterface))
 		{
 			return;
 		}
 
 		$stash = $this->output;
 
-		foreach ($content->elements as $key => $item)
+		foreach ($content->getChildren() as $key => $item)
 		{
 			$this->output = '';
 			$item->accept($this);
@@ -397,6 +399,7 @@ class HtmlRenderer extends Renderer
 	 */
 	private function getFullUrl($object)
 	{
+		/** @var Repository $repository */
 		$repository   = $this->container->get('Repository')->forEntity('Content');
 		$entityType   = explode('\\', get_class($object));
 		$entityType   = array_pop($entityType);

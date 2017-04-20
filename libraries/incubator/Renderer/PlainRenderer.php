@@ -17,7 +17,12 @@ use Joomla\Content\Type\Compound;
 use Joomla\Content\Type\DataTable;
 use Joomla\Content\Type\DefaultMenu;
 use Joomla\Content\Type\Headline;
+use Joomla\Content\Type\HorizontalLine;
+use Joomla\Content\Type\Icon;
 use Joomla\Content\Type\Image;
+use Joomla\Content\Type\Link;
+use Joomla\Content\Type\OnePager;
+use Joomla\Content\Type\OnePagerSection;
 use Joomla\Content\Type\Paragraph;
 use Joomla\Content\Type\Rows;
 use Joomla\Content\Type\Slider;
@@ -280,6 +285,66 @@ class PlainRenderer extends Renderer
 	 */
 	public function visitSpan(Span $span)
 	{
-		// TODO: Implement visitSpan() method.
+		throw new \LogicException(__METHOD__ . ' is not implemented.');
+	}
+
+	/**
+	 * Render a horizontal line
+	 *
+	 * @param   HorizontalLine $hr The horizontal line
+	 *
+	 * @return  integer Number of bytes written to the output
+	 */
+	public function visitHorizontalLine(HorizontalLine $hr)
+	{
+		throw new \LogicException(__METHOD__ . ' is not implemented.');
+	}
+
+	/**
+	 * Render an icon
+	 *
+	 * @param   Icon $icon The icon
+	 *
+	 * @return  integer Number of bytes written to the output
+	 */
+	public function visitIcon(Icon $icon)
+	{
+		throw new \LogicException(__METHOD__ . ' is not implemented.');
+	}
+
+	/**
+	 * Render a link
+	 *
+	 * @param   Link $link The link
+	 *
+	 * @return  integer Number of bytes written to the output
+	 */
+	public function visitLink(Link $link)
+	{
+		throw new \LogicException(__METHOD__ . ' is not implemented.');
+	}
+
+	/**
+	 * Render an one-pager
+	 *
+	 * @param   OnePager $onePager The one-pager
+	 *
+	 * @return  integer Number of bytes written to the output
+	 */
+	public function visitOnePager(OnePager $onePager)
+	{
+		throw new \LogicException(__METHOD__ . ' is not implemented.');
+	}
+
+	/**
+	 * Render an one-pager section
+	 *
+	 * @param   OnePagerSection $onePagerSection The section
+	 *
+	 * @return  integer Number of bytes written to the output
+	 */
+	public function visitOnePagerSection(OnePagerSection $onePagerSection)
+	{
+		throw new \LogicException(__METHOD__ . ' is not implemented.');
 	}
 }

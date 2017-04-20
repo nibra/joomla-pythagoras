@@ -23,5 +23,12 @@ interface CompoundTypeInterface extends ContentTypeInterface
 	 *
 	 * @return  void
 	 */
-	public function add(ContentTypeInterface $content);
+	public function addChild(ContentTypeInterface $content);
+
+	/**
+	 * Get all children
+	 *
+	 * @return  ContentTypeInterface[]
+	 */
+	public function getChildren();
 }
