@@ -77,7 +77,7 @@ class EventDecoratorCest
 	{
 		$knownContentTypes = [
 			Attribution::class => ['label', 'name'],
-			Compound::class    => ['type', 'title', 'id', new \stdClass, []],
+			Compound::class    => ['type', 'title', 'id', [], []],
 			Headline::class    => ['text'],
 			Paragraph::class   => ['text'],
 		];

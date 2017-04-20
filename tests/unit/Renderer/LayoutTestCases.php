@@ -18,6 +18,7 @@ use Joomla\Renderer\LayoutFactory;
 
 class LayoutTestCases extends HtmlTestCase
 {
+	private $renderer;
 	/**
 	 * @var string
 	 */
@@ -30,6 +31,8 @@ class LayoutTestCases extends HtmlTestCase
 
 	public function setUp()
 	{
+		/** @var HtmlRenderer $renderer */
+		$this->renderer = $this->getMockBuilder(HtmlRenderer::class)->disableOriginalConstructor()->getMock();
 		$this->layoutFactory = new LayoutFactory([$this->layoutPath]);
 	}
 
@@ -38,21 +41,19 @@ class LayoutTestCases extends HtmlTestCase
 	 */
 	public function testAccordion()
 	{
-		/** @var HtmlRenderer $renderer */
-		$renderer  = $this->getMockBuilder(HtmlRenderer::class)->getMock();
-		$accordion = new Accordion('Accordion Title', 'accordion-id', ['class' => 'special']);
+		$accordion      = new Accordion('Accordion Title', 'accordion-id', ['class' => 'special']);
 
 		for ($i = 0; $i < 3; $i++)
 		{
 			$compound       = new Compound('div', 'Title ' . $i, null, []);
-			$compound->html = $this->layoutFactory->createLayout('Compound', $compound)->render($renderer);
+			$compound->html = $this->layoutFactory->createLayout('Compound', $compound)->render($this->renderer);
 			$accordion->addChild($compound);
 		}
 
 		$html = $this
 			->layoutFactory
 			->createLayout('Accordion', $accordion)
-			->render($renderer);
+			->render($this->renderer);
 
 		$this->assertHtmlHasRoot('div', $html);
 		$this->assertHtmlRootHasId('accordion-id', $html);
@@ -89,13 +90,11 @@ class LayoutTestCases extends HtmlTestCase
 	 */
 	public function testHeadlineLevelIsUsed()
 	{
-		/** @var HtmlRenderer $renderer */
-		$renderer = $this->getMockBuilder(HtmlRenderer::class)->getMock();
 		$content  = new Headline('Hello World!', 2);
 		$id       = $content->getId();
 		$layout   = $this->layoutFactory->createLayout('Headline', $content);
 
-		$this->assertHtmlEquals("<h2 id=\"{$id}\">Hello World!</h2>", $layout->render($renderer));
+		$this->assertHtmlEquals("<h2 id=\"{$id}\">Hello World!</h2>", $layout->render($this->renderer));
 	}
 
 	/**
@@ -103,13 +102,11 @@ class LayoutTestCases extends HtmlTestCase
 	 */
 	public function testHeadlineLevelDefaultsTo1()
 	{
-		/** @var HtmlRenderer $renderer */
-		$renderer = $this->getMockBuilder(HtmlRenderer::class)->getMock();
 		$content  = new Headline('Hello World!');
 		$id       = $content->getId();
 		$layout   = $this->layoutFactory->createLayout('Headline', $content);
 
-		$this->assertHtmlEquals("<h1 id=\"{$id}\">Hello World!</h1>", $layout->render($renderer));
+		$this->assertHtmlEquals("<h1 id=\"{$id}\">Hello World!</h1>", $layout->render($this->renderer));
 	}
 
 	/**
@@ -117,13 +114,11 @@ class LayoutTestCases extends HtmlTestCase
 	 */
 	public function testHeadlineClassOptionIsUsed()
 	{
-		/** @var HtmlRenderer $renderer */
-		$renderer = $this->getMockBuilder(HtmlRenderer::class)->getMock();
 		$content  = new Headline('Hello World!', 2, ['class' => 'title']);
 		$id       = $content->getId();
 		$layout   = $this->layoutFactory->createLayout('Headline', $content);
 
-		$this->assertHtmlEquals("<h2 id=\"{$id}\" class=\"title\">Hello World!</h2>", $layout->render($renderer));
+		$this->assertHtmlEquals("<h2 id=\"{$id}\" class=\"title\">Hello World!</h2>", $layout->render($this->renderer));
 	}
 
 	public function testIcon()
@@ -156,13 +151,11 @@ class LayoutTestCases extends HtmlTestCase
 	 */
 	public function testParagraph()
 	{
-		/** @var HtmlRenderer $renderer */
-		$renderer = $this->getMockBuilder(HtmlRenderer::class)->getMock();
 		$content  = new Paragraph('Copy Text');
 		$id       = $content->getId();
 		$layout   = $this->layoutFactory->createLayout('Paragraph', $content);
 
-		$this->assertHtmlEquals("<p id=\"{$id}\">Copy Text</p>", $layout->render($renderer));
+		$this->assertHtmlEquals("<p id=\"{$id}\">Copy Text</p>", $layout->render($this->renderer));
 	}
 
 	/**
@@ -170,13 +163,11 @@ class LayoutTestCases extends HtmlTestCase
 	 */
 	public function testParagraphEmphasised()
 	{
-		/** @var HtmlRenderer $renderer */
-		$renderer = $this->getMockBuilder(HtmlRenderer::class)->getMock();
 		$content  = new Paragraph('Copy Text', Paragraph::EMPHASISED);
 		$id       = $content->getId();
 		$layout   = $this->layoutFactory->createLayout('Paragraph', $content);
 
-		$this->assertHtmlEquals("<p id=\"{$id}\"><em>Copy Text</em></p>", $layout->render($renderer));
+		$this->assertHtmlEquals("<p id=\"{$id}\"><em>Copy Text</em></p>", $layout->render($this->renderer));
 	}
 
 	/**
@@ -184,13 +175,11 @@ class LayoutTestCases extends HtmlTestCase
 	 */
 	public function testParagraphClass()
 	{
-		/** @var HtmlRenderer $renderer */
-		$renderer = $this->getMockBuilder(HtmlRenderer::class)->getMock();
 		$content  = new Paragraph('Copy Text', Paragraph::PLAIN, ['class' => 'special']);
 		$id       = $content->getId();
 		$layout   = $this->layoutFactory->createLayout('Paragraph', $content);
 
-		$this->assertHtmlEquals("<p id=\"{$id}\" class=\"special\">Copy Text</p>", $layout->render($renderer));
+		$this->assertHtmlEquals("<p id=\"{$id}\" class=\"special\">Copy Text</p>", $layout->render($this->renderer));
 	}
 
 	public function testRows()
@@ -208,13 +197,11 @@ class LayoutTestCases extends HtmlTestCase
 	 */
 	public function testSpan()
 	{
-		/** @var HtmlRenderer $renderer */
-		$renderer = $this->getMockBuilder(HtmlRenderer::class)->getMock();
 		$content  = new Span('Text', ['class' => 'special']);
 		$id       = $content->getId();
 		$layout   = $this->layoutFactory->createLayout('Span', $content);
 
-		$this->assertHtmlEquals("<span id=\"{$id}\" class=\"special\">Text</span>", $layout->render($renderer));
+		$this->assertHtmlEquals("<span id=\"{$id}\" class=\"special\">Text</span>", $layout->render($this->renderer));
 	}
 
 	public function testTabs()

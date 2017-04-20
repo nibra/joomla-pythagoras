@@ -18,7 +18,7 @@ class LayoutTest extends \PHPUnit_Framework_TestCase
 	public function testLayoutWrapperEncapsulatesLayoutFiles()
 	{
 		/** @var HtmlRenderer $renderer */
-		$renderer = $this->getMockBuilder(HtmlRenderer::class)->getMock();
+		$renderer = $this->getMockBuilder(HtmlRenderer::class)->disableOriginalConstructor()->getMock();
 		$content  = new Headline('Hello World!');
 		$paths    = ['tests/unit/Renderer/fixtures'];
 		$wrapper  = new LayoutWrapper('Headline', $content, $paths);

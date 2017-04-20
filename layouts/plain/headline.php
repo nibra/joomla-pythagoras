@@ -10,7 +10,8 @@
 
 $level = $content->level;
 $id    = $content->getId();
-$class = (isset($content->getParameters()->class)) ? " class=\"{$content->getParameters()->class}\"" : "";
+$class = $content->getParameter('class');
+$class = empty($class) ? "" : " class=\"{$class}\"";
 $text  = $content->text;
 
 echo "<h{$level} id=\"{$id}\"{$class}>{$text}</h{$level}>";
