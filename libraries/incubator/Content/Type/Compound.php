@@ -34,7 +34,7 @@ class Compound extends AbstractCompoundType
 	 * @param   array                  $params   The parameters
 	 * @param   ContentTypeInterface[] $elements Content elements
 	 */
-	public function __construct($type, $title, $id, $params, $elements = [])
+	public function __construct($type, $title, $id, $params = [], $elements = [])
 	{
 		parent::__construct($title, $id, $params, $elements);
 

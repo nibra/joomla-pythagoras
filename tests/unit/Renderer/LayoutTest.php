@@ -10,17 +10,20 @@ namespace Joomla\Tests\Unit\Renderer;
 
 use Joomla\Content\Type\Headline;
 use Joomla\Renderer\Exception\NotFoundException;
+use Joomla\Renderer\HtmlRenderer;
 use Joomla\Renderer\LayoutWrapper;
 
 class LayoutTest extends \PHPUnit_Framework_TestCase
 {
 	public function testLayoutWrapperEncapsulatesLayoutFiles()
 	{
-		$content = new Headline('Hello World!');
-		$paths = ['tests/unit/Renderer/fixtures'];
-		$wrapper = new LayoutWrapper('Headline', $content, $paths);
+		/** @var HtmlRenderer $renderer */
+		$renderer = $this->getMockBuilder(HtmlRenderer::class)->getMock();
+		$content  = new Headline('Hello World!');
+		$paths    = ['tests/unit/Renderer/fixtures'];
+		$wrapper  = new LayoutWrapper('Headline', $content, $paths);
 
-		$result = $wrapper->render();
+		$result = $wrapper->render($renderer);
 		$this->assertRegExp('~\<h1[^>]*>Hello World!</h1>~sm', $result);
 	}
 
@@ -29,7 +32,7 @@ class LayoutTest extends \PHPUnit_Framework_TestCase
 		$this->expectException(NotFoundException::class);
 
 		$content = new Headline('Hello World!');
-		$paths = ['tests/unit/Content/Layout/fixtures'];
+		$paths   = ['tests/unit/Content/Layout/fixtures'];
 		$wrapper = new LayoutWrapper('non-existent', $content, $paths);
 	}
 }

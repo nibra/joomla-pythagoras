@@ -67,10 +67,13 @@ class LayoutWrapper implements LayoutInterface
 	 * Render the layout.
 	 *
 	 * The layout file gets its data in `$content` which is an object implementing the ContentTypeInterface.
+	 * It has access to the renderer in the `$renderer` variable.
+	 *
+	 * @param Renderer $renderer
 	 *
 	 * @return string
 	 */
-	public function render()
+	public function render(Renderer $renderer)
 	{
 		/** @noinspection PhpUnusedLocalVariableInspection */
 		$content = $this->content;

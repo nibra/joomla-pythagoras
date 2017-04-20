@@ -20,7 +20,7 @@ use Joomla\Content\ContentTypeInterface;
 abstract class AbstractCompoundType extends AbstractContentType implements CompoundTypeInterface
 {
 	/** @var  ContentTypeInterface[] Content elements */
-	public $elements = [];
+	protected $elements = [];
 
 	/**
 	 * AbstractCompoundType Constructor.
@@ -30,7 +30,7 @@ abstract class AbstractCompoundType extends AbstractContentType implements Compo
 	 * @param   array                  $params   The parameters
 	 * @param   ContentTypeInterface[] $elements Content elements
 	 */
-	public function __construct($title, $id, $params, $elements = [])
+	public function __construct($title, $id, $params = [], $elements = [])
 	{
 		parent::__construct($title, $id, $params);
 
@@ -50,5 +50,15 @@ abstract class AbstractCompoundType extends AbstractContentType implements Compo
 	public function addChild(ContentTypeInterface $content)
 	{
 		$this->elements[] = $content;
+	}
+
+	/**
+	 * Get all children
+	 *
+	 * @return  ContentTypeInterface[]
+	 */
+	public function getChildren()
+	{
+		return $this->elements;
 	}
 }

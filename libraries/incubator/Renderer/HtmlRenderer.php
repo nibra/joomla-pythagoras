@@ -168,7 +168,7 @@ class HtmlRenderer extends Renderer
 	 */
 	private function applyLayout($contentType, $content)
 	{
-		return $this->write($this->layoutFactory->createLayout($contentType, $content)->render());
+		return $this->write($this->layoutFactory->createLayout($contentType, $content)->render($this));
 	}
 
 	/**

@@ -241,6 +241,8 @@ class DisplayPageCommandHandler extends CommandHandler
 		#echo "Data selection: " . $root->component . ' ' . print_r($root->selection, true) . "\n";
 		$contentType = $root->contentType;
 
+		$root->params = empty($root->params) ? [] : get_object_vars($root->params);
+
 		$data = $this->findData($root->component, $root->selection);
 
 		$reflector             = new \ReflectionClass($contentType);
@@ -353,7 +355,7 @@ class DisplayPageCommandHandler extends CommandHandler
 
 			foreach ($groups as $title => $group)
 			{
-				$compound = new Compound('div', $title, null, new \stdClass);
+				$compound = new Compound('div', $title, null, []);
 
 				foreach ($group as $item)
 				{

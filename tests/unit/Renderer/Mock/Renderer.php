@@ -9,7 +9,12 @@ use Joomla\Content\Type\Columns;
 use Joomla\Content\Type\DataTable;
 use Joomla\Content\Type\DefaultMenu;
 use Joomla\Content\Type\Dump;
+use Joomla\Content\Type\HorizontalLine;
+use Joomla\Content\Type\Icon;
 use Joomla\Content\Type\Image;
+use Joomla\Content\Type\Link;
+use Joomla\Content\Type\OnePager;
+use Joomla\Content\Type\OnePagerSection;
 use Joomla\Content\Type\Rows;
 use Joomla\Content\Type\Slider;
 use Joomla\Content\Type\Span;
@@ -96,7 +101,7 @@ class Renderer extends \Joomla\Renderer\Renderer
 	 */
 	public function visitSlider(Slider $slider)
 	{
-		throw new \LogicException(__METHOD__ . ' is not implemented.');
+		return 0;
 	}
 
 	/**
@@ -108,7 +113,7 @@ class Renderer extends \Joomla\Renderer\Renderer
 	 */
 	public function visitAccordion(Accordion $accordion)
 	{
-		throw new \LogicException(__METHOD__ . ' is not implemented.');
+		return 0;
 	}
 
 	/**
@@ -120,7 +125,7 @@ class Renderer extends \Joomla\Renderer\Renderer
 	 */
 	public function visitTree(Tree $tree)
 	{
-		throw new \LogicException(__METHOD__ . ' is not implemented.');
+		return 0;
 	}
 
 	/**
@@ -132,7 +137,7 @@ class Renderer extends \Joomla\Renderer\Renderer
 	 */
 	public function visitTabs(Tabs $tabs)
 	{
-		throw new \LogicException(__METHOD__ . ' is not implemented.');
+		return 0;
 	}
 
 	/**
@@ -144,7 +149,7 @@ class Renderer extends \Joomla\Renderer\Renderer
 	 */
 	public function visitDump(ContentTypeInterface $dump)
 	{
-		throw new \LogicException(__METHOD__ . ' is not implemented.');
+		return 0;
 	}
 
 	/**
@@ -156,7 +161,7 @@ class Renderer extends \Joomla\Renderer\Renderer
 	 */
 	public function visitRows(Rows $rows)
 	{
-		throw new \LogicException(__METHOD__ . ' is not implemented.');
+		return 0;
 	}
 
 	/**
@@ -168,7 +173,7 @@ class Renderer extends \Joomla\Renderer\Renderer
 	 */
 	public function visitColumns(Columns $columns)
 	{
-		throw new \LogicException(__METHOD__ . ' is not implemented.');
+		return 0;
 	}
 
 	/**
@@ -180,7 +185,7 @@ class Renderer extends \Joomla\Renderer\Renderer
 	 */
 	public function visitArticle(Article $article)
 	{
-		throw new \LogicException(__METHOD__ . ' is not implemented.');
+		return 0;
 	}
 
 	/**
@@ -192,7 +197,7 @@ class Renderer extends \Joomla\Renderer\Renderer
 	 */
 	public function visitTeaser(Teaser $teaser)
 	{
-		throw new \LogicException(__METHOD__ . ' is not implemented.');
+		return 0;
 	}
 
 	/**
@@ -204,7 +209,7 @@ class Renderer extends \Joomla\Renderer\Renderer
 	 */
 	public function visitDefaultMenu(DefaultMenu $defaultMenu)
 	{
-		throw new \LogicException(__METHOD__ . ' is not implemented.');
+		return 0;
 	}
 
 	/**
@@ -227,6 +232,66 @@ class Renderer extends \Joomla\Renderer\Renderer
 	 * @return  integer Number of bytes written to the output
 	 */
 	public function visitSpan(Span $span)
+	{
+		return 0;
+	}
+
+	/**
+	 * Render a horizontal line
+	 *
+	 * @param   HorizontalLine $hr The horizontal line
+	 *
+	 * @return  integer Number of bytes written to the output
+	 */
+	public function visitHorizontalLine(HorizontalLine $hr)
+	{
+		return 0;
+	}
+
+	/**
+	 * Render an icon
+	 *
+	 * @param   Icon $icon The icon
+	 *
+	 * @return  integer Number of bytes written to the output
+	 */
+	public function visitIcon(Icon $icon)
+	{
+		return 0;
+	}
+
+	/**
+	 * Render a link
+	 *
+	 * @param   Link $link The link
+	 *
+	 * @return  integer Number of bytes written to the output
+	 */
+	public function visitLink(Link $link)
+	{
+		return 0;
+	}
+
+	/**
+	 * Render an one-pager
+	 *
+	 * @param   OnePager $onePager The one-pager
+	 *
+	 * @return  integer Number of bytes written to the output
+	 */
+	public function visitOnePager(OnePager $onePager)
+	{
+		return 0;
+	}
+
+	/**
+	 * Render an one-pager section
+	 *
+	 * @param   OnePagerSection $onePagerSection The section
+	 *
+	 * @return  integer Number of bytes written to the output
+	 */
+	public function visitOnePagerSection(OnePagerSection $onePagerSection)
 	{
 		return 0;
 	}

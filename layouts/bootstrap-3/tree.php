@@ -6,6 +6,7 @@
  * @license    GNU General Public License version 2 or later; see LICENSE
  *
  * @var \Joomla\Content\Type\Tree $content
+ * @var \Joomla\Renderer\HtmlRenderer $renderer
  * @codingStandardsIgnoreStart
  */
 
@@ -65,4 +66,4 @@ $(document).ready(function () {
 });
 JS;
 
-$this->addJavascript('.tree-toggler', $js);
+$renderer->addJavascript('.tree-toggler', $js);

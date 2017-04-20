@@ -32,9 +32,9 @@ abstract class AbstractContentType implements ContentTypeInterface
 	 *
 	 * @param string $title  The title
 	 * @param string $id     The identifier
-	 * @param array  $params The parameters
+	 * @param array  $params Optional parameters
 	 */
-	public function __construct($title, $id, array $params)
+	public function __construct($title, $id, array $params = [])
 	{
 		$this
 			->setTitle($title)
