@@ -300,279 +300,7 @@ class EventDecorator implements RendererInterface
 	 */
 	public function visitHeadline(Headline $headline)
 	{
-		return $this->delegate('visitHeadline', [$headline]);
-	}
-
-	/**
-	 * Render a compound (block) element
-	 *
-	 * @param   Compound $compound The compound
-	 *
-	 * @return  integer Number of bytes written to the output
-	 */
-	public function visitCompound(Compound $compound)
-	{
-		return $this->delegate('visitCompound', [$compound]);
-	}
-
-	/**
-	 * Render an attribution to an author
-	 *
-	 * @param   Attribution $attribution The attribution
-	 *
-	 * @return  integer Number of bytes written to the output
-	 */
-	public function visitAttribution(Attribution $attribution)
-	{
-		return $this->delegate('visitAttribution', [$attribution]);
-	}
-
-	/**
-	 * Render a paragraph
-	 *
-	 * @param   Paragraph $paragraph The paragraph
-	 *
-	 * @return  integer Number of bytes written to the output
-	 */
-	public function visitParagraph(Paragraph $paragraph)
-	{
-		return $this->delegate('visitParagraph', [$paragraph]);
-	}
-
-	/**
-	 * Render an image
-	 *
-	 * @param   Image $image The image
-	 *
-	 * @return  integer Number of bytes written to the output
-	 */
-	public function visitImage(Image $image)
-	{
-		return $this->delegate('visitImage', [$image]);
-	}
-
-	/**
-	 * Render an slider
-	 *
-	 * @param   Slider $slider The slider
-	 *
-	 * @return  integer Number of bytes written to the output
-	 */
-	public function visitSlider(Slider $slider)
-	{
-		return $this->delegate('visitSlider', [$slider]);
-	}
-
-	/**
-	 * Render an accordion
-	 *
-	 * @param   Accordion $accordion The accordion
-	 *
-	 * @return  integer Number of bytes written to the output
-	 */
-	public function visitAccordion(Accordion $accordion)
-	{
-		return $this->delegate('visitAccordion', [$accordion]);
-	}
-
-	/**
-	 * Render a tree
-	 *
-	 * @param   Tree $tree The tree
-	 *
-	 * @return  integer Number of bytes written to the output
-	 */
-	public function visitTree(Tree $tree)
-	{
-		return $this->delegate('visitTree', [$tree]);
-	}
-
-	/**
-	 * Render tabs
-	 *
-	 * @param   Tabs $tabs The tabs
-	 *
-	 * @return  integer Number of bytes written to the output
-	 */
-	public function visitTabs(Tabs $tabs)
-	{
-		return $this->delegate('visitTabs', [$tabs]);
-	}
-
-	/**
-	 * Dump an item
-	 *
-	 * @param   ContentTypeInterface $dump The dump
-	 *
-	 * @return  integer Number of bytes written to the output
-	 */
-	public function visitDump(ContentTypeInterface $dump)
-	{
-		return $this->delegate('visitDump', [$dump]);
-	}
-
-	/**
-	 * Render rows
-	 *
-	 * @param   Rows $rows The rows
-	 *
-	 * @return  integer Number of bytes written to the output
-	 */
-	public function visitRows(Rows $rows)
-	{
-		return $this->delegate('visitRows', [$rows]);
-	}
-
-	/**
-	 * Render columns
-	 *
-	 * @param   Columns $columns The columns
-	 *
-	 * @return  integer Number of bytes written to the output
-	 */
-	public function visitColumns(Columns $columns)
-	{
-		return $this->delegate('visitColumns', [$columns]);
-	}
-
-	/**
-	 * Render an article
-	 *
-	 * @param   Article $article The article
-	 *
-	 * @return  integer Number of bytes written to the output
-	 */
-	public function visitArticle(Article $article)
-	{
-		return $this->delegate('visitArticle', [$article]);
-	}
-
-	/**
-	 * Render a teaser
-	 *
-	 * @param   Teaser $teaser The teaser
-	 *
-	 * @return  integer Number of bytes written to the output
-	 */
-	public function visitTeaser(Teaser $teaser)
-	{
-		return $this->delegate('visitTeaser', [$teaser]);
-	}
-
-	/**
-	 * Render a defaultMenu
-	 *
-	 * @param   DefaultMenu $defaultMenu The defaultMenu
-	 *
-	 * @return  integer Number of bytes written to the output
-	 */
-	public function visitDefaultMenu(DefaultMenu $defaultMenu)
-	{
-		return $this->delegate('visitDefaultMenu', [$defaultMenu]);
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getClass()
-	{
-		return $this->renderer->getClass();
-	}
-
-	/**
-	 * Render a data table
-	 *
-	 * @param   DataTable $dataTable The data table
-	 *
-	 * @return  integer Number of bytes written to the output
-	 */
-	public function visitDataTable(DataTable $dataTable)
-	{
-		return $this->delegate('visitDataTable', [$dataTable]);
-	}
-
-	/**
-	 * Render a span
-	 *
-	 * @param   Span $span The span
-	 *
-	 * @return  integer Number of bytes written to the output
-	 */
-	public function visitSpan(Span $span)
-	{
-		return $this->delegate('visitSpan', [$span]);
-	}
-
-	/**
-	 * Render a horizontal line
-	 *
-	 * @param   HorizontalLine $hr The horizontal line
-	 *
-	 * @return  integer Number of bytes written to the output
-	 */
-	public function visitHorizontalLine(HorizontalLine $hr)
-	{
-		return $this->delegate('visitHorizontalLine', [$hr]);
-	}
-
-	/**
-	 * Render an icon
-	 *
-	 * @param   Icon $icon The icon
-	 *
-	 * @return  integer Number of bytes written to the output
-	 */
-	public function visitIcon(Icon $icon)
-	{
-		return $this->delegate('visitIcon', [$icon]);
-	}
-
-	/**
-	 * Render a link
-	 *
-	 * @param   Link $link The link
-	 *
-	 * @return  integer Number of bytes written to the output
-	 */
-	public function visitLink(Link $link)
-	{
-		return $this->delegate('visitLink', [$link]);
-	}
-
-	/**
-	 * Render an one-pager
-	 *
-	 * @param   OnePager $onePager The one-pager
-	 *
-	 * @return  integer Number of bytes written to the output
-	 */
-	public function visitOnePager(OnePager $onePager)
-	{
-		return $this->delegate('visitOnePager', [$onePager]);
-	}
-
-	/**
-	 * Render an one-pager section
-	 *
-	 * @param   OnePagerSection $onePagerSection The section
-	 *
-	 * @return  integer Number of bytes written to the output
-	 */
-	public function visitOnePagerSection(OnePagerSection $onePagerSection)
-	{
-		return $this->delegate('visitOnePagerSection', [$onePagerSection]);
-	}
-
-	/**
-	 * @param   string $method    Method name; must start with 'visit'
-	 * @param   array  $arguments Method arguments
-	 *
-	 * @return  mixed
-	 * @throws  \Exception
-	 */
-	public function __call($method, $arguments)
-	{
-		return $this->delegate($method, $arguments);
+		return $this->delegate(__FUNCTION__, func_get_args());
 	}
 
 	/**
@@ -607,5 +335,265 @@ class EventDecorator implements RendererInterface
 		{
 			return call_user_func_array([$this->renderer, $method], $arguments);
 		}
+	}
+
+	/**
+	 * Render a compound (block) element
+	 *
+	 * @param   Compound $compound The compound
+	 *
+	 * @return  integer Number of bytes written to the output
+	 */
+	public function visitCompound(Compound $compound)
+	{
+		return $this->delegate(__FUNCTION__, func_get_args());
+	}
+
+	/**
+	 * Render an attribution to an author
+	 *
+	 * @param   Attribution $attribution The attribution
+	 *
+	 * @return  integer Number of bytes written to the output
+	 */
+	public function visitAttribution(Attribution $attribution)
+	{
+		return $this->delegate(__FUNCTION__, func_get_args());
+	}
+
+	/**
+	 * Render a paragraph
+	 *
+	 * @param   Paragraph $paragraph The paragraph
+	 *
+	 * @return  integer Number of bytes written to the output
+	 */
+	public function visitParagraph(Paragraph $paragraph)
+	{
+		return $this->delegate(__FUNCTION__, func_get_args());
+	}
+
+	/**
+	 * Render an image
+	 *
+	 * @param   Image $image The image
+	 *
+	 * @return  integer Number of bytes written to the output
+	 */
+	public function visitImage(Image $image)
+	{
+		return $this->delegate(__FUNCTION__, func_get_args());
+	}
+
+	/**
+	 * Render an slider
+	 *
+	 * @param   Slider $slider The slider
+	 *
+	 * @return  integer Number of bytes written to the output
+	 */
+	public function visitSlider(Slider $slider)
+	{
+		return $this->delegate(__FUNCTION__, func_get_args());
+	}
+
+	/**
+	 * Render an accordion
+	 *
+	 * @param   Accordion $accordion The accordion
+	 *
+	 * @return  integer Number of bytes written to the output
+	 */
+	public function visitAccordion(Accordion $accordion)
+	{
+		return $this->delegate(__FUNCTION__, func_get_args());
+	}
+
+	/**
+	 * Render a tree
+	 *
+	 * @param   Tree $tree The tree
+	 *
+	 * @return  integer Number of bytes written to the output
+	 */
+	public function visitTree(Tree $tree)
+	{
+		return $this->delegate(__FUNCTION__, func_get_args());
+	}
+
+	/**
+	 * Render tabs
+	 *
+	 * @param   Tabs $tabs The tabs
+	 *
+	 * @return  integer Number of bytes written to the output
+	 */
+	public function visitTabs(Tabs $tabs)
+	{
+		return $this->delegate(__FUNCTION__, func_get_args());
+	}
+
+	/**
+	 * Dump an item
+	 *
+	 * @param   ContentTypeInterface $dump The dump
+	 *
+	 * @return  integer Number of bytes written to the output
+	 */
+	public function visitDump(ContentTypeInterface $dump)
+	{
+		return $this->delegate(__FUNCTION__, func_get_args());
+	}
+
+	/**
+	 * Render rows
+	 *
+	 * @param   Rows $rows The rows
+	 *
+	 * @return  integer Number of bytes written to the output
+	 */
+	public function visitRows(Rows $rows)
+	{
+		return $this->delegate(__FUNCTION__, func_get_args());
+	}
+
+	/**
+	 * Render columns
+	 *
+	 * @param   Columns $columns The columns
+	 *
+	 * @return  integer Number of bytes written to the output
+	 */
+	public function visitColumns(Columns $columns)
+	{
+		return $this->delegate(__FUNCTION__, func_get_args());
+	}
+
+	/**
+	 * Render an article
+	 *
+	 * @param   Article $article The article
+	 *
+	 * @return  integer Number of bytes written to the output
+	 */
+	public function visitArticle(Article $article)
+	{
+		return $this->delegate(__FUNCTION__, func_get_args());
+	}
+
+	/**
+	 * Render a teaser
+	 *
+	 * @param   Teaser $teaser The teaser
+	 *
+	 * @return  integer Number of bytes written to the output
+	 */
+	public function visitTeaser(Teaser $teaser)
+	{
+		return $this->delegate(__FUNCTION__, func_get_args());
+	}
+
+	/**
+	 * Render a defaultMenu
+	 *
+	 * @param   DefaultMenu $defaultMenu The defaultMenu
+	 *
+	 * @return  integer Number of bytes written to the output
+	 */
+	public function visitDefaultMenu(DefaultMenu $defaultMenu)
+	{
+		return $this->delegate(__FUNCTION__, func_get_args());
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getClass()
+	{
+		return $this->renderer->getClass();
+	}
+
+	/**
+	 * Render a data table
+	 *
+	 * @param   DataTable $dataTable The data table
+	 *
+	 * @return  integer Number of bytes written to the output
+	 */
+	public function visitDataTable(DataTable $dataTable)
+	{
+		return $this->delegate(__FUNCTION__, func_get_args());
+	}
+
+	/**
+	 * Render a span
+	 *
+	 * @param   Span $span The span
+	 *
+	 * @return  integer Number of bytes written to the output
+	 */
+	public function visitSpan(Span $span)
+	{
+		return $this->delegate(__FUNCTION__, func_get_args());
+	}
+
+	/**
+	 * Render a horizontal line
+	 *
+	 * @param   HorizontalLine $hr The horizontal line
+	 *
+	 * @return  integer Number of bytes written to the output
+	 */
+	public function visitHorizontalLine(HorizontalLine $hr)
+	{
+		return $this->delegate(__FUNCTION__, func_get_args());
+	}
+
+	/**
+	 * Render an icon
+	 *
+	 * @param   Icon $icon The icon
+	 *
+	 * @return  integer Number of bytes written to the output
+	 */
+	public function visitIcon(Icon $icon)
+	{
+		return $this->delegate(__FUNCTION__, func_get_args());
+	}
+
+	/**
+	 * Render a link
+	 *
+	 * @param   Link $link The link
+	 *
+	 * @return  integer Number of bytes written to the output
+	 */
+	public function visitLink(Link $link)
+	{
+		return $this->delegate(__FUNCTION__, func_get_args());
+	}
+
+	/**
+	 * Render an one-pager
+	 *
+	 * @param   OnePager $onePager The one-pager
+	 *
+	 * @return  integer Number of bytes written to the output
+	 */
+	public function visitOnePager(OnePager $onePager)
+	{
+		return $this->delegate(__FUNCTION__, func_get_args());
+	}
+
+	/**
+	 * Render an one-pager section
+	 *
+	 * @param   OnePagerSection $onePagerSection The section
+	 *
+	 * @return  integer Number of bytes written to the output
+	 */
+	public function visitOnePagerSection(OnePagerSection $onePagerSection)
+	{
+		return $this->delegate(__FUNCTION__, func_get_args());
 	}
 }
