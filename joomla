@@ -9,8 +9,6 @@
 
 namespace Joomla\Cli;
 
-use Joomla\Cms\ContainerFactory;
-
 ini_set('date.timezone', 'UTC');
 
 $loaded = false;
@@ -36,6 +34,7 @@ if (!$loaded)
 
 require_once __DIR__ . '/init.php';
 
-$container = ContainerFactory::getInstance();
-$console   = new \Joomla\Cli\Application($container);
-$console->run();
+$console = new \Joomla\Cli\Application(initContainer());
+$console->setAutoExit(false);
+
+return $console->run();

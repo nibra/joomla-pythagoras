@@ -9,4 +9,6 @@
  * @codingStandardsIgnoreStart
  */
 ?>
-<h<?php echo $content->level; ?>><?php echo $content->text; ?></h<?php echo $content->level; ?>>
+<!-- <?= __FILE__ ?> -->
+<h<?php echo $content->level; ?> id="<?php echo $content->getId(); ?>"<?php echo (isset($content->getParameters()->class)) ? " class='{$content->getParameters()->class}'" : ""; ?>><?php echo $content->text; ?></h<?php echo $content->level; ?>>
+<!-- EOF <?= __FILE__ ?> -->
