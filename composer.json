@@ -13,7 +13,6 @@
     "vendor-dir": "libraries/vendor"
   },
   "require": {
-    "php": ">=5.5.9",
     "league/flysystem": "^1.0",
     "doctrine/dbal": "^2.5.5",
     "league/tactician": "^1.0",
@@ -29,11 +28,9 @@
   },
   "require-dev": {
     "codeception/codeception": "^2.0",
-    "codegyre/robo": "^0.7.0",
     "slim/csrf": "^0.7.0",
     "greencape/coding-standards": "^1.0",
     "mayflower/php-codebrowser": "^1.1",
-    "apigen/apigen": "^4",
     "codeception/mockery-module": "^0.2.2",
     "phpmetrics/phpmetrics": "^1.10",
     "phploc/phploc": "^2.1",
@@ -42,7 +39,8 @@
     "phpmd/phpmd": "^2.4",
     "phpunit/phpunit": "^5",
     "phpunit/php-code-coverage": "^4",
-    "phpunit/phpunit-mock-objects": "^3.2"
+    "phpunit/phpunit-mock-objects": "^3.2",
+    "consolidation/robo": "^1.0"
   },
   "autoload": {
     "psr-4": {
@@ -54,6 +52,7 @@
     "psr-4": {
       "Joomla\\Tests\\Unit\\": "tests/unit/",
       "Joomla\\Tests\\Unit\\ORM\\Mocks\\": "tests/unit/ORM/Mocks/",
+      "Joomla\\Tests\\Cli\\": "tests/cli/",
       "Joomla\\Tests\\Functional\\": "tests/functional/",
       "Joomla\\Tests\\System\\": "tests/acceptance/",
       "Joomla\\Tests\\Page\\": "tests/_support/Page/"

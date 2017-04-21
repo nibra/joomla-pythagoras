@@ -17,8 +17,7 @@ use Joomla\Content\ContentTypeVisitorInterface;
  * @package  Joomla/Content
  * @since    __DEPLOY_VERSION__
  *
- * @property string                 $type
- * @property ContentTypeInterface[] $elements
+ * @property \Joomla\Extension\Article\Entity\Article $article
  */
 class Article extends AbstractContentType
 {
@@ -29,6 +28,8 @@ class Article extends AbstractContentType
 	 */
 	public function __construct($item)
 	{
+		parent::__construct($item->title, $item->alias, new \stdClass);
+
 		$this->article = $item;
 	}
 
