@@ -23,7 +23,7 @@ class Dump extends AbstractContentType
 	/**
 	 * @var object
 	 */
-	private $item;
+	protected $item;
 
 	/**
 	 * Dump constructor.

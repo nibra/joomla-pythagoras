@@ -305,6 +305,19 @@ class EventDecorator implements RendererInterface
 	}
 
 	/**
+	 * Magic method to handle all non-interfaced methods.
+	 *
+	 * @param   string $method    Method name
+	 * @param   array  $arguments Method arguments
+	 *
+	 * @return  mixed
+	 */
+	public function __call($method, $arguments)
+	{
+		return call_user_func_array([$this->renderer, $method], $arguments);
+	}
+
+	/**
 	 * @param   string $method    The name of the method
 	 * @param   array  $arguments The arguments
 	 *
