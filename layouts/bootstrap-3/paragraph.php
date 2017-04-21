@@ -9,8 +9,15 @@
  * @codingStandardsIgnoreStart
  */
 ?>
+<!-- <?= __FILE__ ?> -->
+<?php $class = $content->getParameter('class'); ?>
 <?php if ($content->variant == Joomla\Content\Type\Paragraph::EMPHASISED) : ?>
-	<p><em><?php echo $content->text; ?></em></p>
+	<p id="<?php echo $content->getId(); ?>"<?php echo (!empty($class)) ? " class='{$class}'" : ""; ?>>
+		<em><?php echo $content->text; ?></em>
+	</p>
 <?php else : ?>
-	<p><?php echo $content->text; ?></p>
+	<p id="<?php echo $content->getId(); ?>"<?php echo (!empty($class)) ? " class='{$class}'" : ""; ?>>
+		<?php echo $content->text; ?>
+	</p>
 <?php endif; ?>
+<!-- EOF <?= __FILE__ ?> -->
