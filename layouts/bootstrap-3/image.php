@@ -9,76 +9,50 @@
  * @codingStandardsIgnoreStart
  */
 
-if (!function_exists('marshalMeasure'))
-{
-	/**
-	 * @param $measure
-	 *
-	 * @return string
-	 */
-	function marshalMeasure($measure):string
-	{
-		if (preg_match('~^\d+$~', $measure))
-		{
-			$measure .= 'px';
-
-			return $measure;
-		}
-
-		return $measure;
-	}
-}
-
-if (!isset($content->params))
-{
-	$content->params = new stdClass;
-}
-
-if (!isset($content->params->class))
-{
-	$content->params->class = '';
-}
-
-if (!isset($content->params->width))
-{
-	$content->params->width = $content->image->width;
-}
-
-if (!isset($content->params->height))
-{
-	$content->params->height = $content->image->height;
-}
+require_once dirname(__DIR__) . '/functions.php';
 
 $url = $content->image->url;
+
 if (!preg_match('~^(https?://|/)~', $url))
 {
 	$url = '/' . $url;
 }
 
-if (!isset($content->alt))
+if (empty($content->alt))
 {
 	$content->alt = $content->image->caption;
 }
 
 $style = [];
 
-if (!empty($content->params->width))
+if (!empty($content->getParameters()->width))
 {
-	$measure = marshalMeasure($content->params->width);
+	$measure = marshalMeasure($content->getParameters()->width);
 	$style[] = "width: {$measure};";
 }
 
-if (!empty($content->params->height))
+if (!empty($content->getParameters()->height))
 {
-	$measure = marshalMeasure($content->params->height);
+	$measure = marshalMeasure($content->getParameters()->height);
 	$style[] = "height: {$measure};";
 }
 
-$inlineCSS = implode(' ', $style);
-
 if (!empty($inlineCSS))
 {
-	$inlineCSS = " style=\"{$inlineCSS}\"";
+	$this->addCss($content->getId(), 'img {' . implode(' ', $style) . '}');
 }
 ?>
-<img class="img-responsive <?php echo $content->params->class; ?>" src="<?php echo $url; ?>" alt="<?php echo $content->alt; ?>"<?php echo $inlineCSS; ?>/>
+<!-- <?= __FILE__ ?> -->
+<figure id="<?php echo $content->getId(); ?>">
+	<img class="img-responsive <?php echo $content->getParameter('class', ''); ?>"
+	     src="<?php echo $url; ?>" alt="<?php echo $content->alt; ?>">
+	<?php if ($content->getParameter('show_caption', false)) : ?>
+		<figcaption>
+			<h2><?php echo $content->image->caption; ?></h2>
+			<?php if ($content->getParameter('show_description', false)) : ?>
+				<p><?php echo $content->image->description; ?></p>
+			<?php endif; ?>
+		</figcaption>
+	<?php endif; ?>
+</figure>
+<!-- EOF <?= __FILE__ ?> -->

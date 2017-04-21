@@ -17,15 +17,22 @@ use Joomla\Content\Type\Columns;
 use Joomla\Content\Type\Compound;
 use Joomla\Content\Type\DefaultMenu;
 use Joomla\Content\Type\Headline;
+use Joomla\Content\Type\HorizontalLine;
+use Joomla\Content\Type\Icon;
 use Joomla\Content\Type\Image;
+use Joomla\Content\Type\Link;
+use Joomla\Content\Type\OnePager;
+use Joomla\Content\Type\OnePagerSection;
 use Joomla\Content\Type\Paragraph;
 use Joomla\Content\Type\Rows;
 use Joomla\Content\Type\Slider;
+use Joomla\Content\Type\Span;
 use Joomla\Content\Type\Tabs;
 use Joomla\Content\Type\Teaser;
 use Joomla\Content\Type\Tree;
 use Joomla\ORM\Operator;
 use Joomla\ORM\Repository\RepositoryInterface;
+use Joomla\PageBuilder\Entity\Layout;
 use Joomla\PageBuilder\Entity\Page;
 use Joomla\Renderer\Exception\NotFoundException;
 use Joomla\Tests\Unit\DumpTrait;
@@ -50,6 +57,9 @@ class HtmlRenderer extends Renderer
 
 	/** @var  string[]  Javascript code to add to output */
 	private $javascript = [];
+
+	/** @var  string[]  CSS code to add to output */
+	private $style = [];
 
 	use DumpTrait;
 
@@ -81,9 +91,27 @@ class HtmlRenderer extends Renderer
 	 *
 	 * @return  void
 	 */
-	protected function addJavascript($label, $code)
+	public function addJavascript($label, $code)
 	{
 		$this->javascript[$label] = $code;
+	}
+
+	/**
+	 * @param string $namespace
+	 * @param string $css
+	 *
+	 * @return void
+	 */
+	public function addCss($namespace, $css)
+	{
+		$this->style[] = preg_replace_callback(
+			'~([^{\s]*\s?\{[^{]*?\})~sm',
+			function ($match) use ($namespace)
+			{
+				return "#{$namespace} {$match[0]}";
+			},
+			$css
+		);
 	}
 
 	/**
@@ -94,6 +122,16 @@ class HtmlRenderer extends Renderer
 		$this->write('<script type="text/javascript">');
 		$this->write(implode("\n", $this->javascript));
 		$this->write('</script>');
+	}
+
+	/**
+	 * @return  void
+	 */
+	public function writeCss()
+	{
+		$this->write('<style>');
+		$this->write(implode("\n", $this->style));
+		$this->write('</style>');
 	}
 
 	/**
@@ -117,7 +155,8 @@ class HtmlRenderer extends Renderer
 	 */
 	private function applyLayout($filename, $content)
 	{
-		$layout = JPATH_ROOT . $this->template . '/' . $filename;
+		$renderer = $this;
+		$layout   = JPATH_ROOT . '/' . $this->template . '/overrides/' . $filename;
 
 		if (!file_exists($layout))
 		{
@@ -141,6 +180,18 @@ class HtmlRenderer extends Renderer
 	public function visitHeadline(Headline $headline)
 	{
 		return $this->applyLayout('headline.php', $headline);
+	}
+
+	/**
+	 * Render a horizontal line.
+	 *
+	 * @param   HorizontalLine $headline The horizontal line
+	 *
+	 * @return  integer Number of bytes written to the output
+	 */
+	public function visitHorizontalLine(HorizontalLine $headline)
+	{
+		return $this->write("<hr>\n");
 	}
 
 	/**
@@ -168,6 +219,18 @@ class HtmlRenderer extends Renderer
 	}
 
 	/**
+	 * Render a span element
+	 *
+	 * @param   Span $span The text
+	 *
+	 * @return  integer Number of bytes written to the output
+	 */
+	public function visitSpan(Span $span)
+	{
+		return $this->applyLayout('span.php', $span);
+	}
+
+	/**
 	 * Render a compound (block) element
 	 *
 	 * @param   Compound $compound The compound
@@ -176,7 +239,9 @@ class HtmlRenderer extends Renderer
 	 */
 	public function visitCompound(Compound $compound)
 	{
-		$class = isset($compound->params->class) ? $compound->params->class : '';
+		$id = " id=\"{$compound->getId()}\"";
+
+		$class = $compound->getParameter('class', '');
 
 		if (!empty($class))
 		{
@@ -184,16 +249,58 @@ class HtmlRenderer extends Renderer
 		}
 
 		$len = 0;
-		$len += $this->write("<{$compound->type}{$class}>\n");
+		$len += $this->write("<!-- Compound -->\n");
+		$len += $this->write("<{$compound->getType()}{$id}{$class}>\n");
 
 		foreach ($compound->elements as $item)
 		{
-			$len += $item->content->accept($this);
+			$len += $item->accept($this);
 		}
 
-		$len += $this->write("</{$compound->type}>\n");
+		$len += $this->write("</{$compound->getType()}>\n");
+		$len += $this->write("<!-- /Compound -->\n");
 
 		return $len;
+	}
+
+	/**
+	 * Render an OnePager
+	 *
+	 * @param   OnePager $page The page
+	 *
+	 * @return  integer Number of bytes written to the output
+	 */
+	public function visitOnePager(OnePager $page)
+	{
+		$this->preRenderChildElements($page);
+
+		return $this->applyLayout('onepager.php', $page);
+	}
+
+	/**
+	 * Render an OnePager section
+	 *
+	 * @param   OnePagerSection $section The page
+	 *
+	 * @return  integer Number of bytes written to the output
+	 */
+	public function visitOnePagerSection(OnePagerSection $section)
+	{
+		$this->preRenderChildElements($section);
+
+		return $this->applyLayout('onepagerSection.php', $section);
+	}
+
+	/**
+	 * Render an icon
+	 *
+	 * @param   Icon $icon The icon
+	 *
+	 * @return  integer Number of bytes written to the output
+	 */
+	public function visitIcon(Icon $icon)
+	{
+		return $this->applyLayout('icon.php', $icon);
 	}
 
 	/**
@@ -209,6 +316,18 @@ class HtmlRenderer extends Renderer
 	}
 
 	/**
+	 * Render a link
+	 *
+	 * @param Link $link
+	 *
+	 * @return int Number of bytes written to the output
+	 */
+	public function visitLink(Link $link)
+	{
+		return $this->applyLayout('link.php', $link);
+	}
+
+	/**
 	 * Render an slider
 	 *
 	 * @param   Slider $slider The slider
@@ -217,7 +336,7 @@ class HtmlRenderer extends Renderer
 	 */
 	public function visitSlider(Slider $slider)
 	{
-		$slider->id = 'slider-' . spl_object_hash($slider);
+		$slider->setId('slider-' . spl_object_hash($slider));
 
 		$this->preRenderChildElements($slider);
 
@@ -233,7 +352,7 @@ class HtmlRenderer extends Renderer
 	 */
 	public function visitAccordion(Accordion $accordion)
 	{
-		$accordion->id = 'accordion-' . spl_object_hash($accordion);
+		$accordion->setId('accordion-' . spl_object_hash($accordion));
 
 		$this->preRenderChildElements($accordion);
 
@@ -249,7 +368,7 @@ class HtmlRenderer extends Renderer
 	 */
 	public function visitTree(Tree $tree)
 	{
-		$tree->id = 'tree-' . spl_object_hash($tree);
+		$tree->setId('tree-' . spl_object_hash($tree));
 
 		$this->preRenderChildElements($tree);
 
@@ -265,7 +384,7 @@ class HtmlRenderer extends Renderer
 	 */
 	public function visitTabs(Tabs $tabs)
 	{
-		$tabs->id = 'tabs-' . spl_object_hash($tabs);
+		$tabs->setId('tabs-' . spl_object_hash($tabs));
 
 		$this->preRenderChildElements($tabs);
 
@@ -307,17 +426,9 @@ class HtmlRenderer extends Renderer
 	 */
 	public function visitColumns(Columns $columns)
 	{
-		$len = 0;
-		$len += $this->write("<{$columns->type}>\n");
+		$this->preRenderChildElements($columns);
 
-		foreach ($columns->elements as $item)
-		{
-			$len += $item->content->accept($this);
-		}
-
-		$len += $this->write("</{$columns->type}>\n");
-
-		return $len;
+		return $this->applyLayout('columns.php', $columns);
 	}
 
 	/**
@@ -398,8 +509,8 @@ class HtmlRenderer extends Renderer
 		foreach ($content->elements as $key => $item)
 		{
 			$this->output = '';
-			$item->content->accept($this);
-			$content->elements[$key]->html = $this->output;
+			$item->accept($this);
+			$item->html = $this->output;
 		}
 
 		$this->output = $stash;
@@ -420,6 +531,12 @@ class HtmlRenderer extends Renderer
 
 		while ($url[0] != '/' && !empty($page->parent))
 		{
+			// @todo refactor
+			if ($page->parent instanceof Layout)
+			{
+				break;
+			}
+
 			$page = $page->parent;
 			$url  = $page->url . '/' . $url;
 		}

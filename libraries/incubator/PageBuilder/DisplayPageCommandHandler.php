@@ -8,9 +8,12 @@
 
 namespace Joomla\PageBuilder;
 
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Logging\DebugStack;
 use Interop\Container\ContainerInterface;
 use Joomla\Content\CompoundTypeInterface;
 use Joomla\Content\ContentTypeInterface;
+use Joomla\Content\Type\AbstractContentType;
 use Joomla\Content\Type\Accordion;
 use Joomla\Content\Type\Compound;
 use Joomla\Content\Type\Image;
@@ -25,6 +28,8 @@ use Joomla\PageBuilder\Entity\Page;
 use Joomla\PageBuilder\Entity\Template;
 use Joomla\Renderer\HtmlRenderer;
 use Joomla\Service\CommandHandler;
+use Joomla\Tests\Unit\DumpTrait;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 
 /**
@@ -34,7 +39,7 @@ use Psr\Http\Message\StreamInterface;
  */
 class DisplayPageCommandHandler extends CommandHandler
 {
-	use \Joomla\Tests\Unit\DumpTrait;
+	use DumpTrait;
 
 	/** @var  ContainerInterface */
 	private $container;
@@ -45,6 +50,9 @@ class DisplayPageCommandHandler extends CommandHandler
 	/** @var  string[] */
 	private $vars;
 
+	/** @var  ServerRequestInterface The request object */
+	private $request;
+
 	/**
 	 * @param DisplayPageCommand $command
 	 */
@@ -52,6 +60,7 @@ class DisplayPageCommandHandler extends CommandHandler
 	{
 		$id              = $command->getId();
 		$this->vars      = $command->getVars();
+		$this->request   = $command->getRequest();
 		$this->output    = $command->getStream();
 		$this->container = $command->getContainer();
 
@@ -85,17 +94,28 @@ class DisplayPageCommandHandler extends CommandHandler
 			// @todo Retrieve the title
 		}
 
-		$this->output->setScriptStrategy($page->layout->template->scripting);
-		$template = $this->loadTemplate(JPATH_ROOT . '/' . $page->layout->template->path . '/index.php', $data);
+		$templatePath = $page->layout->template->path;
+		$this->output->setTemplate($templatePath);
+		$template = $this->loadTemplate(JPATH_ROOT . '/' . $templatePath . '/index.php', $data);
 		$parts    = preg_split('~</body>~', $template, 2);
 		$parts[1] = '</body>' . $parts[1];
 
 		$this->output->write($parts[0]);
+
 		foreach ($contentTree as $root)
 		{
 			$root->accept($this->output);
 		}
+
+		$queryParams = $this->request->getQueryParams();
+
+		if (isset($queryParams['debug']))
+		{
+			$this->dumpSql();
+		}
+
 		$this->output->writeJavascript();
+		$this->output->writeCss();
 		$this->output->write($parts[1]);
 	}
 
@@ -197,6 +217,20 @@ class DisplayPageCommandHandler extends CommandHandler
 	}
 
 	/**
+	 * Build a ContentType object
+	 *
+	 * This method takes the root (a node) of the page's content tree (records from the contents table))
+	 * and transforms it into a corresponding tree of content elements for rendering.
+	 *
+	 * The database fields have the following meaning:
+	 *
+	 * `name`         - a page-wide unique name (id) for the element. SHOULD be used as id attribute.
+	 * `content_type` - fully qualified classname of the content element.
+	 * `content_args` - constructor parameters for the content element.
+	 * `component`    - name of the entity containing data for the content element.
+	 * `selection`    - selection criteria for the data entity.
+	 * `params`       - additional parameters for use by the layout file.
+	 *
 	 * @param Content $root
 	 *
 	 * @return ContentTypeInterface[]
@@ -219,53 +253,53 @@ class DisplayPageCommandHandler extends CommandHandler
 
 		$all = [];
 
-		foreach ($data as $item)
+		foreach (array_values($data) as $index => $item)
 		{
 			#echo "<pre>";
 			#echo "Data item: " . $this->dumpEntity($item) . "\n";
 
-			/** @var ContentTypeInterface $content */
-			if (empty($constructorParameters))
-			{
-				$content = new $contentType;
-			}
-			else
-			{
-				$providedArguments = empty($root->contentArgs) ? [] : get_object_vars($root->contentArgs);
-				$actualArguments   = [];
+			/** @var AbstractContentType $content */
+			$providedArguments = empty($root->contentArgs) ? [] : get_object_vars($root->contentArgs);
+			$actualArguments   = [];
 
-				foreach ($constructorParameters as $parameter)
+			foreach ($constructorParameters as $parameter)
+			{
+				$name         = $parameter->getName();
+				$defaultValue = $parameter->isDefaultValueAvailable() ? $parameter->getDefaultValue() : null;
+
+				if ($name == 'item')
 				{
-					$name         = $parameter->getName();
-					$defaultValue = $parameter->isDefaultValueAvailable() ? $parameter->getDefaultValue() : null;
-
-					if ($name == 'item')
-					{
-						$defaultValue = $item;
-					}
-
-					$actualArguments[$name] = isset($providedArguments[$name]) ? $providedArguments[$name] : $defaultValue;
+					$defaultValue = $item;
 				}
 
-				$content = $reflector->newInstanceArgs($actualArguments);
+				$actualArguments[$name] = isset($providedArguments[$name]) ? $providedArguments[$name] : $defaultValue;
 			}
 
-			$content->params = $root->params;
+			$content = $reflector->newInstanceArgs($actualArguments);
 
+			$content->setId($index == 0 ? $root->name : $root->name . '-' . $index);
+			$content->setParameters($root->params);
+
+			if (!empty($root->customCss))
+			{
+				$this->output->addCss($content->getId(), $root->customCss);
+			}
+
+			#echo "Content: " . get_class($content) . "\n";
 			if ($content instanceof CompoundTypeInterface)
 			{
-				#echo "<pre>";
-				#echo "Content: " . get_class($content) . "\n";
+				/** @noinspection PhpUndefinedFieldInspection */
 				foreach ($root->children as $node)
 				{
+					#echo "<pre>";
 					#echo "Child: " . $node->name . " (" . $node->contentType . ")\n";
 					foreach ($this->toContentType($node) as $child)
 					{
 						#echo "Result: " . get_class($child) . "\n";
-						$content->add($child, $child->getTitle());
+						$content->add($child);
 					}
+					#echo "</pre>";
 				}
-				#echo "</pre>";
 			}
 
 			$all[] = $content;
@@ -315,23 +349,73 @@ class DisplayPageCommandHandler extends CommandHandler
 			$groups    = [
 				'Available Templates' => $templates,
 			];
-			$accordion = new Accordion('Accodion Title');
+			$accordion = new Accordion('Accordion Title', null, new \stdClass);
 
 			foreach ($groups as $title => $group)
 			{
-				$compound = new Compound('div');
+				$compound = new Compound('div', $title, null, new \stdClass);
 
 				foreach ($group as $item)
 				{
 					$imageData      = new ImageEntity();
 					$imageData->url = '/' . $item->path . '/preview.png';
 					$image          = new Image($imageData, $item->path);
-					$compound->add($image, null, "javascript:alert('Select template');");
+					$compound->add($image);
 				}
-				$accordion->add($compound, $title);
+				$accordion->add($compound);
 			}
 
 			$accordion->accept($output);
 		});
+	}
+
+	/**
+	 * @return  void
+	 */
+	protected function dumpSql()
+	{
+		$connection = $this->container->get('Repository')->getConnection();
+
+		if (!$connection instanceof Connection)
+		{
+			return;
+		}
+
+		$logger = $connection->getConfiguration()->getSQLLogger();
+
+		if (!$logger instanceof DebugStack)
+		{
+			return;
+		}
+
+		$queries = $logger->queries;
+
+		$table = '<table class="debug"><tr><th>#</th><th>SQL</th><th>Time</th></tr>';
+
+		foreach ($queries as $index => $query)
+		{
+			$sql    = $query['sql'];
+			$params = $query['params'];
+
+			ksort($params);
+
+			$sql = preg_replace_callback(
+				'~\?~',
+				function () use (&$params)
+				{
+					return array_shift($params);
+				},
+				$sql
+			);
+			$sql = preg_replace('~(WHERE|LIMIT|INNER\s+JOIN|LEFT\s+JOIN)~', "\n  \\1", $sql);
+			$sql = preg_replace('~(AND|OR)~', "\n    \\1", $sql);
+			$time = sprintf('%.3f ms', 1000 * $query['executionMS']);
+
+			$table .= "<tr><td>$index</td><td><pre>$sql</pre></td><td>$time</td></tr>";
+		}
+
+		$table .= '</table>';
+
+		$this->output->write($table);
 	}
 }
