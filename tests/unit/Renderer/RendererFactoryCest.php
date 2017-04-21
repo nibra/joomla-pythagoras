@@ -70,6 +70,9 @@ class RendererFactoryCest
 					$renderer instanceof $expected,
 					"Expected $expected, but got " . get_class($renderer)
 				);
+				$I->assertEquals($expected, $renderer->getClass(),
+					"Renderer is instance of $expected, but identifies itself as " . $renderer->getClass()
+				);
 			}
 			catch (NotFoundException $e)
 			{

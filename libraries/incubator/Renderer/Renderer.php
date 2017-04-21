@@ -394,10 +394,6 @@ abstract class Renderer implements RendererInterface
 				$handler      = $this->handlers[$type];
 				$this->output .= $handler($arguments[0]);
 			}
-			else
-			{
-				throw new NotFoundException("Unknown content type {$match[1]}, no default\n");
-			}
 		}
 	}
 }

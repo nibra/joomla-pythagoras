@@ -10,7 +10,6 @@ namespace Joomla\Tests\Unit\Renderer;
 
 use Joomla\Content\ContentTypeInterface;
 use Joomla\DI\Container;
-use Joomla\Renderer\Exception\NotFoundException;
 use Joomla\Tests\Unit\Renderer\Mock\Content;
 use Joomla\Tests\Unit\Renderer\Mock\ContentType;
 use Joomla\Tests\Unit\Renderer\Mock\NewContentType;
@@ -51,12 +50,12 @@ class DynamicRendererCest
 		});
 
 		/** @var ContentTypeInterface[] $content */
-		$content = array(
+		$content = [
 			new ContentType('ContentType'),
 			new NewContentType('NewContentType'),
 			new OtherContentType('OtherContentType'),
 			new UnregisteredContentType('UnregisteredContentType'),
-		);
+		];
 
 		foreach ($content as $c)
 		{
@@ -73,9 +72,9 @@ class DynamicRendererCest
 	}
 
 	/**
-	 * @testdox If an unknown content type is encountered, an empty string is returned
+	 * @testdox If an unknown content type is encountered, nothing is rendered
 	 */
-	public function DynamicRendererThrowsExceptionOnMissingCallback(UnitTester $I)
+	public function DynamicRendererDoesNothingOnMissingCallback(UnitTester $I)
 	{
 		require_once __DIR__ . '/Mock/Content.php';
 
