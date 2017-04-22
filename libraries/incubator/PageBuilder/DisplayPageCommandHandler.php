@@ -119,10 +119,8 @@ class DisplayPageCommandHandler extends CommandHandler
 		$templatePath = $page->layout->template->path;
 		$this->output->setTemplate($templatePath);
 		$template = $this->loadTemplate(JPATH_ROOT . '/' . $templatePath . '/index.php', $data);
-		$parts    = preg_split('~</body>~', $template, 2);
-		$parts[1] = '</body>' . $parts[1];
 
-		$this->output->write($parts[0]);
+		$remainder = $this->writeUntil('</body>', $template);
 
 		foreach ($contentTree as $root)
 		{
@@ -136,9 +134,8 @@ class DisplayPageCommandHandler extends CommandHandler
 			$this->dumpSql();
 		}
 
-		$this->output->writeJavascript();
-		$this->output->writeCss();
-		$this->output->write($parts[1]);
+		$this->output->write($remainder);
+		$this->output->close();
 	}
 
 	private function registerContentTypes()
@@ -391,7 +388,7 @@ class DisplayPageCommandHandler extends CommandHandler
 
 			if (!empty($root->customCss))
 			{
-				$this->output->addCss($content->getId(), $root->customCss);
+				$this->output->embedCss($content->getId(), $root->customCss);
 			}
 
 			#echo "Content: " . get_class($content) . "\n";
@@ -465,5 +462,20 @@ class DisplayPageCommandHandler extends CommandHandler
 		}
 
 		return $component;
+	}
+
+	/**
+	 * @param $separator
+	 * @param $template1
+	 *
+	 * @return string
+	 */
+	private function writeUntil($separator, $template1)
+	{
+		$parts = preg_split('~' . $separator . '~', $template1, 2);
+		$this->output->write($parts[0]);
+		$remainder = $separator . $parts[1];
+
+		return $remainder;
 	}
 }

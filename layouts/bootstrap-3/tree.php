@@ -66,4 +66,4 @@ $(document).ready(function () {
 });
 JS;
 
-$renderer->addJavascript('.tree-toggler', $js);
+$renderer->embedJavascript('.tree-toggler', $js);

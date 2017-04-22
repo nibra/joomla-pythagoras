@@ -62,11 +62,17 @@ class HtmlRenderer extends Renderer
 	/** @var  ScriptStrategyInterface */
 	private $clientScript;
 
+	/** @var  string[]  Javascript url to add to output */
+	private $scriptUrl = [];
+
 	/** @var  string[]  Javascript code to add to output */
 	private $javascript = [];
 
 	/** @var  string[]  CSS code to add to output */
-	private $style = [];
+	private $css = [];
+
+	/** @var  string[]  CSS url to add to output */
+	private $styleUrl = [];
 
 	/** @var  LayoutFactory */
 	private $layoutFactory;
@@ -100,25 +106,59 @@ class HtmlRenderer extends Renderer
 	}
 
 	/**
+	 * Add JavaScript in a script tag to the output.
+	 * The JS code is identified by the label. Re-using a label will overwrite previous definitions.
+	 *
+	 * @param   string $label An identifier
+	 * @param   string $url   The code associated with that identifier
+	 *
+	 * @return  void
+	 */
+	public function addJavascript($label, $url)
+	{
+		$this->scriptUrl[$label] = $url;
+	}
+
+	/**
+	 * Embed JavaScript in the output.
+	 * The JS code is identified by the label. Re-using a label will overwrite previous definitions.
+	 *
 	 * @param   string $label An identifier
 	 * @param   string $code  The code associated with that identifier
 	 *
 	 * @return  void
 	 */
-	public function addJavascript($label, $code)
+	public function embedJavascript($label, $code)
 	{
 		$this->javascript[$label] = $code;
 	}
 
 	/**
+	 * Add stylesheet to the output.
+	 * The stylesheet is identified by the label. Re-using a label will overwrite previous definitions.
+	 *
+	 * @param string $label
+	 * @param string $url
+	 *
+	 * @return void
+	 */
+	public function addCss($label, $url)
+	{
+		$this->styleUrl[$label] = $url;
+	}
+
+	/**
+	 * Embed CSS in the output.
+	 * The CSS code is namespaced with the ID of the element to prevent collisions.
+	 *
 	 * @param string $namespace
 	 * @param string $css
 	 *
 	 * @return void
 	 */
-	public function addCss($namespace, $css)
+	public function embedCss($namespace, $css)
 	{
-		$this->style[] = preg_replace_callback(
+		$this->css[] = preg_replace_callback(
 			'~([^{\s]*\s?\{[^{]*?\})~sm',
 			function ($match) use ($namespace)
 			{
@@ -131,21 +171,65 @@ class HtmlRenderer extends Renderer
 	/**
 	 * @return  void
 	 */
-	public function writeJavascript()
+	public function writeEmbeddedJavascript()
 	{
-		$this->write('<script type="text/javascript">');
-		$this->write(implode("\n", $this->javascript));
-		$this->write('</script>');
+		$js = '';
+		$js .= '<script>';
+		$js .= implode("\n", $this->javascript);
+		$js .= '</script>';
+
+		$this->injectBefore('</body>', $js);
 	}
 
 	/**
 	 * @return  void
 	 */
-	public function writeCss()
+	public function writeRemoteJavascript()
 	{
-		$this->write('<style>');
-		$this->write(implode("\n", $this->style));
-		$this->write('</style>');
+		$elements = '';
+		foreach ($this->scriptUrl as $url)
+		{
+			$elements .= "<script src=\"{$url}\"></script>";
+		}
+
+		$this->injectBefore('</head>', $elements);
+	}
+
+	/**
+	 * @return  void
+	 */
+	public function writeEmbeddedCss()
+	{
+		$css = '';
+		$css .= '<style>';
+		$css .= implode("\n", $this->css);
+		$css .= '</style>';
+
+		$this->injectBefore('</head>', $css);
+	}
+
+	/**
+	 * @return  void
+	 */
+	public function writeRemoteCss()
+	{
+		$elements = '';
+		foreach ($this->styleUrl as $url)
+		{
+			$elements .= "<link rel=\"stylesheet\" href=\"{$url}\">";
+		}
+
+		$this->injectBefore('</head>', $elements);
+	}
+
+	public function close()
+	{
+		$this->writeRemoteJavascript();
+		$this->writeEmbeddedJavascript();
+		$this->writeRemoteCss();
+		$this->writeEmbeddedCss();
+
+		#parent::close();
 	}
 
 	/**
@@ -604,5 +688,14 @@ class HtmlRenderer extends Renderer
 	public function visitLink(Link $link)
 	{
 		return $this->applyLayout('Link', $link);
+	}
+
+	/**
+	 * @param $where
+	 * @param $string
+	 */
+	private function injectBefore($where, $string)
+	{
+		$this->output = str_replace($where, $string . $where, $this->output);
 	}
 }
