@@ -17,6 +17,7 @@ use Joomla\Content\Type\AbstractContentType;
 use Joomla\Content\Type\Accordion;
 use Joomla\Content\Type\Compound;
 use Joomla\Content\Type\Image;
+use Joomla\Event\DispatcherInterface;
 use Joomla\Media\Entity\Image as ImageEntity;
 use Joomla\ORM\Operator;
 use Joomla\ORM\Repository\RepositoryInterface;
@@ -27,7 +28,10 @@ use Joomla\PageBuilder\Entity\Layout;
 use Joomla\PageBuilder\Entity\Page;
 use Joomla\PageBuilder\Entity\Template;
 use Joomla\Renderer\HtmlRenderer;
+use Joomla\Service\CommandBus;
 use Joomla\Service\CommandHandler;
+use Joomla\String\Inflector;
+use Joomla\String\Normalise;
 use Joomla\Tests\Unit\DumpTrait;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
@@ -52,6 +56,24 @@ class DisplayPageCommandHandler extends CommandHandler
 
 	/** @var  ServerRequestInterface The request object */
 	private $request;
+
+	/** @var  Inflector */
+	private $inflector;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param   CommandBus          $commandBus A command bus
+	 * @param   DispatcherInterface $dispatcher A dispatcher
+	 *
+	 * @since   __DEPLOY_VERSION__
+	 */
+	public function __construct(CommandBus $commandBus, DispatcherInterface $dispatcher)
+	{
+		parent::__construct($commandBus, $dispatcher);
+
+		$this->inflector = Inflector::getInstance();
+	}
 
 	/**
 	 * @param DisplayPageCommand $command
@@ -119,14 +141,39 @@ class DisplayPageCommandHandler extends CommandHandler
 		$this->output->write($parts[1]);
 	}
 
-	private function loadTemplate($path, $data = [])
+	private function registerContentTypes()
 	{
-		extract($data);
+		$container = $this->container;
+		$output    = $this->output;
 
-		ob_start();
-		include $path;
+		$this->output->registerContentType('TemplateSelector', function (TemplateSelector $selector) use ($container, $output)
+		{
+			/** @var RepositoryInterface $repo */
+			$repo      = $container->get('Repository')->forEntity(Template::class);
+			$templates = $repo->getAll();
 
-		return ob_get_clean();
+			// @todo Grouping
+			$groups    = [
+				'Available Templates' => $templates,
+			];
+			$accordion = new Accordion('Accordion Title', null, []);
+
+			foreach ($groups as $title => $group)
+			{
+				$compound = new Compound('div', $title, null, []);
+
+				foreach ($group as $item)
+				{
+					$imageData      = new ImageEntity();
+					$imageData->url = '/' . $item->path . '/preview.png';
+					$image          = new Image($imageData, $item->path);
+					$compound->addChild($image);
+				}
+				$accordion->addChild($compound);
+			}
+
+			$accordion->accept($output);
+		});
 	}
 
 	private function flatten($content)
@@ -174,6 +221,66 @@ class DisplayPageCommandHandler extends CommandHandler
 		}
 
 		return $result;
+	}
+
+	private function loadTemplate($path, $data = [])
+	{
+		extract($data);
+
+		ob_start();
+		include $path;
+
+		return ob_get_clean();
+	}
+
+	/**
+	 * @return  void
+	 */
+	protected function dumpSql()
+	{
+		$connection = $this->container->get('Repository')->getConnection();
+
+		if (!$connection instanceof Connection)
+		{
+			return;
+		}
+
+		$logger = $connection->getConfiguration()->getSQLLogger();
+
+		if (!$logger instanceof DebugStack)
+		{
+			return;
+		}
+
+		$queries = $logger->queries;
+
+		$table = '<table class="debug"><tr><th>#</th><th>SQL</th><th>Time</th></tr>';
+
+		foreach ($queries as $index => $query)
+		{
+			$sql    = $query['sql'];
+			$params = $query['params'];
+
+			ksort($params);
+
+			$sql  = preg_replace_callback(
+				'~\?~',
+				function () use (&$params)
+				{
+					return array_shift($params);
+				},
+				$sql
+			);
+			$sql  = preg_replace('~(WHERE|LIMIT|INNER\s+JOIN|LEFT\s+JOIN)~', "\n  \\1", $sql);
+			$sql  = preg_replace('~(AND|OR)~', "\n    \\1", $sql);
+			$time = sprintf('%.3f ms', 1000 * $query['executionMS']);
+
+			$table .= "<tr><td>$index</td><td><pre>$sql</pre></td><td>$time</td></tr>";
+		}
+
+		$table .= '</table>';
+
+		$this->output->write($table);
 	}
 
 	private function objectListToTree(array $items, $id = 'id', $parentId = 'parentId', $children = 'children', $ordering = 'ordering')
@@ -243,7 +350,7 @@ class DisplayPageCommandHandler extends CommandHandler
 
 		$root->params = empty($root->params) ? [] : get_object_vars($root->params);
 
-		$data = $this->findData($root->component, $root->selection);
+		$data = $this->findData($this->resolveComponent($root->component), $root->selection);
 
 		$reflector             = new \ReflectionClass($contentType);
 		$constructor           = $reflector->getConstructor();
@@ -336,88 +443,27 @@ class DisplayPageCommandHandler extends CommandHandler
 		return $finder->getItems();
 	}
 
-	private function registerContentTypes()
+	/**
+	 * Resolve the component in case it is a dynamic entity name
+	 *
+	 * @param   string  $component  The component
+	 *
+	 * @return  string
+	 */
+	private function resolveComponent($component)
 	{
-		$container = $this->container;
-		$output    = $this->output;
-
-		$this->output->registerContentType('TemplateSelector', function (TemplateSelector $selector) use ($container, $output)
+		if (!empty($component) && $component[0] == ':')
 		{
-			/** @var RepositoryInterface $repo */
-			$repo      = $container->get('Repository')->forEntity(Template::class);
-			$templates = $repo->getAll();
+			$component = $this->vars[substr($component, 1)];
 
-			// @todo Grouping
-			$groups    = [
-				'Available Templates' => $templates,
-			];
-			$accordion = new Accordion('Accordion Title', null, []);
-
-			foreach ($groups as $title => $group)
+			if (!$this->inflector->isPlural($component))
 			{
-				$compound = new Compound('div', $title, null, []);
-
-				foreach ($group as $item)
-				{
-					$imageData      = new ImageEntity();
-					$imageData->url = '/' . $item->path . '/preview.png';
-					$image          = new Image($imageData, $item->path);
-					$compound->addChild($image);
-				}
-				$accordion->addChild($compound);
+				throw new \RuntimeException("Entity name must be provided in its plural form; try '" . $this->inflector->toPlural($component) . "'");
 			}
 
-			$accordion->accept($output);
-		});
-	}
-
-	/**
-	 * @return  void
-	 */
-	protected function dumpSql()
-	{
-		$connection = $this->container->get('Repository')->getConnection();
-
-		if (!$connection instanceof Connection)
-		{
-			return;
+			$component = Normalise::toCamelCase($this->inflector->toSingular($component));
 		}
 
-		$logger = $connection->getConfiguration()->getSQLLogger();
-
-		if (!$logger instanceof DebugStack)
-		{
-			return;
-		}
-
-		$queries = $logger->queries;
-
-		$table = '<table class="debug"><tr><th>#</th><th>SQL</th><th>Time</th></tr>';
-
-		foreach ($queries as $index => $query)
-		{
-			$sql    = $query['sql'];
-			$params = $query['params'];
-
-			ksort($params);
-
-			$sql = preg_replace_callback(
-				'~\?~',
-				function () use (&$params)
-				{
-					return array_shift($params);
-				},
-				$sql
-			);
-			$sql = preg_replace('~(WHERE|LIMIT|INNER\s+JOIN|LEFT\s+JOIN)~', "\n  \\1", $sql);
-			$sql = preg_replace('~(AND|OR)~', "\n    \\1", $sql);
-			$time = sprintf('%.3f ms', 1000 * $query['executionMS']);
-
-			$table .= "<tr><td>$index</td><td><pre>$sql</pre></td><td>$time</td></tr>";
-		}
-
-		$table .= '</table>';
-
-		$this->output->write($table);
+		return $component;
 	}
 }

@@ -31,23 +31,23 @@ trait DumpTrait
 		return $msg . "\n" . $traceAsString;
 	}
 
-	protected function dumpVar($obj, $dive = false, $indent = '')
+	protected function dumpVar($var, $dive = false, $indent = '')
 	{
 		$res = $indent;
 
-		if (is_object($obj))
+		if (is_object($var))
 		{
-			$res .= get_class($obj) . " {\n";
-			$values = get_object_vars($obj);
+			$res .= get_class($var) . " {\n";
+			$values = get_object_vars($var);
 		}
-		elseif (is_array($obj))
+		elseif (is_array($var))
 		{
 			$res .= "Array {\n";
-			$values = $obj;
+			$values = $var;
 		}
 		else
 		{
-			return var_export($obj, true);
+			return var_export($var, true);
 		}
 
 		foreach ($values as $key => $value)

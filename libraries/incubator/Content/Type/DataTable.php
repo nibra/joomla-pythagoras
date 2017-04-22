@@ -18,20 +18,17 @@ use Joomla\Content\ContentTypeVisitorInterface;
  *
  * @property object $data
  */
-class DataTable extends AbstractContentType
+class DataTable extends AbstractCompoundType
 {
 	/**
 	 * Tree constructor.
 	 *
-	 * @param   object[] $data   The data to be displayed in the table
 	 * @param string     $title  The title
 	 * @param array      $params The parameters
 	 */
-	public function __construct($data, $title, array $params)
+	public function __construct($title, array $params = [])
 	{
 		parent::__construct($title, 'table-' . spl_object_hash($this), $params);
-
-		$this->data = $data;
 	}
 
 	/**

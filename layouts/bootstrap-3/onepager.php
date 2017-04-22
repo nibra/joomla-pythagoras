@@ -78,4 +78,4 @@ $js = <<<JS
 })(jQuery); // End of use strict
 JS;
 
-$this->addJavascript('.navbar', $js);
+$renderer->addJavascript('.navbar', $js);

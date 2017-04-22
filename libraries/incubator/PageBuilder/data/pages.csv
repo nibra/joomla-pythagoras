@@ -8,3 +8,4 @@ id,title,url,parent_id,layout_id
 7,":title",":alias",6,3
 8,"Shop","shop",3,3
 9,"Joomla! X","joomlax",0,4
+10,":entity Manager",":entity",2,2

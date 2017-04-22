@@ -14,6 +14,7 @@ use Joomla\Http\MiddlewareInterface;
 use Joomla\ORM\Repository\RepositoryInterface;
 use Joomla\PageBuilder\Entity\Page;
 use Joomla\Router\Router;
+use Joomla\Tests\Unit\DumpTrait;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -28,6 +29,8 @@ class RouterMiddleware implements MiddlewareInterface
 {
 	/** @var Container */
 	private $container;
+
+	use DumpTrait;
 
 	/**
 	 * RouterMiddleware constructor.

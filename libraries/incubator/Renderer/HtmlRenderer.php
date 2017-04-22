@@ -33,6 +33,7 @@ use Joomla\Content\Type\Span;
 use Joomla\Content\Type\Tabs;
 use Joomla\Content\Type\Teaser;
 use Joomla\Content\Type\Tree;
+use Joomla\ORM\Entity\EntityBuilder;
 use Joomla\ORM\Operator;
 use Joomla\ORM\Repository\Repository;
 use Joomla\PageBuilder\Entity\Layout;
@@ -508,7 +509,14 @@ class HtmlRenderer extends Renderer
 	 */
 	public function visitDataTable(DataTable $dataTable)
 	{
-		throw new \LogicException(__METHOD__ . ' is not implemented.');
+		/** @var EntityBuilder $entityBuilder */
+		$entityBuilder = $this->container->get('Repository')->getEntityBuilder();
+
+		$params           = $dataTable->getParameters();
+		$params['entity'] = $entityBuilder->getMeta(get_class($dataTable->getChildren()[0]->item));
+		$dataTable->setParameters($params);
+
+		return $this->applyLayout('DataTable', $dataTable);
 	}
 
 	/**
