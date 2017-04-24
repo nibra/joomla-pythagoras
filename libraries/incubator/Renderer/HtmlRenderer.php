@@ -96,6 +96,142 @@ class HtmlRenderer extends Renderer implements JavascriptAwareInterface, CssAwar
 	}
 
 	/**
+	 * Render an accordion
+	 *
+	 * @param   Accordion $accordion The accordion
+	 *
+	 * @return  void
+	 */
+	public function visitAccordion(Accordion $accordion)
+	{
+		$accordion->setId('accordion-' . spl_object_hash($accordion));
+
+		$this->preRenderChildElements($accordion);
+
+		$this->applyLayout('Accordion', $accordion);
+	}
+
+	/**
+	 * Render an article
+	 *
+	 * @param   Article $article The article
+	 *
+	 * @return  void
+	 */
+	public function visitArticle(Article $article)
+	{
+		$this->applyLayout('Article', $article);
+	}
+
+	/**
+	 * Render an attribution to an author
+	 *
+	 * @param   Attribution $attribution The attribution
+	 *
+	 * @return  void
+	 */
+	public function visitAttribution(Attribution $attribution)
+	{
+		$this->applyLayout('Attribution', $attribution);
+	}
+
+	/**
+	 * Render columns
+	 *
+	 * @param   Columns $columns The columns
+	 *
+	 * @return  void
+	 */
+	public function visitColumns(Columns $columns)
+	{
+		$this->preRenderChildElements($columns);
+
+		$this->applyLayout('Columns', $columns);
+	}
+
+	/**
+	 * Render a compound (block) element
+	 *
+	 * @param   Compound $compound The compound
+	 *
+	 * @return  void
+	 */
+	public function visitCompound(Compound $compound)
+	{
+		$this->applyLayout('Compound', $compound);
+	}
+
+	/**
+	 * Render a data table
+	 *
+	 * @param   DataTable $dataTable The data table
+	 *
+	 * @return  void
+	 */
+	public function visitDataTable(DataTable $dataTable)
+	{
+		$items = $dataTable->getChildren();
+
+		/** @var EntityBuilder $entityBuilder */
+		$entityBuilder = $this->container->get('Repository')->getEntityBuilder();
+
+		$params           = $dataTable->getParameters();
+		$params['entity'] = $entityBuilder->getMeta(get_class($items[0]->item));
+		$dataTable->setParameters($params);
+
+		$this->applyLayout('DataTable', $dataTable);
+	}
+
+	/**
+	 * Render a defaultMenu
+	 *
+	 * @param   DefaultMenu $defaultMenu The defaultMenu
+	 *
+	 * @return  void
+	 */
+	public function visitDefaultMenu(DefaultMenu $defaultMenu)
+	{
+		if ($defaultMenu->item instanceof Page)
+		{
+			$defaultMenu->item = $this->convertPageTreeToMenu($defaultMenu->item);
+		}
+
+		$this->applyLayout('DefaultMenu', $defaultMenu);
+	}
+
+	/**
+	 * @param   Page $page The page
+	 *
+	 * @return  Menu
+	 */
+	private function convertPageTreeToMenu($page)
+	{
+		$menu = new Menu(
+			$page->title,
+			$this->expandUrl($page->url, $page)
+		);
+
+		foreach ($page->children->getAll() as $child)
+		{
+			$menu->add($this->convertPageTreeToMenu($child));
+		}
+
+		return $menu;
+	}
+
+	/**
+	 * Dump an item
+	 *
+	 * @param   Dump $dump The dump
+	 *
+	 * @return  void
+	 */
+	public function visitDump(Dump $dump)
+	{
+		$this->write('<pre>' . $this->dumpEntity($dump->item) . '</pre>');
+	}
+
+	/**
 	 * Render a headline.
 	 *
 	 * @param   Headline $headline The headline
@@ -121,15 +257,79 @@ class HtmlRenderer extends Renderer implements JavascriptAwareInterface, CssAwar
 	}
 
 	/**
-	 * Render an attribution to an author
+	 * Render a horizontal line.
 	 *
-	 * @param   Attribution $attribution The attribution
+	 * @param   HorizontalLine $headline The horizontal line
 	 *
 	 * @return  void
 	 */
-	public function visitAttribution(Attribution $attribution)
+	public function visitHorizontalLine(HorizontalLine $headline)
 	{
-		$this->applyLayout('Attribution', $attribution);
+		$this->write("<hr>\n");
+	}
+
+	/**
+	 * Render an icon
+	 *
+	 * @param   Icon $icon The icon
+	 *
+	 * @return  void
+	 */
+	public function visitIcon(Icon $icon)
+	{
+		$this->applyLayout('Icon', $icon);
+	}
+
+	/**
+	 * Render an image
+	 *
+	 * @param   Image $image The image
+	 *
+	 * @return  void
+	 */
+	public function visitImage(Image $image)
+	{
+		$this->applyLayout('Image', $image);
+	}
+
+	/**
+	 * Render a link
+	 *
+	 * @param Link $link
+	 *
+	 * @return  void
+	 */
+	public function visitLink(Link $link)
+	{
+		$this->applyLayout('Link', $link);
+	}
+
+	/**
+	 * Render an OnePager
+	 *
+	 * @param   OnePager $page The page
+	 *
+	 * @return  void
+	 */
+	public function visitOnePager(OnePager $page)
+	{
+		$this->preRenderChildElements($page);
+
+		$this->applyLayout('Onepager', $page);
+	}
+
+	/**
+	 * Render an OnePager section
+	 *
+	 * @param   OnePagerSection $section The page
+	 *
+	 * @return  void
+	 */
+	public function visitOnePagerSection(OnePagerSection $section)
+	{
+		$this->preRenderChildElements($section);
+
+		$this->applyLayout('OnepagerSection', $section);
 	}
 
 	/**
@@ -145,27 +345,17 @@ class HtmlRenderer extends Renderer implements JavascriptAwareInterface, CssAwar
 	}
 
 	/**
-	 * Render a compound (block) element
+	 * Render rows
 	 *
-	 * @param   Compound $compound The compound
+	 * @param   Rows $rows The rows
 	 *
 	 * @return  void
 	 */
-	public function visitCompound(Compound $compound)
+	public function visitRows(Rows $rows)
 	{
-		$this->applyLayout('Compound', $compound);
-	}
+		$this->preRenderChildElements($rows);
 
-	/**
-	 * Render an image
-	 *
-	 * @param   Image $image The image
-	 *
-	 * @return  void
-	 */
-	public function visitImage(Image $image)
-	{
-		$this->applyLayout('Image', $image);
+		$this->applyLayout('Rows', $rows);
 	}
 
 	/**
@@ -209,35 +399,15 @@ class HtmlRenderer extends Renderer implements JavascriptAwareInterface, CssAwar
 	}
 
 	/**
-	 * Render an accordion
+	 * Render a span element
 	 *
-	 * @param   Accordion $accordion The accordion
-	 *
-	 * @return  void
-	 */
-	public function visitAccordion(Accordion $accordion)
-	{
-		$accordion->setId('accordion-' . spl_object_hash($accordion));
-
-		$this->preRenderChildElements($accordion);
-
-		$this->applyLayout('Accordion', $accordion);
-	}
-
-	/**
-	 * Render a tree
-	 *
-	 * @param   Tree $tree The tree
+	 * @param   Span $span The text
 	 *
 	 * @return  void
 	 */
-	public function visitTree(Tree $tree)
+	public function visitSpan(Span $span)
 	{
-		$tree->setId('tree-' . spl_object_hash($tree));
-
-		$this->preRenderChildElements($tree);
-
-		$this->applyLayout('Tree', $tree);
+		$this->applyLayout('Span', $span);
 	}
 
 	/**
@@ -254,58 +424,6 @@ class HtmlRenderer extends Renderer implements JavascriptAwareInterface, CssAwar
 		$this->preRenderChildElements($tabs);
 
 		$this->applyLayout('Tabs', $tabs);
-	}
-
-	/**
-	 * Dump an item
-	 *
-	 * @param   Dump $dump The dump
-	 *
-	 * @return  void
-	 */
-	public function visitDump(Dump $dump)
-	{
-		$this->write('<pre>' . $this->dumpEntity($dump->item) . '</pre>');
-	}
-
-	/**
-	 * Render rows
-	 *
-	 * @param   Rows $rows The rows
-	 *
-	 * @return  void
-	 */
-	public function visitRows(Rows $rows)
-	{
-		$this->preRenderChildElements($rows);
-
-		$this->applyLayout('Rows', $rows);
-	}
-
-	/**
-	 * Render columns
-	 *
-	 * @param   Columns $columns The columns
-	 *
-	 * @return  void
-	 */
-	public function visitColumns(Columns $columns)
-	{
-		$this->preRenderChildElements($columns);
-
-		$this->applyLayout('Columns', $columns);
-	}
-
-	/**
-	 * Render an article
-	 *
-	 * @param   Article $article The article
-	 *
-	 * @return  void
-	 */
-	public function visitArticle(Article $article)
-	{
-		$this->applyLayout('Article', $article);
 	}
 
 	/**
@@ -392,136 +510,18 @@ class HtmlRenderer extends Renderer implements JavascriptAwareInterface, CssAwar
 	}
 
 	/**
-	 * Render a defaultMenu
+	 * Render a tree
 	 *
-	 * @param   DefaultMenu $defaultMenu The defaultMenu
-	 *
-	 * @return  void
-	 */
-	public function visitDefaultMenu(DefaultMenu $defaultMenu)
-	{
-		if ($defaultMenu->item instanceof Page)
-		{
-			$defaultMenu->item = $this->convertPageTreeToMenu($defaultMenu->item);
-		}
-
-		$this->applyLayout('DefaultMenu', $defaultMenu);
-	}
-
-	/**
-	 * @param   Page $page The page
-	 *
-	 * @return  Menu
-	 */
-	private function convertPageTreeToMenu($page)
-	{
-		$menu = new Menu(
-			$page->title,
-			$this->expandUrl($page->url, $page)
-		);
-
-		foreach ($page->children->getAll() as $child)
-		{
-			$menu->add($this->convertPageTreeToMenu($child));
-		}
-
-		return $menu;
-	}
-
-	/**
-	 * Render a data table
-	 *
-	 * @param   DataTable $dataTable The data table
+	 * @param   Tree $tree The tree
 	 *
 	 * @return  void
 	 */
-	public function visitDataTable(DataTable $dataTable)
+	public function visitTree(Tree $tree)
 	{
-		$items = $dataTable->getChildren();
+		$tree->setId('tree-' . spl_object_hash($tree));
 
-		/** @var EntityBuilder $entityBuilder */
-		$entityBuilder = $this->container->get('Repository')->getEntityBuilder();
+		$this->preRenderChildElements($tree);
 
-		$params           = $dataTable->getParameters();
-		$params['entity'] = $entityBuilder->getMeta(get_class($items[0]->item));
-		$dataTable->setParameters($params);
-
-		$this->applyLayout('DataTable', $dataTable);
-	}
-
-	/**
-	 * Render a horizontal line.
-	 *
-	 * @param   HorizontalLine $headline The horizontal line
-	 *
-	 * @return  void
-	 */
-	public function visitHorizontalLine(HorizontalLine $headline)
-	{
-		$this->write("<hr>\n");
-	}
-
-	/**
-	 * Render a span element
-	 *
-	 * @param   Span $span The text
-	 *
-	 * @return  void
-	 */
-	public function visitSpan(Span $span)
-	{
-		$this->applyLayout('Span', $span);
-	}
-
-	/**
-	 * Render an OnePager
-	 *
-	 * @param   OnePager $page The page
-	 *
-	 * @return  void
-	 */
-	public function visitOnePager(OnePager $page)
-	{
-		$this->preRenderChildElements($page);
-
-		$this->applyLayout('Onepager', $page);
-	}
-
-	/**
-	 * Render an OnePager section
-	 *
-	 * @param   OnePagerSection $section The page
-	 *
-	 * @return  void
-	 */
-	public function visitOnePagerSection(OnePagerSection $section)
-	{
-		$this->preRenderChildElements($section);
-
-		$this->applyLayout('OnepagerSection', $section);
-	}
-
-	/**
-	 * Render an icon
-	 *
-	 * @param   Icon $icon The icon
-	 *
-	 * @return  void
-	 */
-	public function visitIcon(Icon $icon)
-	{
-		$this->applyLayout('Icon', $icon);
-	}
-
-	/**
-	 * Render a link
-	 *
-	 * @param Link $link
-	 *
-	 * @return  void
-	 */
-	public function visitLink(Link $link)
-	{
-		$this->applyLayout('Link', $link);
+		$this->applyLayout('Tree', $tree);
 	}
 }

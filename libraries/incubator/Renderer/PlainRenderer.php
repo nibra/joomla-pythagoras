@@ -45,6 +45,16 @@ class PlainRenderer extends Renderer
 	protected $mediatype = 'text/plain';
 
 	/**
+	 * Render an accordion
+	 *
+	 * @param   Accordion $accordion The accordion
+	 *
+	 * @return  void
+	 */
+	public function visitAccordion(Accordion $accordion)
+	{
+		throw new \LogicException(__METHOD__ . ' is not implemented.');
+	}	/**
 	 * Write data to the output.
 	 *
 	 * @param   ContentTypeInterface|string $content The string that is to be written.
@@ -64,6 +74,16 @@ class PlainRenderer extends Renderer
 	}
 
 	/**
+	 * Render an article
+	 *
+	 * @param   Article $article The article
+	 *
+	 * @return  void
+	 */
+	public function visitArticle(Article $article)
+	{
+		throw new \LogicException(__METHOD__ . ' is not implemented.');
+	}	/**
 	 * Render a headline.
 	 *
 	 * @param   Headline $headline The headline
@@ -76,6 +96,16 @@ class PlainRenderer extends Renderer
 	}
 
 	/**
+	 * Render an attribution to an author
+	 *
+	 * @param   Attribution $attribution The attribution
+	 *
+	 * @return  void
+	 */
+	public function visitAttribution(Attribution $attribution)
+	{
+		$this->write($attribution->label . ' ' . $attribution->text . "\n\n");
+	}	/**
 	 * Render a compound (block) element
 	 *
 	 * @param   Compound $compound The compound
@@ -91,15 +121,15 @@ class PlainRenderer extends Renderer
 	}
 
 	/**
-	 * Render an attribution to an author
+	 * Render columns
 	 *
-	 * @param   Attribution $attribution The attribution
+	 * @param   Columns $columns The columns
 	 *
 	 * @return  void
 	 */
-	public function visitAttribution(Attribution $attribution)
+	public function visitColumns(Columns $columns)
 	{
-		$this->write($attribution->label . ' ' . $attribution->text . "\n\n");
+		$this->visitCompound($columns);
 	}
 
 	/**
@@ -138,17 +168,7 @@ class PlainRenderer extends Renderer
 		throw new \LogicException(__METHOD__ . ' is not implemented.');
 	}
 
-	/**
-	 * Render an accordion
-	 *
-	 * @param   Accordion $accordion The accordion
-	 *
-	 * @return  void
-	 */
-	public function visitAccordion(Accordion $accordion)
-	{
-		throw new \LogicException(__METHOD__ . ' is not implemented.');
-	}
+
 
 	/**
 	 * Render a tree
@@ -198,29 +218,9 @@ class PlainRenderer extends Renderer
 		$this->visitCompound($rows);
 	}
 
-	/**
-	 * Render columns
-	 *
-	 * @param   Columns $columns The columns
-	 *
-	 * @return  void
-	 */
-	public function visitColumns(Columns $columns)
-	{
-		$this->visitCompound($columns);
-	}
 
-	/**
-	 * Render an article
-	 *
-	 * @param   Article $article The article
-	 *
-	 * @return  void
-	 */
-	public function visitArticle(Article $article)
-	{
-		throw new \LogicException(__METHOD__ . ' is not implemented.');
-	}
+
+
 
 	/**
 	 * Render a teaser

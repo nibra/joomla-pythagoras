@@ -96,22 +96,6 @@ abstract class Renderer implements RendererInterface
 	}
 
 	/**
-	 * @return string
-	 */
-	public function getClass()
-	{
-		return get_class($this);
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getMediaType()
-	{
-		return $this->mediatype;
-	}
-
-	/**
 	 * Write data to the output.
 	 *
 	 * @param   ContentTypeInterface|string $content The string that is to be written.
@@ -138,6 +122,22 @@ abstract class Renderer implements RendererInterface
 	public function __toString()
 	{
 		return $this->output;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getClass()
+	{
+		return get_class($this);
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getMediaType()
+	{
+		return $this->mediatype;
 	}
 
 	/**
