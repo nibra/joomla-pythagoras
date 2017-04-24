@@ -125,11 +125,11 @@ class HtmlRenderer extends Renderer implements JavascriptAwareInterface, CssAwar
 	 *
 	 * @param   Attribution $attribution The attribution
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitAttribution(Attribution $attribution)
 	{
-		return $this->applyLayout('Attribution', $attribution);
+		$this->applyLayout('Attribution', $attribution);
 	}
 
 	/**
@@ -137,11 +137,11 @@ class HtmlRenderer extends Renderer implements JavascriptAwareInterface, CssAwar
 	 *
 	 * @param   Paragraph $paragraph The paragraph
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitParagraph(Paragraph $paragraph)
 	{
-		return $this->applyLayout('Paragraph', $paragraph);
+		$this->applyLayout('Paragraph', $paragraph);
 	}
 
 	/**
@@ -149,11 +149,11 @@ class HtmlRenderer extends Renderer implements JavascriptAwareInterface, CssAwar
 	 *
 	 * @param   Compound $compound The compound
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitCompound(Compound $compound)
 	{
-		return $this->applyLayout('Compound', $compound);
+		$this->applyLayout('Compound', $compound);
 	}
 
 	/**
@@ -161,11 +161,11 @@ class HtmlRenderer extends Renderer implements JavascriptAwareInterface, CssAwar
 	 *
 	 * @param   Image $image The image
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitImage(Image $image)
 	{
-		return $this->applyLayout('Image', $image);
+		$this->applyLayout('Image', $image);
 	}
 
 	/**
@@ -173,7 +173,7 @@ class HtmlRenderer extends Renderer implements JavascriptAwareInterface, CssAwar
 	 *
 	 * @param   Slider $slider The slider
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitSlider(Slider $slider)
 	{
@@ -181,7 +181,7 @@ class HtmlRenderer extends Renderer implements JavascriptAwareInterface, CssAwar
 
 		$this->preRenderChildElements($slider);
 
-		return $this->applyLayout('Slider', $slider);
+		$this->applyLayout('Slider', $slider);
 	}
 
 	/**
@@ -200,13 +200,12 @@ class HtmlRenderer extends Renderer implements JavascriptAwareInterface, CssAwar
 
 		foreach ($content->getChildren() as $key => $item)
 		{
-			$this->rewind();
+			$this->output = '';
 			$item->accept($this);
 			$item->html = $this->output;
 		}
 
-		$this->rewind();
-		$this->write($stash);
+		$this->output = $stash;
 	}
 
 	/**
@@ -214,7 +213,7 @@ class HtmlRenderer extends Renderer implements JavascriptAwareInterface, CssAwar
 	 *
 	 * @param   Accordion $accordion The accordion
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitAccordion(Accordion $accordion)
 	{
@@ -222,7 +221,7 @@ class HtmlRenderer extends Renderer implements JavascriptAwareInterface, CssAwar
 
 		$this->preRenderChildElements($accordion);
 
-		return $this->applyLayout('Accordion', $accordion);
+		$this->applyLayout('Accordion', $accordion);
 	}
 
 	/**
@@ -230,7 +229,7 @@ class HtmlRenderer extends Renderer implements JavascriptAwareInterface, CssAwar
 	 *
 	 * @param   Tree $tree The tree
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitTree(Tree $tree)
 	{
@@ -238,7 +237,7 @@ class HtmlRenderer extends Renderer implements JavascriptAwareInterface, CssAwar
 
 		$this->preRenderChildElements($tree);
 
-		return $this->applyLayout('Tree', $tree);
+		$this->applyLayout('Tree', $tree);
 	}
 
 	/**
@@ -246,7 +245,7 @@ class HtmlRenderer extends Renderer implements JavascriptAwareInterface, CssAwar
 	 *
 	 * @param   Tabs $tabs The tabs
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitTabs(Tabs $tabs)
 	{
@@ -254,7 +253,7 @@ class HtmlRenderer extends Renderer implements JavascriptAwareInterface, CssAwar
 
 		$this->preRenderChildElements($tabs);
 
-		return $this->applyLayout('Tabs', $tabs);
+		$this->applyLayout('Tabs', $tabs);
 	}
 
 	/**
@@ -262,11 +261,11 @@ class HtmlRenderer extends Renderer implements JavascriptAwareInterface, CssAwar
 	 *
 	 * @param   Dump $dump The dump
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitDump(Dump $dump)
 	{
-		return $this->write('<pre>' . $this->dumpEntity($dump->item) . '</pre>');
+		$this->write('<pre>' . $this->dumpEntity($dump->item) . '</pre>');
 	}
 
 	/**
@@ -274,13 +273,13 @@ class HtmlRenderer extends Renderer implements JavascriptAwareInterface, CssAwar
 	 *
 	 * @param   Rows $rows The rows
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitRows(Rows $rows)
 	{
 		$this->preRenderChildElements($rows);
 
-		return $this->applyLayout('Rows', $rows);
+		$this->applyLayout('Rows', $rows);
 	}
 
 	/**
@@ -288,13 +287,13 @@ class HtmlRenderer extends Renderer implements JavascriptAwareInterface, CssAwar
 	 *
 	 * @param   Columns $columns The columns
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitColumns(Columns $columns)
 	{
 		$this->preRenderChildElements($columns);
 
-		return $this->applyLayout('Columns', $columns);
+		$this->applyLayout('Columns', $columns);
 	}
 
 	/**
@@ -302,11 +301,11 @@ class HtmlRenderer extends Renderer implements JavascriptAwareInterface, CssAwar
 	 *
 	 * @param   Article $article The article
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitArticle(Article $article)
 	{
-		return $this->applyLayout('Article', $article);
+		$this->applyLayout('Article', $article);
 	}
 
 	/**
@@ -314,13 +313,13 @@ class HtmlRenderer extends Renderer implements JavascriptAwareInterface, CssAwar
 	 *
 	 * @param   Teaser $teaser The teaser
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitTeaser(Teaser $teaser)
 	{
 		$teaser->url = $this->getFullUrl($teaser->article);
 
-		return $this->applyLayout('Teaser', $teaser);
+		$this->applyLayout('Teaser', $teaser);
 	}
 
 	/**
@@ -397,7 +396,7 @@ class HtmlRenderer extends Renderer implements JavascriptAwareInterface, CssAwar
 	 *
 	 * @param   DefaultMenu $defaultMenu The defaultMenu
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitDefaultMenu(DefaultMenu $defaultMenu)
 	{
@@ -406,7 +405,7 @@ class HtmlRenderer extends Renderer implements JavascriptAwareInterface, CssAwar
 			$defaultMenu->item = $this->convertPageTreeToMenu($defaultMenu->item);
 		}
 
-		return $this->applyLayout('DefaultMenu', $defaultMenu);
+		$this->applyLayout('DefaultMenu', $defaultMenu);
 	}
 
 	/**
@@ -434,7 +433,7 @@ class HtmlRenderer extends Renderer implements JavascriptAwareInterface, CssAwar
 	 *
 	 * @param   DataTable $dataTable The data table
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitDataTable(DataTable $dataTable)
 	{
@@ -447,18 +446,7 @@ class HtmlRenderer extends Renderer implements JavascriptAwareInterface, CssAwar
 		$params['entity'] = $entityBuilder->getMeta(get_class($items[0]->item));
 		$dataTable->setParameters($params);
 
-		return $this->applyLayout('DataTable', $dataTable);
-	}
-
-	/**
-	 * @return  array
-	 */
-	protected function collectMetadata()
-	{
-		$metaData                                  = parent::collectMetadata();
-		$metaData['wrapper_data']['client_script'] = empty($this->clientScript) ? null : get_class($this->clientScript);
-
-		return $metaData;
+		$this->applyLayout('DataTable', $dataTable);
 	}
 
 	/**
@@ -466,11 +454,11 @@ class HtmlRenderer extends Renderer implements JavascriptAwareInterface, CssAwar
 	 *
 	 * @param   HorizontalLine $headline The horizontal line
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitHorizontalLine(HorizontalLine $headline)
 	{
-		return $this->write("<hr>\n");
+		$this->write("<hr>\n");
 	}
 
 	/**
@@ -478,11 +466,11 @@ class HtmlRenderer extends Renderer implements JavascriptAwareInterface, CssAwar
 	 *
 	 * @param   Span $span The text
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitSpan(Span $span)
 	{
-		return $this->applyLayout('Span', $span);
+		$this->applyLayout('Span', $span);
 	}
 
 	/**
@@ -490,13 +478,13 @@ class HtmlRenderer extends Renderer implements JavascriptAwareInterface, CssAwar
 	 *
 	 * @param   OnePager $page The page
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitOnePager(OnePager $page)
 	{
 		$this->preRenderChildElements($page);
 
-		return $this->applyLayout('Onepager', $page);
+		$this->applyLayout('Onepager', $page);
 	}
 
 	/**
@@ -504,13 +492,13 @@ class HtmlRenderer extends Renderer implements JavascriptAwareInterface, CssAwar
 	 *
 	 * @param   OnePagerSection $section The page
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitOnePagerSection(OnePagerSection $section)
 	{
 		$this->preRenderChildElements($section);
 
-		return $this->applyLayout('OnepagerSection', $section);
+		$this->applyLayout('OnepagerSection', $section);
 	}
 
 	/**
@@ -518,11 +506,11 @@ class HtmlRenderer extends Renderer implements JavascriptAwareInterface, CssAwar
 	 *
 	 * @param   Icon $icon The icon
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitIcon(Icon $icon)
 	{
-		return $this->applyLayout('Icon', $icon);
+		$this->applyLayout('Icon', $icon);
 	}
 
 	/**
@@ -530,10 +518,10 @@ class HtmlRenderer extends Renderer implements JavascriptAwareInterface, CssAwar
 	 *
 	 * @param Link $link
 	 *
-	 * @return int Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitLink(Link $link)
 	{
-		return $this->applyLayout('Link', $link);
+		$this->applyLayout('Link', $link);
 	}
 }

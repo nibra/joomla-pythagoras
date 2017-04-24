@@ -108,7 +108,7 @@ class DisplayPageCommandHandler extends CommandHandler
 		$id              = $command->getId();
 		$this->vars      = $command->getVars();
 		$this->request   = $command->getRequest();
-		$this->output    = $command->getStream();
+		$this->output    = $command->getRenderer();
 		$this->container = $command->getContainer();
 
 		$queryParams = $this->request->getQueryParams();

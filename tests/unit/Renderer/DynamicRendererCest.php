@@ -67,7 +67,7 @@ class DynamicRendererCest
 			"static: NewContentType\n" .
 			"dynamic: OtherContentType\n" .
 			"default: UnregisteredContentType\n",
-			$renderer->getContents()
+			(string) $renderer
 		);
 	}
 

@@ -67,6 +67,8 @@ class EventDecorator implements RendererInterface
 	}
 
 	/**
+	 * Register a handler for a content type.
+	 *
 	 * @param   string                $type    The content type
 	 * @param   callable|array|string $handler The handler for that type
 	 *
@@ -91,205 +93,45 @@ class EventDecorator implements RendererInterface
 	}
 
 	/**
-	 * Reads all data from the stream into a string, from the beginning to end.
+	 * Get the (inner) class of this renderer.
 	 *
-	 * This method MUST attempt to seek to the beginning of the stream before
-	 * reading data and read the stream until the end is reached.
+	 * @return string
+	 */
+	public function getClass()
+	{
+		return $this->renderer->getClass();
+	}
+
+	/**
+	 * Get the media (MIME) type for this renderer.
 	 *
-	 * Warning: This could attempt to load a large amount of data into memory.
+	 * @return string
+	 */
+	public function getMediaType()
+	{
+		return $this->renderer->getMediaType();
+	}
+
+	/**
+	 * Write data to the output.
 	 *
-	 * This method MUST NOT raise an exception in order to conform with PHP's
-	 * string casting operations.
+	 * @param   ContentTypeInterface|string $content The string that is to be written.
 	 *
-	 * @see http://php.net/manual/en/language.oop5.magic.php#object.tostring
+	 * @return  void
+	 */
+	public function write($content)
+	{
+		$this->renderer->write($content);
+	}
+
+	/**
+	 * Get the content from the buffer
+	 *
 	 * @return string
 	 */
 	public function __toString()
 	{
 		return (string) $this->renderer;
-	}
-
-	/**
-	 * Closes the stream and any underlying resources.
-	 *
-	 * @return  void
-	 */
-	public function close()
-	{
-		$this->renderer->close();
-	}
-
-	/**
-	 * Separates any underlying resources from the stream.
-	 *
-	 * After the stream has been detached, the stream is in an unusable state.
-	 *
-	 * @return  resource|null Underlying PHP stream, if any
-	 */
-	public function detach()
-	{
-		return $this->renderer->detach();
-	}
-
-	/**
-	 * Get the size of the stream if known.
-	 *
-	 * @return  integer|null  Returns the size in bytes if known, or null if unknown.
-	 */
-	public function getSize()
-	{
-		return $this->renderer->getSize();
-	}
-
-	/**
-	 * Returns the current position of the file read/write pointer
-	 *
-	 * @return  integer  Position of the file pointer
-	 * @throws  \RuntimeException on error.
-	 */
-	public function tell()
-	{
-		return $this->renderer->tell();
-	}
-
-	/**
-	 * Returns true if the stream is at the end of the stream.
-	 *
-	 * @return  boolean
-	 */
-	public function eof()
-	{
-		return $this->renderer->eof();
-	}
-
-	/**
-	 * Returns whether or not the stream is seekable.
-	 *
-	 * @return  boolean
-	 */
-	public function isSeekable()
-	{
-		return $this->renderer->isSeekable();
-	}
-
-	/**
-	 * Seek to a position in the stream.
-	 *
-	 * @link http://www.php.net/manual/en/function.fseek.php
-	 *
-	 * @param   int $offset Stream offset
-	 * @param   int $whence Specifies how the cursor position will be calculated
-	 *                      based on the seek offset. Valid values are identical to the built-in
-	 *                      PHP $whence values for `fseek()`.  SEEK_SET: Set position equal to
-	 *                      offset bytes SEEK_CUR: Set position to current location plus offset
-	 *                      SEEK_END: Set position to end-of-stream plus offset.
-	 *
-	 * @return  void
-	 *
-	 * @throws  \RuntimeException on failure.
-	 */
-	public function seek($offset, $whence = SEEK_SET)
-	{
-		$this->renderer->seek($offset, $whence);
-	}
-
-	/**
-	 * Seek to the beginning of the stream.
-	 *
-	 * If the stream is not seekable, this method will raise an exception;
-	 * otherwise, it will perform a seek(0).
-	 *
-	 * @see  seek()
-	 * @link http://www.php.net/manual/en/function.fseek.php
-	 *
-	 * @return  void
-	 * @throws  \RuntimeException on failure.
-	 */
-	public function rewind()
-	{
-		$this->renderer->rewind();
-	}
-
-	/**
-	 * Returns whether or not the stream is writable.
-	 *
-	 * @return  boolean
-	 */
-	public function isWritable()
-	{
-		return $this->renderer->isWritable();
-	}
-
-	/**
-	 * Write data to the stream.
-	 *
-	 * @param   string $string The string that is to be written.
-	 *
-	 * @return  integer  Returns the number of bytes written to the stream.
-	 * @throws  \RuntimeException on failure.
-	 */
-	public function write($string)
-	{
-		return $this->renderer->write($string);
-	}
-
-	/**
-	 * Returns whether or not the stream is readable.
-	 *
-	 * @return  boolean
-	 */
-	public function isReadable()
-	{
-		return $this->renderer->isReadable();
-	}
-
-	/**
-	 * Read data from the stream.
-	 *
-	 * @param   int $length  Read up to $length bytes from the object and return
-	 *                       them. Fewer than $length bytes may be returned if underlying stream
-	 *                       call returns fewer bytes.
-	 *
-	 * @return  string  Returns the data read from the stream, or an empty string
-	 *                  if no bytes are available.
-	 *
-	 * @throws \RuntimeException if an error occurs.
-	 */
-	public function read($length)
-	{
-		return $this->renderer->read($length);
-	}
-
-	/**
-	 * Returns the remaining contents in a string
-	 *
-	 * @return  string
-	 *
-	 * @throws  \RuntimeException if unable to read or an error occurs while
-	 *     reading.
-	 */
-	public function getContents()
-	{
-		return $this->renderer->getContents();
-	}
-
-	/**
-	 * Get stream metadata as an associative array or retrieve a specific key.
-	 *
-	 * The keys returned are identical to the keys returned from PHP's
-	 * stream_get_meta_data() function.
-	 *
-	 * @link http://php.net/manual/en/function.stream-get-meta-data.php
-	 *
-	 * @param   string $key Specific metadata to retrieve.
-	 *
-	 * @return  array|mixed|null Returns an associative array if no key is
-	 *                           provided. Returns a specific key value if a key is provided and the
-	 *                           value is found, or null if the key is not found.
-	 */
-	public function getMetadata($key = null)
-	{
-		return $this->renderer->getMetadata($key);
 	}
 
 	/**
@@ -301,20 +143,7 @@ class EventDecorator implements RendererInterface
 	 */
 	public function visitHeadline(Headline $headline)
 	{
-		return $this->delegate(__FUNCTION__, func_get_args());
-	}
-
-	/**
-	 * Magic method to handle all non-interfaced methods.
-	 *
-	 * @param   string $method    Method name
-	 * @param   array  $arguments Method arguments
-	 *
-	 * @return  mixed
-	 */
-	public function __call($method, $arguments)
-	{
-		return call_user_func_array([$this->renderer, $method], $arguments);
+		$this->delegate(__FUNCTION__, func_get_args());
 	}
 
 	/**
@@ -356,11 +185,11 @@ class EventDecorator implements RendererInterface
 	 *
 	 * @param   Compound $compound The compound
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitCompound(Compound $compound)
 	{
-		return $this->delegate(__FUNCTION__, func_get_args());
+		$this->delegate(__FUNCTION__, func_get_args());
 	}
 
 	/**
@@ -368,11 +197,11 @@ class EventDecorator implements RendererInterface
 	 *
 	 * @param   Attribution $attribution The attribution
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitAttribution(Attribution $attribution)
 	{
-		return $this->delegate(__FUNCTION__, func_get_args());
+		$this->delegate(__FUNCTION__, func_get_args());
 	}
 
 	/**
@@ -380,11 +209,11 @@ class EventDecorator implements RendererInterface
 	 *
 	 * @param   Paragraph $paragraph The paragraph
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitParagraph(Paragraph $paragraph)
 	{
-		return $this->delegate(__FUNCTION__, func_get_args());
+		$this->delegate(__FUNCTION__, func_get_args());
 	}
 
 	/**
@@ -392,11 +221,11 @@ class EventDecorator implements RendererInterface
 	 *
 	 * @param   Image $image The image
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitImage(Image $image)
 	{
-		return $this->delegate(__FUNCTION__, func_get_args());
+		$this->delegate(__FUNCTION__, func_get_args());
 	}
 
 	/**
@@ -404,11 +233,11 @@ class EventDecorator implements RendererInterface
 	 *
 	 * @param   Slider $slider The slider
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitSlider(Slider $slider)
 	{
-		return $this->delegate(__FUNCTION__, func_get_args());
+		$this->delegate(__FUNCTION__, func_get_args());
 	}
 
 	/**
@@ -416,11 +245,11 @@ class EventDecorator implements RendererInterface
 	 *
 	 * @param   Accordion $accordion The accordion
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitAccordion(Accordion $accordion)
 	{
-		return $this->delegate(__FUNCTION__, func_get_args());
+		$this->delegate(__FUNCTION__, func_get_args());
 	}
 
 	/**
@@ -428,11 +257,11 @@ class EventDecorator implements RendererInterface
 	 *
 	 * @param   Tree $tree The tree
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitTree(Tree $tree)
 	{
-		return $this->delegate(__FUNCTION__, func_get_args());
+		$this->delegate(__FUNCTION__, func_get_args());
 	}
 
 	/**
@@ -440,11 +269,11 @@ class EventDecorator implements RendererInterface
 	 *
 	 * @param   Tabs $tabs The tabs
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitTabs(Tabs $tabs)
 	{
-		return $this->delegate(__FUNCTION__, func_get_args());
+		$this->delegate(__FUNCTION__, func_get_args());
 	}
 
 	/**
@@ -452,11 +281,11 @@ class EventDecorator implements RendererInterface
 	 *
 	 * @param   Dump $dump The dump
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitDump(Dump $dump)
 	{
-		return $this->delegate(__FUNCTION__, func_get_args());
+		$this->delegate(__FUNCTION__, func_get_args());
 	}
 
 	/**
@@ -464,11 +293,11 @@ class EventDecorator implements RendererInterface
 	 *
 	 * @param   Rows $rows The rows
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitRows(Rows $rows)
 	{
-		return $this->delegate(__FUNCTION__, func_get_args());
+		$this->delegate(__FUNCTION__, func_get_args());
 	}
 
 	/**
@@ -476,11 +305,11 @@ class EventDecorator implements RendererInterface
 	 *
 	 * @param   Columns $columns The columns
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitColumns(Columns $columns)
 	{
-		return $this->delegate(__FUNCTION__, func_get_args());
+		$this->delegate(__FUNCTION__, func_get_args());
 	}
 
 	/**
@@ -488,11 +317,11 @@ class EventDecorator implements RendererInterface
 	 *
 	 * @param   Article $article The article
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitArticle(Article $article)
 	{
-		return $this->delegate(__FUNCTION__, func_get_args());
+		$this->delegate(__FUNCTION__, func_get_args());
 	}
 
 	/**
@@ -500,11 +329,11 @@ class EventDecorator implements RendererInterface
 	 *
 	 * @param   Teaser $teaser The teaser
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitTeaser(Teaser $teaser)
 	{
-		return $this->delegate(__FUNCTION__, func_get_args());
+		$this->delegate(__FUNCTION__, func_get_args());
 	}
 
 	/**
@@ -512,19 +341,25 @@ class EventDecorator implements RendererInterface
 	 *
 	 * @param   DefaultMenu $defaultMenu The defaultMenu
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitDefaultMenu(DefaultMenu $defaultMenu)
 	{
-		return $this->delegate(__FUNCTION__, func_get_args());
+		$this->delegate(__FUNCTION__, func_get_args());
 	}
 
 	/**
-	 * @return string
+	 * Delegate all methods.
+	 *
+	 * @param   string $method    Method name; must start with 'visit'
+	 * @param   array  $arguments Method arguments
+	 *
+	 * @return  mixed
+	 * @throws  \Exception
 	 */
-	public function getClass()
+	public function __call($method, $arguments)
 	{
-		return $this->renderer->getClass();
+		return $this->delegate($method, $arguments);
 	}
 
 	/**
@@ -532,11 +367,11 @@ class EventDecorator implements RendererInterface
 	 *
 	 * @param   DataTable $dataTable The data table
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitDataTable(DataTable $dataTable)
 	{
-		return $this->delegate(__FUNCTION__, func_get_args());
+		$this->delegate(__FUNCTION__, func_get_args());
 	}
 
 	/**
@@ -544,11 +379,11 @@ class EventDecorator implements RendererInterface
 	 *
 	 * @param   Span $span The span
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitSpan(Span $span)
 	{
-		return $this->delegate(__FUNCTION__, func_get_args());
+		$this->delegate(__FUNCTION__, func_get_args());
 	}
 
 	/**
@@ -556,11 +391,11 @@ class EventDecorator implements RendererInterface
 	 *
 	 * @param   HorizontalLine $hr The horizontal line
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitHorizontalLine(HorizontalLine $hr)
 	{
-		return $this->delegate(__FUNCTION__, func_get_args());
+		$this->delegate(__FUNCTION__, func_get_args());
 	}
 
 	/**
@@ -568,11 +403,11 @@ class EventDecorator implements RendererInterface
 	 *
 	 * @param   Icon $icon The icon
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitIcon(Icon $icon)
 	{
-		return $this->delegate(__FUNCTION__, func_get_args());
+		$this->delegate(__FUNCTION__, func_get_args());
 	}
 
 	/**
@@ -580,11 +415,11 @@ class EventDecorator implements RendererInterface
 	 *
 	 * @param   Link $link The link
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitLink(Link $link)
 	{
-		return $this->delegate(__FUNCTION__, func_get_args());
+		$this->delegate(__FUNCTION__, func_get_args());
 	}
 
 	/**
@@ -592,11 +427,11 @@ class EventDecorator implements RendererInterface
 	 *
 	 * @param   OnePager $onePager The one-pager
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitOnePager(OnePager $onePager)
 	{
-		return $this->delegate(__FUNCTION__, func_get_args());
+		$this->delegate(__FUNCTION__, func_get_args());
 	}
 
 	/**
@@ -604,10 +439,10 @@ class EventDecorator implements RendererInterface
 	 *
 	 * @param   OnePagerSection $onePagerSection The section
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitOnePagerSection(OnePagerSection $onePagerSection)
 	{
-		return $this->delegate(__FUNCTION__, func_get_args());
+		$this->delegate(__FUNCTION__, func_get_args());
 	}
 }

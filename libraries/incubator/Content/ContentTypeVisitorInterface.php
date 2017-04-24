@@ -45,7 +45,7 @@ interface ContentTypeVisitorInterface
 	 *
 	 * @param   Headline $headline The headline
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitHeadline(Headline $headline);
 
@@ -54,7 +54,7 @@ interface ContentTypeVisitorInterface
 	 *
 	 * @param   Compound $compound The compound
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitCompound(Compound $compound);
 
@@ -63,7 +63,7 @@ interface ContentTypeVisitorInterface
 	 *
 	 * @param   Attribution $attribution The attribution
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitAttribution(Attribution $attribution);
 
@@ -72,7 +72,7 @@ interface ContentTypeVisitorInterface
 	 *
 	 * @param   Paragraph $paragraph The paragraph
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitParagraph(Paragraph $paragraph);
 
@@ -81,7 +81,7 @@ interface ContentTypeVisitorInterface
 	 *
 	 * @param   Image $image The image
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitImage(Image $image);
 
@@ -90,7 +90,7 @@ interface ContentTypeVisitorInterface
 	 *
 	 * @param   Slider $slider The slider
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitSlider(Slider $slider);
 
@@ -99,7 +99,7 @@ interface ContentTypeVisitorInterface
 	 *
 	 * @param   Accordion $accordion The accordion
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitAccordion(Accordion $accordion);
 
@@ -108,7 +108,7 @@ interface ContentTypeVisitorInterface
 	 *
 	 * @param   Tree $tree The tree
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitTree(Tree $tree);
 
@@ -117,7 +117,7 @@ interface ContentTypeVisitorInterface
 	 *
 	 * @param   Tabs $tabs The tabs
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitTabs(Tabs $tabs);
 
@@ -126,7 +126,7 @@ interface ContentTypeVisitorInterface
 	 *
 	 * @param   Dump $dump The dump
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitDump(Dump $dump);
 
@@ -135,7 +135,7 @@ interface ContentTypeVisitorInterface
 	 *
 	 * @param   Rows $rows The rows
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitRows(Rows $rows);
 
@@ -144,7 +144,7 @@ interface ContentTypeVisitorInterface
 	 *
 	 * @param   Columns $columns The columns
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitColumns(Columns $columns);
 
@@ -153,7 +153,7 @@ interface ContentTypeVisitorInterface
 	 *
 	 * @param   Article $article The article
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitArticle(Article $article);
 
@@ -162,7 +162,7 @@ interface ContentTypeVisitorInterface
 	 *
 	 * @param   Teaser $teaser The teaser
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitTeaser(Teaser $teaser);
 
@@ -171,7 +171,7 @@ interface ContentTypeVisitorInterface
 	 *
 	 * @param   DefaultMenu $defaultMenu The defaultMenu
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitDefaultMenu(DefaultMenu $defaultMenu);
 

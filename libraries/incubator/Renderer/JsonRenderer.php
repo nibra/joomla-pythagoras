@@ -51,18 +51,13 @@ class JsonRenderer extends Renderer
 	protected $len = 0;
 
 	/**
-	 * Update the content
+	 * Get the content from the buffer
 	 *
-	 * @return integer
+	 * @return string
 	 */
-	private function updateContent()
+	public function __toString()
 	{
-		$this->output = json_encode($this->data, JSON_PRETTY_PRINT);
-		$total        = strlen($this->output);
-		$len          = $total - $this->len;
-		$this->len    = $total;
-
-		return $len;
+		return json_encode($this->data, JSON_PRETTY_PRINT);
 	}
 
 	/**
@@ -70,13 +65,11 @@ class JsonRenderer extends Renderer
 	 *
 	 * @param   Headline $headline The headline
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitHeadline(Headline $headline)
 	{
 		$this->data[] = ['headline' => ['text' => $headline->text, 'level' => $headline->level]];
-
-		return $this->updateContent();
 	}
 
 	/**
@@ -84,21 +77,20 @@ class JsonRenderer extends Renderer
 	 *
 	 * @param   Compound $compound The compound
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitCompound(Compound $compound)
 	{
 		$stash      = $this->data;
 		$this->data = [];
 
-		foreach ($compound->elements as $item) {
+		foreach ($compound->elements as $item)
+		{
 			$item->content->accept($this);
 		}
 
 		$stash[]    = [$compound->type => $this->data];
 		$this->data = $stash;
-
-		return $this->updateContent();
 	}
 
 	/**
@@ -106,13 +98,11 @@ class JsonRenderer extends Renderer
 	 *
 	 * @param   Attribution $attribution The attribution
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitAttribution(Attribution $attribution)
 	{
 		$this->data[] = ['attribution' => ['label' => $attribution->label, 'name' => $attribution->name]];
-
-		return $this->updateContent();
 	}
 
 	/**
@@ -120,13 +110,11 @@ class JsonRenderer extends Renderer
 	 *
 	 * @param   Paragraph $paragraph The paragraph
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitParagraph(Paragraph $paragraph)
 	{
 		$this->data[] = ['paragraph' => ['text' => $paragraph->text, 'variant' => $paragraph->variant]];
-
-		return $this->updateContent();
 	}
 
 	/**
@@ -134,7 +122,7 @@ class JsonRenderer extends Renderer
 	 *
 	 * @param   Image $image The image
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitImage(Image $image)
 	{
@@ -146,7 +134,7 @@ class JsonRenderer extends Renderer
 	 *
 	 * @param   Slider $slider The slider
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitSlider(Slider $slider)
 	{
@@ -158,7 +146,7 @@ class JsonRenderer extends Renderer
 	 *
 	 * @param   Accordion $accordion The accordion
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitAccordion(Accordion $accordion)
 	{
@@ -170,7 +158,7 @@ class JsonRenderer extends Renderer
 	 *
 	 * @param   Tree $tree The tree
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitTree(Tree $tree)
 	{
@@ -182,7 +170,7 @@ class JsonRenderer extends Renderer
 	 *
 	 * @param   Tabs $tabs The tabs
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitTabs(Tabs $tabs)
 	{
@@ -194,7 +182,7 @@ class JsonRenderer extends Renderer
 	 *
 	 * @param   Dump $dump The dump
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitDump(Dump $dump)
 	{
@@ -206,7 +194,7 @@ class JsonRenderer extends Renderer
 	 *
 	 * @param   Rows $rows The rows
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitRows(Rows $rows)
 	{
@@ -218,7 +206,7 @@ class JsonRenderer extends Renderer
 	 *
 	 * @param   Columns $columns The columns
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitColumns(Columns $columns)
 	{
@@ -230,7 +218,7 @@ class JsonRenderer extends Renderer
 	 *
 	 * @param   Article $article The article
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitArticle(Article $article)
 	{
@@ -242,7 +230,7 @@ class JsonRenderer extends Renderer
 	 *
 	 * @param   Teaser $teaser The teaser
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitTeaser(Teaser $teaser)
 	{
@@ -254,7 +242,7 @@ class JsonRenderer extends Renderer
 	 *
 	 * @param   DefaultMenu $defaultMenu The defaultMenu
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitDefaultMenu(DefaultMenu $defaultMenu)
 	{
@@ -266,7 +254,7 @@ class JsonRenderer extends Renderer
 	 *
 	 * @param   DataTable $dataTable The data table
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitDataTable(DataTable $dataTable)
 	{
@@ -278,7 +266,7 @@ class JsonRenderer extends Renderer
 	 *
 	 * @param   Span $span The span
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitSpan(Span $span)
 	{
@@ -290,7 +278,7 @@ class JsonRenderer extends Renderer
 	 *
 	 * @param   HorizontalLine $hr The horizontal line
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitHorizontalLine(HorizontalLine $hr)
 	{
@@ -302,7 +290,7 @@ class JsonRenderer extends Renderer
 	 *
 	 * @param   Icon $icon The icon
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitIcon(Icon $icon)
 	{
@@ -314,7 +302,7 @@ class JsonRenderer extends Renderer
 	 *
 	 * @param   Link $link The link
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitLink(Link $link)
 	{
@@ -326,7 +314,7 @@ class JsonRenderer extends Renderer
 	 *
 	 * @param   OnePager $onePager The one-pager
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitOnePager(OnePager $onePager)
 	{
@@ -338,7 +326,7 @@ class JsonRenderer extends Renderer
 	 *
 	 * @param   OnePagerSection $onePagerSection The section
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitOnePagerSection(OnePagerSection $onePagerSection)
 	{
