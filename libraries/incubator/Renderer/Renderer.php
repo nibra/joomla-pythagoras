@@ -10,7 +10,6 @@ namespace Joomla\Renderer;
 
 use Interop\Container\ContainerInterface;
 use Joomla\Content\ContentTypeInterface;
-use Joomla\Renderer\Exception\NotFoundException;
 
 /**
  * Class Renderer
@@ -250,8 +249,10 @@ abstract class Renderer implements RendererInterface
 		}
 		else
 		{
-			$this->output .= $content;
-			$len          = strlen($content);
+			$this->output = substr($this->output, 0, $this->pointer) . $content;
+
+			$len = strlen($content);
+			$this->seek(1, SEEK_END);
 		}
 
 		return $len;

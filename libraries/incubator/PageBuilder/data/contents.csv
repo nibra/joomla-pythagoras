@@ -62,5 +62,5 @@ h2 {text-shadow: 0 0 5px #000;}",54,0,9
 115,contact-content,Joomla\Content\Type\Teaser,,1,Article,,{"id":19},"{""show_image"":false,""link_image"":false,""show_button"":false}",i {color: #f44321;},114,0,9
 117,footer,Joomla\Content\Type\OnePagerSection,{"type": "footer"},6,,,,,,40,0,9
 118,footer-content,Joomla\Content\Type\Paragraph,{"text": "© 2016-17 Joomla! X. All Rights Reserved."},1,,,,,,117,0,9
-119,entity-table,Joomla\Content\Type\DataTable,,1,,,,{"label":false},,0,0,10
+119,entity-table,Joomla\Content\Type\DataTable,,1,,,,,,0,0,10
 120,entity,Joomla\Content\Type\Dump,,1,:entity,,,,,119,0,10

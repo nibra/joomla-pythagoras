@@ -8,6 +8,8 @@
 
 namespace Joomla\Renderer;
 
+use Joomla\String\Inflector;
+
 /**
  * Class LayoutFactory
  *
@@ -39,14 +41,38 @@ class LayoutFactory
 
 	private function getNamespaces($paths)
 	{
+		$inflector = Inflector::getInstance();
+
 		$namespaces = [];
 
 		foreach ($paths as $path)
 		{
-			$word         = str_replace('/', ' ', $path);
-			$word         = ucwords($word);
-			$word         = str_replace(' ', '\\', $word);
-			$namespaces[] = $word;
+			$separated = str_replace('/', ' ', $path);
+			$separated = preg_replace('~[^\w ]+~', '', $separated);
+			$parts     = explode(' ', $separated);
+			array_walk(
+				$parts,
+				function (&$part) use ($inflector)
+				{
+					if ($inflector->isPlural($part))
+					{
+						$part = $inflector->toSingular($part);
+					}
+					$part = ucfirst($part);
+				}
+			);
+
+			if ($parts[0] == 'Layout')
+			{
+				array_unshift($parts, 'Joomla');
+			}
+			elseif ($parts[0] == 'Template')
+			{
+				// @todo Get real template namespace, e.g. from database
+				array_shift($parts);
+			}
+
+			$namespaces[] = implode('\\', $parts);
 		}
 
 		return $namespaces;
@@ -61,16 +87,23 @@ class LayoutFactory
 	 */
 	public function createLayout($contentType, $content)
 	{
+		$layout = null;
 		foreach ($this->namespaces as $namespace)
 		{
-			$className = $namespace . $contentType;
+			$className = $namespace . '\\' . $contentType;
 
 			if (class_exists($className))
 			{
-				return new $className($content);
+				$layout = new $className($content);
+				break;
 			}
 		}
 
-		return new LayoutWrapper($contentType, $content, $this->paths);
+		if (is_null($layout))
+		{
+			$layout = new LayoutWrapper($contentType, $content, $this->paths);
+		}
+
+		return $layout;
 	}
 }

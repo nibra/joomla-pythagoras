@@ -27,7 +27,10 @@ use Joomla\PageBuilder\Entity\Content;
 use Joomla\PageBuilder\Entity\Layout;
 use Joomla\PageBuilder\Entity\Page;
 use Joomla\PageBuilder\Entity\Template;
+use Joomla\Renderer\CssAwareInterface;
 use Joomla\Renderer\HtmlRenderer;
+use Joomla\Renderer\JavascriptAwareInterface;
+use Joomla\Renderer\RendererInterface;
 use Joomla\Service\CommandBus;
 use Joomla\Service\CommandHandler;
 use Joomla\String\Inflector;
@@ -60,6 +63,9 @@ class DisplayPageCommandHandler extends CommandHandler
 	/** @var  Inflector */
 	private $inflector;
 
+	/** @var  boolean */
+	private $debug;
+
 	/**
 	 * Constructor.
 	 *
@@ -76,9 +82,28 @@ class DisplayPageCommandHandler extends CommandHandler
 	}
 
 	/**
-	 * @param DisplayPageCommand $command
+	 * Execute the command
+	 *
+	 * @param DisplayPageCommand $command The command
 	 */
 	public function handle(DisplayPageCommand $command)
+	{
+		$id          = $this->initFromCommand($command);
+		$page        = $this->getPageById($id);
+		$contentTree = $this->getContentTree($page);
+		$template    = $this->getTemplate($page);
+
+		$this->renderContentTree($contentTree, $template);
+	}
+
+	/**
+	 * Initialize Handler with data from the command.
+	 *
+	 * @param DisplayPageCommand $command The command
+	 *
+	 * @return int The page ID
+	 */
+	private function initFromCommand(DisplayPageCommand $command)
 	{
 		$id              = $command->getId();
 		$this->vars      = $command->getVars();
@@ -86,13 +111,43 @@ class DisplayPageCommandHandler extends CommandHandler
 		$this->output    = $command->getStream();
 		$this->container = $command->getContainer();
 
-		$this->registerContentTypes();
+		$queryParams = $this->request->getQueryParams();
+		$this->debug = isset($queryParams['debug']);
 
+		$this->registerContentTypes($this->output, $this->container);
+
+		return $id;
+	}
+
+	/**
+	 * Get the page record with the given ID
+	 *
+	 * @param integer $id The page ID
+	 *
+	 * @return Page The page
+	 */
+	private function getPageById($id)
+	{
 		/** @var RepositoryFactory $repositoryFactory */
 		$repositoryFactory = $this->container->get('Repository');
 		$repository        = $repositoryFactory->forEntity(Page::class);
 
-		$page           = $repository->getById($id);
+		/** @var Page $page */
+		$page = $repository->getById($id);
+
+		return $page;
+	}
+
+	/**
+	 * Get the content tree for a page.
+	 *
+	 * @param Page $page The page
+	 *
+	 * @return ContentTypeInterface[] The content tree(s)
+	 */
+	private function getContentTree($page)
+	{
+		$contentItems   = [];
 		$contentItems[] = $page->content->getAll();
 
 		for ($m = $page->layout; $m != null; $m = $m->parent)
@@ -107,19 +162,34 @@ class DisplayPageCommandHandler extends CommandHandler
 			$page->parent = $page->layout;
 		}
 
-		$contentTree = $this->buildTree($contentItems);
+		return $this->buildTree($contentItems);
+	}
 
-		$data = get_object_vars($page);
-
-		if ($data['title'][0] == ':')
-		{
-			// @todo Retrieve the title
-		}
-
+	/**
+	 * Get the (prerendered) template.
+	 *
+	 * @param Page $page The page
+	 *
+	 * @return string The template code
+	 */
+	private function getTemplate($page)
+	{
+		$data         = $this->getPageData($page);
 		$templatePath = $page->layout->template->path;
 		$this->output->setTemplate($templatePath);
 		$template = $this->loadTemplate(JPATH_ROOT . '/' . $templatePath . '/index.php', $data);
 
+		return $template;
+	}
+
+	/**
+	 * Integrates the content tree(s) into the template.
+	 *
+	 * @param ContentTypeInterface[] $contentTree The content tree(s)
+	 * @param string                 $template    The template
+	 */
+	private function renderContentTree($contentTree, $template)
+	{
 		$remainder = $this->writeUntil('</body>', $template);
 
 		foreach ($contentTree as $root)
@@ -127,23 +197,25 @@ class DisplayPageCommandHandler extends CommandHandler
 			$root->accept($this->output);
 		}
 
-		$queryParams = $this->request->getQueryParams();
-
-		if (isset($queryParams['debug']))
+		if ($this->debug)
 		{
 			$this->dumpSql();
 		}
 
 		$this->output->write($remainder);
-		$this->output->close();
+		$this->output->writeJavascript();
+		$this->output->writeCss();
 	}
 
-	private function registerContentTypes()
+	/**
+	 * Register TemplateSelector to the renderer
+	 *
+	 * @param RendererInterface  $renderer
+	 * @param ContainerInterface $container
+	 */
+	private function registerContentTypes(RendererInterface $renderer, ContainerInterface $container)
 	{
-		$container = $this->container;
-		$output    = $this->output;
-
-		$this->output->registerContentType('TemplateSelector', function (TemplateSelector $selector) use ($container, $output)
+		$this->output->registerContentType('TemplateSelector', function (TemplateSelector $selector) use ($container, $renderer)
 		{
 			/** @var RepositoryInterface $repo */
 			$repo      = $container->get('Repository')->forEntity(Template::class);
@@ -169,7 +241,7 @@ class DisplayPageCommandHandler extends CommandHandler
 				$accordion->addChild($compound);
 			}
 
-			$accordion->accept($output);
+			$accordion->accept($renderer);
 		});
 	}
 
@@ -220,6 +292,25 @@ class DisplayPageCommandHandler extends CommandHandler
 		return $result;
 	}
 
+	/**
+	 * Get the data from the page object.
+	 *
+	 * @param Page $page The page
+	 *
+	 * @return array The (resolved) data
+	 */
+	private function getPageData($page)
+	{
+		$data = get_object_vars($page);
+
+		if ($data['title'][0] == ':')
+		{
+			// @todo Retrieve the title
+		}
+
+		return $data;
+	}
+
 	private function loadTemplate($path, $data = [])
 	{
 		extract($data);
@@ -228,6 +319,21 @@ class DisplayPageCommandHandler extends CommandHandler
 		include $path;
 
 		return ob_get_clean();
+	}
+
+	/**
+	 * @param $separator
+	 * @param $string
+	 *
+	 * @return string
+	 */
+	private function writeUntil($separator, $string)
+	{
+		$parts = explode($separator, $string, 2);
+
+		$this->output->write($parts[0]);
+
+		return $separator . $parts[1];
 	}
 
 	/**
@@ -443,7 +549,7 @@ class DisplayPageCommandHandler extends CommandHandler
 	/**
 	 * Resolve the component in case it is a dynamic entity name
 	 *
-	 * @param   string  $component  The component
+	 * @param   string $component The component
 	 *
 	 * @return  string
 	 */
@@ -462,20 +568,5 @@ class DisplayPageCommandHandler extends CommandHandler
 		}
 
 		return $component;
-	}
-
-	/**
-	 * @param $separator
-	 * @param $template1
-	 *
-	 * @return string
-	 */
-	private function writeUntil($separator, $template1)
-	{
-		$parts = preg_split('~' . $separator . '~', $template1, 2);
-		$this->output->write($parts[0]);
-		$remainder = $separator . $parts[1];
-
-		return $remainder;
 	}
 }

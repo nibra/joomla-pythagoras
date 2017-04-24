@@ -48,7 +48,7 @@ use Joomla\Tests\Unit\DumpTrait;
  *
  * @since    __DEPLOY_VERSION__
  */
-class HtmlRenderer extends Renderer
+class HtmlRenderer extends Renderer implements JavascriptAwareInterface, CssAwareInterface
 {
 	/** @var string The MIME type */
 	protected $mediatype = 'text/html';
@@ -62,22 +62,12 @@ class HtmlRenderer extends Renderer
 	/** @var  ScriptStrategyInterface */
 	private $clientScript;
 
-	/** @var  string[]  Javascript url to add to output */
-	private $scriptUrl = [];
-
-	/** @var  string[]  Javascript code to add to output */
-	private $javascript = [];
-
-	/** @var  string[]  CSS code to add to output */
-	private $css = [];
-
-	/** @var  string[]  CSS url to add to output */
-	private $styleUrl = [];
-
 	/** @var  LayoutFactory */
 	private $layoutFactory;
 
 	use DumpTrait;
+	use JavascriptAwareImplementation;
+	use CssAwareImplementation;
 
 	/**
 	 * @param   ScriptStrategyInterface $strategy The scripting strategy (library) to use
@@ -106,133 +96,6 @@ class HtmlRenderer extends Renderer
 	}
 
 	/**
-	 * Add JavaScript in a script tag to the output.
-	 * The JS code is identified by the label. Re-using a label will overwrite previous definitions.
-	 *
-	 * @param   string $label An identifier
-	 * @param   string $url   The code associated with that identifier
-	 *
-	 * @return  void
-	 */
-	public function addJavascript($label, $url)
-	{
-		$this->scriptUrl[$label] = $url;
-	}
-
-	/**
-	 * Embed JavaScript in the output.
-	 * The JS code is identified by the label. Re-using a label will overwrite previous definitions.
-	 *
-	 * @param   string $label An identifier
-	 * @param   string $code  The code associated with that identifier
-	 *
-	 * @return  void
-	 */
-	public function embedJavascript($label, $code)
-	{
-		$this->javascript[$label] = $code;
-	}
-
-	/**
-	 * Add stylesheet to the output.
-	 * The stylesheet is identified by the label. Re-using a label will overwrite previous definitions.
-	 *
-	 * @param string $label
-	 * @param string $url
-	 *
-	 * @return void
-	 */
-	public function addCss($label, $url)
-	{
-		$this->styleUrl[$label] = $url;
-	}
-
-	/**
-	 * Embed CSS in the output.
-	 * The CSS code is namespaced with the ID of the element to prevent collisions.
-	 *
-	 * @param string $namespace
-	 * @param string $css
-	 *
-	 * @return void
-	 */
-	public function embedCss($namespace, $css)
-	{
-		$this->css[] = preg_replace_callback(
-			'~([^{\s]*\s?\{[^{]*?\})~sm',
-			function ($match) use ($namespace)
-			{
-				return "#{$namespace} {$match[0]}";
-			},
-			$css
-		);
-	}
-
-	/**
-	 * @return  void
-	 */
-	public function writeEmbeddedJavascript()
-	{
-		$js = '';
-		$js .= '<script>';
-		$js .= implode("\n", $this->javascript);
-		$js .= '</script>';
-
-		$this->injectBefore('</body>', $js);
-	}
-
-	/**
-	 * @return  void
-	 */
-	public function writeRemoteJavascript()
-	{
-		$elements = '';
-		foreach ($this->scriptUrl as $url)
-		{
-			$elements .= "<script src=\"{$url}\"></script>";
-		}
-
-		$this->injectBefore('</head>', $elements);
-	}
-
-	/**
-	 * @return  void
-	 */
-	public function writeEmbeddedCss()
-	{
-		$css = '';
-		$css .= '<style>';
-		$css .= implode("\n", $this->css);
-		$css .= '</style>';
-
-		$this->injectBefore('</head>', $css);
-	}
-
-	/**
-	 * @return  void
-	 */
-	public function writeRemoteCss()
-	{
-		$elements = '';
-		foreach ($this->styleUrl as $url)
-		{
-			$elements .= "<link rel=\"stylesheet\" href=\"{$url}\">";
-		}
-
-		$this->injectBefore('</head>', $elements);
-	}
-
-	public function close()
-	{
-		$this->writeRemoteJavascript();
-		$this->writeEmbeddedJavascript();
-		$this->writeRemoteCss();
-		$this->writeEmbeddedCss();
-
-		#parent::close();
-	}
-
-	/**
 	 * Render a headline.
 	 *
 	 * @param   Headline $headline The headline
@@ -254,7 +117,7 @@ class HtmlRenderer extends Renderer
 	 */
 	private function applyLayout($contentType, $content)
 	{
-		return $this->write($this->layoutFactory->createLayout($contentType, $content)->render($this));
+		return $this->layoutFactory->createLayout($contentType, $content)->render($this);
 	}
 
 	/**
@@ -290,26 +153,7 @@ class HtmlRenderer extends Renderer
 	 */
 	public function visitCompound(Compound $compound)
 	{
-		$id = " id=\"{$compound->getId()}\"";
-
-		$class = $compound->getParameter('class', '');
-
-		if (!empty($class))
-		{
-			$class = " class=\"$class\"";
-		}
-
-		$len = 0;
-		$len += $this->write("<{$compound->getType()}{$id}{$class}>\n");
-
-		foreach ($compound->elements as $item)
-		{
-			$len += $item->accept($this);
-		}
-
-		$len += $this->write("</{$compound->getType()}>\n");
-
-		return $len;
+		return $this->applyLayout('Compound', $compound);
 	}
 
 	/**
@@ -356,12 +200,13 @@ class HtmlRenderer extends Renderer
 
 		foreach ($content->getChildren() as $key => $item)
 		{
-			$this->output = '';
+			$this->rewind();
 			$item->accept($this);
 			$item->html = $this->output;
 		}
 
-		$this->output = $stash;
+		$this->rewind();
+		$this->write($stash);
 	}
 
 	/**
@@ -593,11 +438,13 @@ class HtmlRenderer extends Renderer
 	 */
 	public function visitDataTable(DataTable $dataTable)
 	{
+		$items = $dataTable->getChildren();
+
 		/** @var EntityBuilder $entityBuilder */
 		$entityBuilder = $this->container->get('Repository')->getEntityBuilder();
 
 		$params           = $dataTable->getParameters();
-		$params['entity'] = $entityBuilder->getMeta(get_class($dataTable->getChildren()[0]->item));
+		$params['entity'] = $entityBuilder->getMeta(get_class($items[0]->item));
 		$dataTable->setParameters($params);
 
 		return $this->applyLayout('DataTable', $dataTable);
@@ -688,14 +535,5 @@ class HtmlRenderer extends Renderer
 	public function visitLink(Link $link)
 	{
 		return $this->applyLayout('Link', $link);
-	}
-
-	/**
-	 * @param $where
-	 * @param $string
-	 */
-	private function injectBefore($where, $string)
-	{
-		$this->output = str_replace($where, $string . $where, $this->output);
 	}
 }

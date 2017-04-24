@@ -21,6 +21,8 @@ use Joomla\Renderer\Exception\NotFoundException;
  */
 class LayoutWrapper implements LayoutInterface
 {
+	private $debug = true;
+
 	/**
 	 * @var string
 	 */
@@ -69,18 +71,29 @@ class LayoutWrapper implements LayoutInterface
 	 * The layout file gets its data in `$content` which is an object implementing the ContentTypeInterface.
 	 * It has access to the renderer in the `$renderer` variable.
 	 *
-	 * @param Renderer $renderer
+	 * @param Renderer|RendererInterface $renderer
 	 *
-	 * @return string
+	 * @return int
 	 */
-	public function render(Renderer $renderer)
+	public function render(RendererInterface $renderer)
 	{
 		/** @noinspection PhpUnusedLocalVariableInspection */
 		$content = $this->content;
 
 		ob_start();
+
+		if ($this->debug)
+		{
+			echo "\n\n<!-- BOF {$this->layoutFile} -->\n";
+		}
+
 		include $this->layoutFile;
 
-		return ob_get_clean();
+		if ($this->debug)
+		{
+			echo "\n<!-- EOF {$this->layoutFile} -->\n\n";
+		}
+
+		return $renderer->write(ob_get_clean());
 	}
 }

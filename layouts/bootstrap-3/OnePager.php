@@ -2,18 +2,39 @@
 /**
  * Part of the Joomla Framework Content Package
  *
- * @copyright  Copyright (C) 2015 - 2016 Open Source Matters, Inc. All rights reserved.
+ * @copyright  Copyright (C) 2015 - 2017 Open Source Matters, Inc. All rights reserved.
  * @license    GNU General Public License version 2 or later; see LICENSE
- *
- * @var \Joomla\Content\Type\OnePager $content
- * @var \Joomla\Renderer\HtmlRenderer $renderer
- * @codingStandardsIgnoreStart
  */
 
-$id    = $content->getId();
-$title = $content->getTitle();
+namespace Joomla\Layout\Bootstrap3;
 
-$renderer->write(<<<HTML
+use Joomla\Renderer\LayoutInterface;
+use Joomla\Renderer\RendererInterface;
+
+class OnePager implements LayoutInterface
+{
+	/** @var  \Joomla\Content\Type\Compound */
+	private $content;
+
+	public function __construct(\Joomla\Content\Type\OnePager $content)
+	{
+		$this->content = $content;
+	}
+
+	/**
+	 * Render the layout.
+	 *
+	 * @param RendererInterface $renderer
+	 *
+	 * @return int
+	 */
+	public function render(RendererInterface $renderer)
+	{
+		$content = $this->content;
+		$id = $content->getId();
+		$title = $content->getTitle();
+
+		$len = $renderer->write(<<<HTML
 <nav id="{$id}-nav" class="navbar navbar-default navbar-fixed-top">
     <div class="container">
         <div class="navbar-header">
@@ -25,36 +46,36 @@ $renderer->write(<<<HTML
         <div class="collapse navbar-collapse" id="{$id}-collapse">
             <ul class="nav navbar-nav navbar-right">
 HTML
-);
+		);
 
-$children = $content->getChildren();
-array_shift($children);
-array_pop($children);
+		$children = $content->getChildren();
+		array_shift($children);
+		array_pop($children);
 
-foreach ($children as $i => $child)
-{
-	$childId    = $child->getId();
-	$childTitle = $child->getTitle();
+		foreach ($children as $i => $child)
+		{
+			$childId    = $child->getId();
+			$childTitle = $child->getTitle();
 
-	$renderer->write("                <li><a class=\"page-scroll\" href=\"#{$childId}\">{$childTitle}</a></li>\n");
-}
+			$len += $renderer->write("                <li><a class=\"page-scroll\" href=\"#{$childId}\">{$childTitle}</a></li>\n");
+		}
 
-$renderer->write(<<<HTML
+		$len += $renderer->write(<<<HTML
             </ul>
         </div>
     </div>
 </nav>
 HTML
-);
+		);
 
-foreach ($content->getChildren() as $child)
-{
-	$child->accept($renderer);
-}
+		foreach ($content->getChildren() as $child)
+		{
+			$len += $child->accept($renderer);
+		}
 
-$renderer->embedJavascript('.navbar', <<<JS
+		$renderer->embedJavascript('.navbar', <<<JS
 (function($) {
-	"use strict"; // Start of use strict
+	"use strict";
 	$(document).ready(function() {
 		// jQuery for page scrolling feature - requires jQuery Easing plugin
 		$('a.page-scroll').bind('click', function(event) {
@@ -84,6 +105,11 @@ $renderer->embedJavascript('.navbar', <<<JS
 		})
 	});
 
-})(jQuery); // End of use strict
+})(jQuery);
+
 JS
-);
+		);
+
+		return $len;
+	}
+}

@@ -41,19 +41,6 @@ foreach ($content->getChildren() as $row)
 	{
 		echo "<td>";
 
-		#if (is_object($cell))
-		#{
-		#	echo "object " . get_class($cell);
-		#}
-		#elseif (is_array($cell))
-		#{
-		#	echo "array (" . count($cell) . ")";
-		#}
-		#else
-		#{
-		#	echo $cell;
-		#}
-
 		if (is_scalar($cell))
 		{
 			echo $cell;
@@ -73,16 +60,3 @@ foreach ($content->getChildren() as $row)
 
 echo "</tbody>";
 echo "</table>";
-
-#$renderer->addJavascript('jquery', 'https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js');
-$renderer->addJavascript('jquery-ui', 'https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js');
-$renderer->addJavascript('tabulator', 'https://cdnjs.cloudflare.com/ajax/libs/tabulator/2.11.0/tabulator.min.js');
-$renderer->addCss('tabulator', 'https://cdnjs.cloudflare.com/ajax/libs/tabulator/2.11.0/tabulator.min.css');
-
-$js = <<<JS
-$(document).ready(function () {
-	$("#{$id}").tabulator({});
-});
-JS;
-
-$renderer->embedJavascript('.tabulator-' . $id, $js);

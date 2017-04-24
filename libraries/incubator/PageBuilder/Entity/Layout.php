@@ -19,9 +19,38 @@ use Joomla\ORM\Repository\RepositoryInterface;
  */
 class Layout
 {
+	/**
+	 * @var integer The ID
+	 */
 	public $id;
+
+	/**
+	 * @var string The layout title
+	 */
 	public $title;
 
-	/** @var  RepositoryInterface */
+	/**
+	 * @var Layout The parent layout, if any
+	 */
+	public $parent;
+
+	/**
+	 * @var Template The template
+	 */
+	public $template;
+
+	/**
+	 * @var RepositoryInterface Subsequent layouts
+	 */
+	public $children;
+
+	/**
+	 * @var RepositoryInterface Pages using this layout
+	 */
+	public $pages;
+
+	/**
+	 * @var RepositoryInterface Content tree
+	 */
 	public $content;
 }

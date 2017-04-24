@@ -10,7 +10,6 @@
  */
 
 ?>
-<!-- <?= __FILE__ ?> -->
 <div id="<?php echo $content->getId(); ?>" class="container">
 	<?php foreach ($content->elements as $i => $element) : ?>
 		<?php $class = isset($element->getParameters()->class) ? $element->getParameters()->class : ''; ?>
@@ -19,4 +18,3 @@
 		</div>
 	<?php endforeach; ?>
 </div>
-<!-- EOF <?= __FILE__ ?> -->

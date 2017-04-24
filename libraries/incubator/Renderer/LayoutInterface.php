@@ -20,9 +20,9 @@ interface LayoutInterface
 	/**
 	 * Render the layout.
 	 *
-	 * @param Renderer $renderer
+	 * @param RendererInterface $renderer
 	 *
-	 * @return string
+	 * @return int
 	 */
-	public function render(Renderer $renderer);
+	public function render(RendererInterface $renderer);
 }

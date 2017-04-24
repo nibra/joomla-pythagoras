@@ -10,7 +10,6 @@
  */
 $class = $content->getParameter('class', '');
 ?>
-<!-- <?= __FILE__ ?> -->
 <div id="<?php echo $content->getId(); ?>"<?php echo $class ? " class=\"$class\"" : ''; ?>>
 	<ul class="nav nav-tabs">
 		<?php foreach ($content->elements as $i => $element) : ?>
@@ -27,4 +26,3 @@ $class = $content->getParameter('class', '');
 		<?php endforeach; ?>
 	</div>
 </div>
-<!-- EOF <?= __FILE__ ?> -->

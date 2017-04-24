@@ -40,7 +40,6 @@ $subTree = function($menu, $callback, $level, $maxlevel ) {
 	<?php
 };
 ?>
-<!-- <?= __FILE__ ?> -->
 <nav id="<?php echo $content->getId(); ?>" class="<?php echo $content->getParameter('class', 'navbar navbar-inverse'); ?>">
 	<div class="container-fluid">
 		<div class="navbar-header">
@@ -56,6 +55,5 @@ $subTree = function($menu, $callback, $level, $maxlevel ) {
 		</ul>
 	</div>
 </nav>
-<!-- EOF <?= __FILE__ ?> -->
 <?php
 unset($subTree);

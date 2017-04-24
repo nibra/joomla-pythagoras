@@ -8,7 +8,7 @@
 
 namespace Joomla\PageBuilder\Entity;
 
-use Joomla\ORM\Repository\Repository;
+use Joomla\ORM\Repository\RepositoryInterface;
 
 /**
  * Class Page
@@ -19,12 +19,38 @@ use Joomla\ORM\Repository\Repository;
  */
 class Page
 {
+	/**
+	 * @var integer The ID
+	 */
 	public $id;
+
+	/**
+	 * @var string The page title
+	 */
 	public $title;
+
+	/**
+	 * @var string The (partial) URL of the page
+	 */
 	public $url;
 
 	/**
-	 * @var Repository Subsequent pages
+	 * @var Page The parent page, if any
+	 */
+	public $parent;
+
+	/**
+	 * @var RepositoryInterface Subsequent pages
 	 */
 	public $children;
+
+	/**
+	 * @var RepositoryInterface Content tree
+	 */
+	public $content;
+
+	/**
+	 * @var Layout The layout for the page
+	 */
+	public $layout;
 }

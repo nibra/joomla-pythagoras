@@ -42,7 +42,6 @@ if (!empty($inlineCSS))
 	$this->addCss($content->getId(), 'img {' . implode(' ', $style) . '}');
 }
 ?>
-<!-- <?= __FILE__ ?> -->
 <figure id="<?php echo $content->getId(); ?>">
 	<img class="img-responsive <?php echo $content->getParameter('class', ''); ?>"
 	     src="<?php echo $url; ?>" alt="<?php echo $content->alt; ?>">
@@ -55,4 +54,3 @@ if (!empty($inlineCSS))
 		</figcaption>
 	<?php endif; ?>
 </figure>
-<!-- EOF <?= __FILE__ ?> -->

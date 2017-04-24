@@ -47,7 +47,9 @@
   "autoload": {
     "psr-4": {
       "Joomla\\": "libraries/incubator/",
-      "Joomla\\Extension\\": "extensions/"
+      "Joomla\\Extension\\": "extensions/",
+      "Joomla\\Layout\\Bootstrap3\\": "layouts/bootstrap-3/",
+      "Joomla\\Layout\\Plain\\": "layouts/plain/"
     }
   },
   "autoload-dev": {

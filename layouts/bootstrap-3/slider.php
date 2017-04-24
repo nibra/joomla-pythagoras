@@ -11,7 +11,6 @@
  */
 
 ?>
-<!-- <?= __FILE__ ?> -->
 <div id="<?php echo $content->getId(); ?>" class="carousel <?php echo $content->getParameter('class', 'slide'); ?>" data-ride="carousel">
 	<!-- Indicators -->
 	<ol class="carousel-indicators">
@@ -39,4 +38,3 @@
 		<span class="sr-only">Next</span>
 	</a>
 </div>
-<!-- EOF <?= __FILE__ ?> -->

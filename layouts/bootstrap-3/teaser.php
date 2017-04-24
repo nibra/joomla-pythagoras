@@ -55,11 +55,9 @@ if ($content->getParameter('class') > '')
 	$class = " class=\"{$content->getParameter('class')}\"";
 }
 ?>
-<!-- <?= __FILE__ ?> -->
 <div id="<?php echo $content->getId(); ?>"<?php echo $class; ?>>
 	<?php echo $image; ?>
 	<<?php echo $hTag; ?>><?php echo $title; ?></<?php echo $hTag; ?>>
 	<p><?php echo $subline; ?></p>
 	<?php echo $button; ?>
 </div>
-<!-- EOF <?= __FILE__ ?> -->
