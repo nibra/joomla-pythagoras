@@ -236,11 +236,11 @@ class HtmlRenderer extends Renderer implements JavascriptAwareInterface, CssAwar
 	 *
 	 * @param   Headline $headline The headline
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitHeadline(Headline $headline)
 	{
-		return $this->applyLayout('Headline', $headline);
+		$this->applyLayout('Headline', $headline);
 	}
 
 	/**

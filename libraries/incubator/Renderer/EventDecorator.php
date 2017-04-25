@@ -223,11 +223,11 @@ class EventDecorator implements RendererInterface
 	 *
 	 * @param   Headline $headline The headline
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitHeadline(Headline $headline)
 	{
-		$this->delegate(__FUNCTION__, func_get_args());
+		$this->delegate('visitHeadline', [$headline]);
 	}
 
 	/**
@@ -313,7 +313,7 @@ class EventDecorator implements RendererInterface
 	}
 
 	/**
-	 * Render an one-pager
+	 * Render a one-pager
 	 *
 	 * @param   OnePager $onePager The one-pager
 	 *
@@ -325,9 +325,9 @@ class EventDecorator implements RendererInterface
 	}
 
 	/**
-	 * Render an one-pager section
+	 * Render a one-pager section
 	 *
-	 * @param   OnePagerSection $onePagerSection The section
+	 * @param   OnePagerSection $onePagerSection The one-pager section
 	 *
 	 * @return  void
 	 */

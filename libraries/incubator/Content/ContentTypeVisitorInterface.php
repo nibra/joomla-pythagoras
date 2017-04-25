@@ -41,60 +41,6 @@ use Joomla\Content\Type\Tree;
 interface ContentTypeVisitorInterface
 {
 	/**
-	 * Render a headline.
-	 *
-	 * @param   Headline $headline The headline
-	 *
-	 * @return  void
-	 */
-	public function visitHeadline(Headline $headline);
-
-	/**
-	 * Render a compound (block) element
-	 *
-	 * @param   Compound $compound The compound
-	 *
-	 * @return  void
-	 */
-	public function visitCompound(Compound $compound);
-
-	/**
-	 * Render an attribution to an author
-	 *
-	 * @param   Attribution $attribution The attribution
-	 *
-	 * @return  void
-	 */
-	public function visitAttribution(Attribution $attribution);
-
-	/**
-	 * Render a paragraph
-	 *
-	 * @param   Paragraph $paragraph The paragraph
-	 *
-	 * @return  void
-	 */
-	public function visitParagraph(Paragraph $paragraph);
-
-	/**
-	 * Render an image
-	 *
-	 * @param   Image $image The image
-	 *
-	 * @return  void
-	 */
-	public function visitImage(Image $image);
-
-	/**
-	 * Render an slider
-	 *
-	 * @param   Slider $slider The slider
-	 *
-	 * @return  void
-	 */
-	public function visitSlider(Slider $slider);
-
-	/**
 	 * Render an accordion
 	 *
 	 * @param   Accordion $accordion The accordion
@@ -102,51 +48,6 @@ interface ContentTypeVisitorInterface
 	 * @return  void
 	 */
 	public function visitAccordion(Accordion $accordion);
-
-	/**
-	 * Render a tree
-	 *
-	 * @param   Tree $tree The tree
-	 *
-	 * @return  void
-	 */
-	public function visitTree(Tree $tree);
-
-	/**
-	 * Render tabs
-	 *
-	 * @param   Tabs $tabs The tabs
-	 *
-	 * @return  void
-	 */
-	public function visitTabs(Tabs $tabs);
-
-	/**
-	 * Dump an item
-	 *
-	 * @param   Dump $dump The dump
-	 *
-	 * @return  void
-	 */
-	public function visitDump(Dump $dump);
-
-	/**
-	 * Render rows
-	 *
-	 * @param   Rows $rows The rows
-	 *
-	 * @return  void
-	 */
-	public function visitRows(Rows $rows);
-
-	/**
-	 * Render columns
-	 *
-	 * @param   Columns $columns The columns
-	 *
-	 * @return  void
-	 */
-	public function visitColumns(Columns $columns);
 
 	/**
 	 * Render an article
@@ -158,13 +59,31 @@ interface ContentTypeVisitorInterface
 	public function visitArticle(Article $article);
 
 	/**
-	 * Render a teaser
+	 * Render an attribution to an author
 	 *
-	 * @param   Teaser $teaser The teaser
+	 * @param   Attribution $attribution The attribution
 	 *
 	 * @return  void
 	 */
-	public function visitTeaser(Teaser $teaser);
+	public function visitAttribution(Attribution $attribution);
+
+	/**
+	 * Render columns
+	 *
+	 * @param   Columns $columns The columns
+	 *
+	 * @return  void
+	 */
+	public function visitColumns(Columns $columns);
+
+	/**
+	 * Render a compound (block) element
+	 *
+	 * @param   Compound $compound The compound
+	 *
+	 * @return  void
+	 */
+	public function visitCompound(Compound $compound);
 
 	/**
 	 * Render a defaultMenu
@@ -176,65 +95,119 @@ interface ContentTypeVisitorInterface
 	public function visitDefaultMenu(DefaultMenu $defaultMenu);
 
 	/**
-	 * Render a data table
+	 * Dump an item
 	 *
-	 * @param   DataTable $dataTable The data table
+	 * @param   ContentTypeInterface $dump The dump
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
-	public function visitDataTable(DataTable $dataTable);
+	public function visitDump(ContentTypeInterface $dump);
 
 	/**
-	 * Render a span
+	 * Render a headline.
 	 *
-	 * @param   Span $span The span
+	 * @param   Headline $headline The headline
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
-	public function visitSpan(Span $span);
+	public function visitHeadline(Headline $headline);
 
 	/**
-	 * Render a horizontal line
+	 * Render an image
 	 *
-	 * @param   HorizontalLine $hr The horizontal line
+	 * @param   Image $image The image
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
-	public function visitHorizontalLine(HorizontalLine $hr);
-
-	/**
-	 * Render an icon
-	 *
-	 * @param   Icon $icon The icon
-	 *
-	 * @return  integer Number of bytes written to the output
-	 */
-	public function visitIcon(Icon $icon);
+	public function visitImage(Image $image);
 
 	/**
 	 * Render a link
 	 *
 	 * @param   Link $link The link
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitLink(Link $link);
 
 	/**
-	 * Render an one-pager
+	 * Render a one-pager
 	 *
 	 * @param   OnePager $onePager The one-pager
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitOnePager(OnePager $onePager);
 
 	/**
-	 * Render an one-pager section
+	 * Render a one-pager section
 	 *
-	 * @param   OnePagerSection $onePagerSection The section
+	 * @param   OnePagerSection $onePagerSection The one-pager section
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitOnePagerSection(OnePagerSection $onePagerSection);
+
+	/**
+	 * Render a paragraph
+	 *
+	 * @param   Paragraph $paragraph The paragraph
+	 *
+	 * @return  void
+	 */
+	public function visitParagraph(Paragraph $paragraph);
+
+	/**
+	 * Render rows
+	 *
+	 * @param   Rows $rows The rows
+	 *
+	 * @return  void
+	 */
+	public function visitRows(Rows $rows);
+
+	/**
+	 * Render an slider
+	 *
+	 * @param   Slider $slider The slider
+	 *
+	 * @return  void
+	 */
+	public function visitSlider(Slider $slider);
+
+	/**
+	 * Render a span
+	 *
+	 * @param   Span $span The span
+	 *
+	 * @return  void
+	 */
+	public function visitSpan(Span $span);
+
+	/**
+	 * Render tabs
+	 *
+	 * @param   Tabs $tabs The tabs
+	 *
+	 * @return  void
+	 */
+	public function visitTabs(Tabs $tabs);
+
+	/**
+	 * Render a teaser
+	 *
+	 * @param   Teaser $teaser The teaser
+	 *
+	 * @return  void
+	 */
+	public function visitTeaser(Teaser $teaser);
+
+	/**
+	 * Render a tree
+	 *
+	 * @param   Tree $tree The tree
+	 *
+	 * @return  void
+	 */
+	public function visitTree(Tree $tree);
 }

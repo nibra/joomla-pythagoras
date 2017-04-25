@@ -37,11 +37,10 @@ class Renderer extends \Joomla\Renderer\Renderer
 	 *
 	 * @param   \Joomla\Content\Type\Headline $headline The headline
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitHeadline(\Joomla\Content\Type\Headline $headline)
 	{
-		return 0;
 	}
 
 	/**
@@ -49,11 +48,10 @@ class Renderer extends \Joomla\Renderer\Renderer
 	 *
 	 * @param   \Joomla\Content\Type\Compound $compound The compound
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitCompound(\Joomla\Content\Type\Compound $compound)
 	{
-		return 0;
 	}
 
 	/**
@@ -61,11 +59,10 @@ class Renderer extends \Joomla\Renderer\Renderer
 	 *
 	 * @param   \Joomla\Content\Type\Attribution $attribution The attribution
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitAttribution(\Joomla\Content\Type\Attribution $attribution)
 	{
-		return 0;
 	}
 
 	/**
@@ -73,11 +70,10 @@ class Renderer extends \Joomla\Renderer\Renderer
 	 *
 	 * @param   \Joomla\Content\Type\Paragraph $paragraph The paragraph
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitParagraph(\Joomla\Content\Type\Paragraph $paragraph)
 	{
-		return 0;
 	}
 
 	/**
@@ -85,11 +81,10 @@ class Renderer extends \Joomla\Renderer\Renderer
 	 *
 	 * @param   Image $image The image
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitImage(Image $image)
 	{
-		return 0;
 	}
 
 	/**
@@ -97,11 +92,10 @@ class Renderer extends \Joomla\Renderer\Renderer
 	 *
 	 * @param   Slider $slider The slider
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitSlider(Slider $slider)
 	{
-		return 0;
 	}
 
 	/**
@@ -109,11 +103,10 @@ class Renderer extends \Joomla\Renderer\Renderer
 	 *
 	 * @param   Accordion $accordion The accordion
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitAccordion(Accordion $accordion)
 	{
-		return 0;
 	}
 
 	/**
@@ -121,11 +114,10 @@ class Renderer extends \Joomla\Renderer\Renderer
 	 *
 	 * @param   Tree $tree The tree
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitTree(Tree $tree)
 	{
-		return 0;
 	}
 
 	/**
@@ -133,11 +125,10 @@ class Renderer extends \Joomla\Renderer\Renderer
 	 *
 	 * @param   Tabs $tabs The tabs
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitTabs(Tabs $tabs)
 	{
-		return 0;
 	}
 
 	/**
@@ -145,11 +136,10 @@ class Renderer extends \Joomla\Renderer\Renderer
 	 *
 	 * @param   Dump $dump The dump
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitDump(Dump $dump)
 	{
-		return 0;
 	}
 
 	/**
@@ -157,11 +147,10 @@ class Renderer extends \Joomla\Renderer\Renderer
 	 *
 	 * @param   Rows $rows The rows
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitRows(Rows $rows)
 	{
-		return 0;
 	}
 
 	/**
@@ -169,11 +158,10 @@ class Renderer extends \Joomla\Renderer\Renderer
 	 *
 	 * @param   Columns $columns The columns
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitColumns(Columns $columns)
 	{
-		return 0;
 	}
 
 	/**
@@ -181,11 +169,10 @@ class Renderer extends \Joomla\Renderer\Renderer
 	 *
 	 * @param   Article $article The article
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitArticle(Article $article)
 	{
-		return 0;
 	}
 
 	/**
@@ -193,11 +180,10 @@ class Renderer extends \Joomla\Renderer\Renderer
 	 *
 	 * @param   Teaser $teaser The teaser
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitTeaser(Teaser $teaser)
 	{
-		return 0;
 	}
 
 	/**
@@ -205,11 +191,10 @@ class Renderer extends \Joomla\Renderer\Renderer
 	 *
 	 * @param   DefaultMenu $defaultMenu The defaultMenu
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitDefaultMenu(DefaultMenu $defaultMenu)
 	{
-		return 0;
 	}
 
 	/**
@@ -217,11 +202,10 @@ class Renderer extends \Joomla\Renderer\Renderer
 	 *
 	 * @param   DataTable $dataTable The data table
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitDataTable(DataTable $dataTable)
 	{
-		return 0;
 	}
 
 	/**
@@ -229,11 +213,10 @@ class Renderer extends \Joomla\Renderer\Renderer
 	 *
 	 * @param   Span $span The span
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitSpan(Span $span)
 	{
-		return 0;
 	}
 
 	/**
@@ -241,11 +224,10 @@ class Renderer extends \Joomla\Renderer\Renderer
 	 *
 	 * @param   HorizontalLine $hr The horizontal line
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitHorizontalLine(HorizontalLine $hr)
 	{
-		return 0;
 	}
 
 	/**
@@ -253,11 +235,10 @@ class Renderer extends \Joomla\Renderer\Renderer
 	 *
 	 * @param   Icon $icon The icon
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitIcon(Icon $icon)
 	{
-		return 0;
 	}
 
 	/**
@@ -265,34 +246,31 @@ class Renderer extends \Joomla\Renderer\Renderer
 	 *
 	 * @param   Link $link The link
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitLink(Link $link)
 	{
-		return 0;
 	}
 
 	/**
-	 * Render an one-pager
+	 * Render a one-pager
 	 *
 	 * @param   OnePager $onePager The one-pager
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitOnePager(OnePager $onePager)
 	{
-		return 0;
 	}
 
 	/**
-	 * Render an one-pager section
+	 * Render a one-pager section
 	 *
 	 * @param   OnePagerSection $onePagerSection The section
 	 *
-	 * @return  integer Number of bytes written to the output
+	 * @return  void
 	 */
 	public function visitOnePagerSection(OnePagerSection $onePagerSection)
 	{
-		return 0;
 	}
 }

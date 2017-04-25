@@ -14,12 +14,8 @@ use Joomla\Content\Type\Article;
 use Joomla\Content\Type\Attribution;
 use Joomla\Content\Type\Columns;
 use Joomla\Content\Type\Compound;
-use Joomla\Content\Type\DataTable;
 use Joomla\Content\Type\DefaultMenu;
-use Joomla\Content\Type\Dump;
 use Joomla\Content\Type\Headline;
-use Joomla\Content\Type\HorizontalLine;
-use Joomla\Content\Type\Icon;
 use Joomla\Content\Type\Image;
 use Joomla\Content\Type\Link;
 use Joomla\Content\Type\OnePager;
@@ -54,7 +50,33 @@ class PlainRenderer extends Renderer
 	public function visitAccordion(Accordion $accordion)
 	{
 		throw new \LogicException(__METHOD__ . ' is not implemented.');
-	}	/**
+	}
+
+	/**
+	 * Render an article
+	 *
+	 * @param   Article $article The article
+	 *
+	 * @return  void
+	 */
+	public function visitArticle(Article $article)
+	{
+		throw new \LogicException(__METHOD__ . ' is not implemented.');
+	}
+
+	/**
+	 * Render an attribution to an author
+	 *
+	 * @param   Attribution $attribution The attribution
+	 *
+	 * @return  void
+	 */
+	public function visitAttribution(Attribution $attribution)
+	{
+		$this->write($attribution->label . ' ' . $attribution->text . "\n\n");
+	}
+
+	/**
 	 * Write data to the output.
 	 *
 	 * @param   ContentTypeInterface|string $content The string that is to be written.
@@ -74,38 +96,18 @@ class PlainRenderer extends Renderer
 	}
 
 	/**
-	 * Render an article
+	 * Render columns
 	 *
-	 * @param   Article $article The article
-	 *
-	 * @return  void
-	 */
-	public function visitArticle(Article $article)
-	{
-		throw new \LogicException(__METHOD__ . ' is not implemented.');
-	}	/**
-	 * Render a headline.
-	 *
-	 * @param   Headline $headline The headline
+	 * @param   Columns $columns The columns
 	 *
 	 * @return  void
 	 */
-	public function visitHeadline(Headline $headline)
+	public function visitColumns(Columns $columns)
 	{
-		$this->write($headline->text . "\n" . str_repeat('=', strlen($headline->text)) . "\n\n");
+		$this->visitCompound($columns);
 	}
 
 	/**
-	 * Render an attribution to an author
-	 *
-	 * @param   Attribution $attribution The attribution
-	 *
-	 * @return  void
-	 */
-	public function visitAttribution(Attribution $attribution)
-	{
-		$this->write($attribution->label . ' ' . $attribution->text . "\n\n");
-	}	/**
 	 * Render a compound (block) element
 	 *
 	 * @param   Compound $compound The compound
@@ -121,27 +123,39 @@ class PlainRenderer extends Renderer
 	}
 
 	/**
-	 * Render columns
+	 * Render a defaultMenu
 	 *
-	 * @param   Columns $columns The columns
+	 * @param   DefaultMenu $defaultMenu The defaultMenu
 	 *
 	 * @return  void
 	 */
-	public function visitColumns(Columns $columns)
+	public function visitDefaultMenu(DefaultMenu $defaultMenu)
 	{
-		$this->visitCompound($columns);
+		throw new \LogicException(__METHOD__ . ' is not implemented.');
 	}
 
 	/**
-	 * Render a paragraph
+	 * Dump an item
 	 *
-	 * @param   Paragraph $paragraph The paragraph
+	 * @param   ContentTypeInterface $dump The dump
 	 *
 	 * @return  void
 	 */
-	public function visitParagraph(Paragraph $paragraph)
+	public function visitDump(ContentTypeInterface $dump)
 	{
-		$this->write($paragraph->text . "\n\n");
+		$this->write(print_r($dump->item, true));
+	}
+
+	/**
+	 * Render a headline.
+	 *
+	 * @param   Headline $headline The headline
+	 *
+	 * @return  void
+	 */
+	public function visitHeadline(Headline $headline)
+	{
+		$this->write($headline->text . "\n" . str_repeat('=', strlen($headline->text)) . "\n\n");
 	}
 
 	/**
@@ -157,6 +171,66 @@ class PlainRenderer extends Renderer
 	}
 
 	/**
+	 * Render a link
+	 *
+	 * @param   Link $link The link
+	 *
+	 * @return  void
+	 */
+	public function visitLink(Link $link)
+	{
+		throw new \LogicException(__METHOD__ . ' is not implemented.');
+	}
+
+	/**
+	 * Render a one-pager
+	 *
+	 * @param   OnePager $onePager The one-pager
+	 *
+	 * @return  void
+	 */
+	public function visitOnePager(OnePager $onePager)
+	{
+		throw new \LogicException(__METHOD__ . ' is not implemented.');
+	}
+
+	/**
+	 * Render a one-pager section
+	 *
+	 * @param   OnePagerSection $onePagerSection The one-pager section
+	 *
+	 * @return  void
+	 */
+	public function visitOnePagerSection(OnePagerSection $onePagerSection)
+	{
+		throw new \LogicException(__METHOD__ . ' is not implemented.');
+	}
+
+	/**
+	 * Render a paragraph
+	 *
+	 * @param   Paragraph $paragraph The paragraph
+	 *
+	 * @return  void
+	 */
+	public function visitParagraph(Paragraph $paragraph)
+	{
+		$this->write($paragraph->text . "\n\n");
+	}
+
+	/**
+	 * Render rows
+	 *
+	 * @param   Rows $rows The rows
+	 *
+	 * @return  void
+	 */
+	public function visitRows(Rows $rows)
+	{
+		$this->visitCompound($rows);
+	}
+
+	/**
 	 * Render an slider
 	 *
 	 * @param   Slider $slider The slider
@@ -168,16 +242,14 @@ class PlainRenderer extends Renderer
 		throw new \LogicException(__METHOD__ . ' is not implemented.');
 	}
 
-
-
 	/**
-	 * Render a tree
+	 * Render an span
 	 *
-	 * @param   Tree $tree The tree
+	 * @param   Span $span The span
 	 *
 	 * @return  void
 	 */
-	public function visitTree(Tree $tree)
+	public function visitSpan(Span $span)
 	{
 		throw new \LogicException(__METHOD__ . ' is not implemented.');
 	}
@@ -195,34 +267,6 @@ class PlainRenderer extends Renderer
 	}
 
 	/**
-	 * Dump an item
-	 *
-	 * @param   Dump $dump The dump
-	 *
-	 * @return  void
-	 */
-	public function visitDump(Dump $dump)
-	{
-		$this->write(print_r($dump->item, true));
-	}
-
-	/**
-	 * Render rows
-	 *
-	 * @param   Rows $rows The rows
-	 *
-	 * @return  void
-	 */
-	public function visitRows(Rows $rows)
-	{
-		$this->visitCompound($rows);
-	}
-
-
-
-
-
-	/**
 	 * Render a teaser
 	 *
 	 * @param   Teaser $teaser The teaser
@@ -235,97 +279,13 @@ class PlainRenderer extends Renderer
 	}
 
 	/**
-	 * Render a defaultMenu
+	 * Render a tree
 	 *
-	 * @param   DefaultMenu $defaultMenu The defaultMenu
-	 *
-	 * @return  void
-	 */
-	public function visitDefaultMenu(DefaultMenu $defaultMenu)
-	{
-		throw new \LogicException(__METHOD__ . ' is not implemented.');
-	}
-
-	/**
-	 * Render a data table
-	 *
-	 * @param   DataTable $dataTable The data table
+	 * @param   Tree $tree The tree
 	 *
 	 * @return  void
 	 */
-	public function visitDataTable(DataTable $dataTable)
-	{
-		throw new \LogicException(__METHOD__ . ' is not implemented.');
-	}
-
-	/**
-	 * Render a span
-	 *
-	 * @param   Span $span The span
-	 *
-	 * @return  void
-	 */
-	public function visitSpan(Span $span)
-	{
-		throw new \LogicException(__METHOD__ . ' is not implemented.');
-	}
-
-	/**
-	 * Render a horizontal line
-	 *
-	 * @param   HorizontalLine $hr The horizontal line
-	 *
-	 * @return  void
-	 */
-	public function visitHorizontalLine(HorizontalLine $hr)
-	{
-		throw new \LogicException(__METHOD__ . ' is not implemented.');
-	}
-
-	/**
-	 * Render an icon
-	 *
-	 * @param   Icon $icon The icon
-	 *
-	 * @return  void
-	 */
-	public function visitIcon(Icon $icon)
-	{
-		throw new \LogicException(__METHOD__ . ' is not implemented.');
-	}
-
-	/**
-	 * Render a link
-	 *
-	 * @param   Link $link The link
-	 *
-	 * @return  void
-	 */
-	public function visitLink(Link $link)
-	{
-		throw new \LogicException(__METHOD__ . ' is not implemented.');
-	}
-
-	/**
-	 * Render an one-pager
-	 *
-	 * @param   OnePager $onePager The one-pager
-	 *
-	 * @return  void
-	 */
-	public function visitOnePager(OnePager $onePager)
-	{
-		throw new \LogicException(__METHOD__ . ' is not implemented.');
-	}
-
-	/**
-	 * Render an one-pager section
-	 *
-	 * @param   OnePagerSection $onePagerSection The section
-	 *
-	 * @return  void
-	 */
-	public function visitOnePagerSection(OnePagerSection $onePagerSection)
+	public function visitTree(Tree $tree)
 	{
 		throw new \LogicException(__METHOD__ . ' is not implemented.');
 	}

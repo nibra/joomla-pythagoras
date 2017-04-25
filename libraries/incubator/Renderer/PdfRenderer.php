@@ -8,6 +8,7 @@
 
 namespace Joomla\Renderer;
 
+use Joomla\Content\ContentTypeInterface;
 use Joomla\Content\Type\Accordion;
 use Joomla\Content\Type\Article;
 use Joomla\Content\Type\Attribution;
@@ -200,7 +201,7 @@ class PdfRenderer extends Renderer
 	}
 
 	/**
-	 * Render an one-pager
+	 * Render a one-pager
 	 *
 	 * @param   OnePager $onePager The one-pager
 	 *
@@ -212,9 +213,9 @@ class PdfRenderer extends Renderer
 	}
 
 	/**
-	 * Render an one-pager section
+	 * Render a one-pager section
 	 *
-	 * @param   OnePagerSection $onePagerSection The section
+	 * @param   OnePagerSection $onePagerSection The one-pager section
 	 *
 	 * @return  void
 	 */
