@@ -8,8 +8,6 @@
 
 namespace Joomla\Renderer;
 
-use Psr\Http\Message\StreamInterface;
-
 /**
  * CssAware Implementation
  *
@@ -70,19 +68,25 @@ trait CssAwareImplementation
 	 */
 	public function writeCss()
 	{
-		$remote = '';
-		foreach ($this->cssAwareRemote as $url)
+		/** @var Renderer $this */
+
+		if (!empty($this->cssAwareRemote))
 		{
-			$remote .= "<link rel=\"stylesheet\" href=\"{$url}\">";
+			$remote = '';
+			foreach ($this->cssAwareRemote as $url)
+			{
+				$remote .= "<link rel=\"stylesheet\" href=\"{$url}\">";
+			}
+			$this->output = str_replace('</head>', $remote . '</head>', $this->output);
 		}
 
-		$embedded = '';
-		$embedded .= '<style>';
-		$embedded .= implode("\n", $this->cssAwareEmbedded);
-		$embedded .= '</style>';
-
-		/** @var Renderer $this */
-		$this->output = str_replace('</head>', $remote . '</head>', $this->output);
-		$this->output = str_replace('</head>', $embedded . '</head>', $this->output);
+		if (!empty($this->cssAwareEmbedded))
+		{
+			$embedded = '';
+			$embedded .= '<style>';
+			$embedded .= implode("\n", $this->cssAwareEmbedded);
+			$embedded .= '</style>';
+			$this->output = str_replace('</head>', $embedded . '</head>', $this->output);
+		}
 	}
 }

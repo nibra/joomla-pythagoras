@@ -8,8 +8,6 @@
 
 namespace Joomla\Renderer;
 
-use Psr\Http\Message\StreamInterface;
-
 /**
  * JavascriptAware Implementation
  *
@@ -63,19 +61,26 @@ trait JavascriptAwareImplementation
 	 */
 	public function writeJavascript()
 	{
-		$remote = '';
-		foreach ($this->javascriptAwareRemote as $url)
+		/** @var Renderer $this */
+
+		if (!empty($this->javascriptAwareRemote))
 		{
-			$remote .= "<script src=\"{$url}\"></script>";
+			$remote = '';
+			foreach ($this->javascriptAwareRemote as $url)
+			{
+				$remote .= "<script src=\"{$url}\"></script>";
+			}
+			$this->output = str_replace('</head>', $remote . '</head>', $this->output);
 		}
 
-		$embedded = '';
-		$embedded .= '<script>';
-		$embedded .= implode("\n", $this->javascriptAwareEmbedded);
-		$embedded .= '</script>';
+		if (!empty($this->javascriptAwareEmbedded))
+		{
+			$embedded = '';
+			$embedded .= '<script>';
+			$embedded .= implode("\n", $this->javascriptAwareEmbedded);
+			$embedded .= '</script>';
 
-		/** @var Renderer $this */
-		$this->output = str_replace('</head>', $remote . '</head>', $this->output);
-		$this->output = str_replace('</body>', $embedded . '</body>', $this->output);
+			$this->output = str_replace('</body>', $embedded . '</body>', $this->output);
+		}
 	}
 }
