@@ -249,11 +249,11 @@ class HtmlRenderer extends Renderer implements JavascriptAwareInterface, CssAwar
 	 * @param   string                      $contentType The filename of the layout file
 	 * @param   object|ContentTypeInterface $content     The content
 	 *
-	 * @return  integer
+	 * @return  void
 	 */
 	private function applyLayout($contentType, $content)
 	{
-		return $this->layoutFactory->createLayout($contentType, $content)->render($this);
+		$this->layoutFactory->createLayout($contentType, $content)->render($this);
 	}
 
 	/**

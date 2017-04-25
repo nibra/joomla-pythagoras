@@ -9,6 +9,7 @@
 namespace Joomla\Renderer;
 
 use Joomla\Content\ContentTypeInterface;
+use Joomla\Content\ContentTypeVisitorTrait;
 use Joomla\Content\Type\Accordion;
 use Joomla\Content\Type\Article;
 use Joomla\Content\Type\Attribution;
@@ -41,28 +42,19 @@ class PlainRenderer extends Renderer
 	/** @var string The MIME type */
 	protected $mediatype = 'text/plain';
 
-	/**
-	 * Render an accordion
-	 *
-	 * @param   Accordion $accordion The accordion
-	 *
-	 * @return  void
-	 */
-	public function visitAccordion(Accordion $accordion)
-	{
-		throw new \LogicException(__METHOD__ . ' is not implemented.');
-	}
+	use ContentTypeVisitorTrait;
 
 	/**
-	 * Render an article
+	 * Common handler for different ContentTypes.
 	 *
-	 * @param   Article $article The article
+	 * @param string               $method  The name of the originally called method
+	 * @param ContentTypeInterface $content The content
 	 *
-	 * @return  void
+	 * @return mixed
 	 */
-	public function visitArticle(Article $article)
+	public function visit($method, $content)
 	{
-		throw new \LogicException(__METHOD__ . ' is not implemented.');
+		throw new \LogicException($method . ' is not implemented.');
 	}
 
 	/**
@@ -124,18 +116,6 @@ class PlainRenderer extends Renderer
 	}
 
 	/**
-	 * Render a defaultMenu
-	 *
-	 * @param   DefaultMenu $defaultMenu The defaultMenu
-	 *
-	 * @return  void
-	 */
-	public function visitDefaultMenu(DefaultMenu $defaultMenu)
-	{
-		throw new \LogicException(__METHOD__ . ' is not implemented.');
-	}
-
-	/**
 	 * Dump an item
 	 *
 	 * @param   Dump $dump The dump
@@ -172,42 +152,6 @@ class PlainRenderer extends Renderer
 	}
 
 	/**
-	 * Render a link
-	 *
-	 * @param   Link $link The link
-	 *
-	 * @return  void
-	 */
-	public function visitLink(Link $link)
-	{
-		throw new \LogicException(__METHOD__ . ' is not implemented.');
-	}
-
-	/**
-	 * Render a one-pager
-	 *
-	 * @param   OnePager $onePager The one-pager
-	 *
-	 * @return  void
-	 */
-	public function visitOnePager(OnePager $onePager)
-	{
-		throw new \LogicException(__METHOD__ . ' is not implemented.');
-	}
-
-	/**
-	 * Render a one-pager section
-	 *
-	 * @param   OnePagerSection $onePagerSection The one-pager section
-	 *
-	 * @return  void
-	 */
-	public function visitOnePagerSection(OnePagerSection $onePagerSection)
-	{
-		throw new \LogicException(__METHOD__ . ' is not implemented.');
-	}
-
-	/**
 	 * Render a paragraph
 	 *
 	 * @param   Paragraph $paragraph The paragraph
@@ -229,65 +173,5 @@ class PlainRenderer extends Renderer
 	public function visitRows(Rows $rows)
 	{
 		$this->visitCompound($rows);
-	}
-
-	/**
-	 * Render an slider
-	 *
-	 * @param   Slider $slider The slider
-	 *
-	 * @return  void
-	 */
-	public function visitSlider(Slider $slider)
-	{
-		throw new \LogicException(__METHOD__ . ' is not implemented.');
-	}
-
-	/**
-	 * Render an span
-	 *
-	 * @param   Span $span The span
-	 *
-	 * @return  void
-	 */
-	public function visitSpan(Span $span)
-	{
-		throw new \LogicException(__METHOD__ . ' is not implemented.');
-	}
-
-	/**
-	 * Render tabs
-	 *
-	 * @param   Tabs $tabs The tabs
-	 *
-	 * @return  void
-	 */
-	public function visitTabs(Tabs $tabs)
-	{
-		throw new \LogicException(__METHOD__ . ' is not implemented.');
-	}
-
-	/**
-	 * Render a teaser
-	 *
-	 * @param   Teaser $teaser The teaser
-	 *
-	 * @return  void
-	 */
-	public function visitTeaser(Teaser $teaser)
-	{
-		throw new \LogicException(__METHOD__ . ' is not implemented.');
-	}
-
-	/**
-	 * Render a tree
-	 *
-	 * @param   Tree $tree The tree
-	 *
-	 * @return  void
-	 */
-	public function visitTree(Tree $tree)
-	{
-		throw new \LogicException(__METHOD__ . ' is not implemented.');
 	}
 }

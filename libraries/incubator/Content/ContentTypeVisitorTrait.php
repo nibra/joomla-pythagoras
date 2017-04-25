@@ -13,12 +13,9 @@ use Joomla\Content\Type\Article;
 use Joomla\Content\Type\Attribution;
 use Joomla\Content\Type\Columns;
 use Joomla\Content\Type\Compound;
-use Joomla\Content\Type\DataTable;
 use Joomla\Content\Type\DefaultMenu;
 use Joomla\Content\Type\Dump;
 use Joomla\Content\Type\Headline;
-use Joomla\Content\Type\HorizontalLine;
-use Joomla\Content\Type\Icon;
 use Joomla\Content\Type\Image;
 use Joomla\Content\Type\Link;
 use Joomla\Content\Type\OnePager;
@@ -32,14 +29,28 @@ use Joomla\Content\Type\Teaser;
 use Joomla\Content\Type\Tree;
 
 /**
- * Interface ContentTypeVisitorInterface
+ * Content Type Visitor Trait
  *
- * @package Joomla\Content
+ * This trait redirects calls to `visit<ContentType>($content)` methods to visit('visit<ContentType>', $content).
+ * This is very handy, if the implementations for the methods are very similar, since interfaces can not be
+ * implemented using `__call()`.
+ *
+ * @package  Joomla\Content
  *
  * @since    __DEPLOY_VERSION__
  */
-interface ContentTypeVisitorInterface
+trait ContentTypeVisitorTrait
 {
+	/**
+	 * Common handler for different ContentTypes.
+	 *
+	 * @param string               $method  The name of the originally called method
+	 * @param ContentTypeInterface $content The content
+	 *
+	 * @return mixed
+	 */
+	abstract public function visit($method, $content);
+
 	/**
 	 * Render an accordion
 	 *
@@ -47,7 +58,10 @@ interface ContentTypeVisitorInterface
 	 *
 	 * @return  void
 	 */
-	public function visitAccordion(Accordion $accordion);
+	public function visitAccordion(Accordion $accordion)
+	{
+		$this->visit(__FUNCTION__, func_get_arg(0));
+	}
 
 	/**
 	 * Render an article
@@ -56,7 +70,10 @@ interface ContentTypeVisitorInterface
 	 *
 	 * @return  void
 	 */
-	public function visitArticle(Article $article);
+	public function visitArticle(Article $article)
+	{
+		$this->visit(__FUNCTION__, func_get_arg(0));
+	}
 
 	/**
 	 * Render an attribution to an author
@@ -65,7 +82,10 @@ interface ContentTypeVisitorInterface
 	 *
 	 * @return  void
 	 */
-	public function visitAttribution(Attribution $attribution);
+	public function visitAttribution(Attribution $attribution)
+	{
+		$this->visit(__FUNCTION__, func_get_arg(0));
+	}
 
 	/**
 	 * Render columns
@@ -74,7 +94,10 @@ interface ContentTypeVisitorInterface
 	 *
 	 * @return  void
 	 */
-	public function visitColumns(Columns $columns);
+	public function visitColumns(Columns $columns)
+	{
+		$this->visit(__FUNCTION__, func_get_arg(0));
+	}
 
 	/**
 	 * Render a compound (block) element
@@ -83,7 +106,10 @@ interface ContentTypeVisitorInterface
 	 *
 	 * @return  void
 	 */
-	public function visitCompound(Compound $compound);
+	public function visitCompound(Compound $compound)
+	{
+		$this->visit(__FUNCTION__, func_get_arg(0));
+	}
 
 	/**
 	 * Render a defaultMenu
@@ -92,16 +118,22 @@ interface ContentTypeVisitorInterface
 	 *
 	 * @return  void
 	 */
-	public function visitDefaultMenu(DefaultMenu $defaultMenu);
+	public function visitDefaultMenu(DefaultMenu $defaultMenu)
+	{
+		$this->visit(__FUNCTION__, func_get_arg(0));
+	}
 
 	/**
-	 * Dump an item
+	 * Render dump
 	 *
 	 * @param   Dump $dump The dump
 	 *
 	 * @return  void
 	 */
-	public function visitDump(Dump $dump);
+	public function visitDump(Dump $dump)
+	{
+		$this->visit(__FUNCTION__, func_get_arg(0));
+	}
 
 	/**
 	 * Render a headline.
@@ -110,7 +142,10 @@ interface ContentTypeVisitorInterface
 	 *
 	 * @return  void
 	 */
-	public function visitHeadline(Headline $headline);
+	public function visitHeadline(Headline $headline)
+	{
+		$this->visit(__FUNCTION__, func_get_arg(0));
+	}
 
 	/**
 	 * Render an image
@@ -119,7 +154,10 @@ interface ContentTypeVisitorInterface
 	 *
 	 * @return  void
 	 */
-	public function visitImage(Image $image);
+	public function visitImage(Image $image)
+	{
+		$this->visit(__FUNCTION__, func_get_arg(0));
+	}
 
 	/**
 	 * Render a link
@@ -128,7 +166,10 @@ interface ContentTypeVisitorInterface
 	 *
 	 * @return  void
 	 */
-	public function visitLink(Link $link);
+	public function visitLink(Link $link)
+	{
+		$this->visit(__FUNCTION__, func_get_arg(0));
+	}
 
 	/**
 	 * Render a one-pager
@@ -137,7 +178,10 @@ interface ContentTypeVisitorInterface
 	 *
 	 * @return  void
 	 */
-	public function visitOnePager(OnePager $onePager);
+	public function visitOnePager(OnePager $onePager)
+	{
+		$this->visit(__FUNCTION__, func_get_arg(0));
+	}
 
 	/**
 	 * Render a one-pager section
@@ -146,7 +190,10 @@ interface ContentTypeVisitorInterface
 	 *
 	 * @return  void
 	 */
-	public function visitOnePagerSection(OnePagerSection $onePagerSection);
+	public function visitOnePagerSection(OnePagerSection $onePagerSection)
+	{
+		$this->visit(__FUNCTION__, func_get_arg(0));
+	}
 
 	/**
 	 * Render a paragraph
@@ -155,7 +202,10 @@ interface ContentTypeVisitorInterface
 	 *
 	 * @return  void
 	 */
-	public function visitParagraph(Paragraph $paragraph);
+	public function visitParagraph(Paragraph $paragraph)
+	{
+		$this->visit(__FUNCTION__, func_get_arg(0));
+	}
 
 	/**
 	 * Render rows
@@ -164,7 +214,10 @@ interface ContentTypeVisitorInterface
 	 *
 	 * @return  void
 	 */
-	public function visitRows(Rows $rows);
+	public function visitRows(Rows $rows)
+	{
+		$this->visit(__FUNCTION__, func_get_arg(0));
+	}
 
 	/**
 	 * Render an slider
@@ -173,16 +226,22 @@ interface ContentTypeVisitorInterface
 	 *
 	 * @return  void
 	 */
-	public function visitSlider(Slider $slider);
+	public function visitSlider(Slider $slider)
+	{
+		$this->visit(__FUNCTION__, func_get_arg(0));
+	}
 
 	/**
-	 * Render a span
+	 * Render an span
 	 *
 	 * @param   Span $span The span
 	 *
 	 * @return  void
 	 */
-	public function visitSpan(Span $span);
+	public function visitSpan(Span $span)
+	{
+		$this->visit(__FUNCTION__, func_get_arg(0));
+	}
 
 	/**
 	 * Render tabs
@@ -191,7 +250,10 @@ interface ContentTypeVisitorInterface
 	 *
 	 * @return  void
 	 */
-	public function visitTabs(Tabs $tabs);
+	public function visitTabs(Tabs $tabs)
+	{
+		$this->visit(__FUNCTION__, func_get_arg(0));
+	}
 
 	/**
 	 * Render a teaser
@@ -200,7 +262,10 @@ interface ContentTypeVisitorInterface
 	 *
 	 * @return  void
 	 */
-	public function visitTeaser(Teaser $teaser);
+	public function visitTeaser(Teaser $teaser)
+	{
+		$this->visit(__FUNCTION__, func_get_arg(0));
+	}
 
 	/**
 	 * Render a tree
@@ -209,5 +274,8 @@ interface ContentTypeVisitorInterface
 	 *
 	 * @return  void
 	 */
-	public function visitTree(Tree $tree);
+	public function visitTree(Tree $tree)
+	{
+		$this->visit(__FUNCTION__, func_get_arg(0));
+	}
 }
