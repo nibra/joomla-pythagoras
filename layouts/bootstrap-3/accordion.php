@@ -13,7 +13,7 @@ $id    = $content->getId();
 $class = $content->getParameter('class', '');
 ?>
 <div class="panel-group <?php echo $class; ?>" id="<?php echo $id; ?>">
-	<?php foreach ($content->elements as $i => $element) : ?>
+	<?php foreach ($content->getChildren() as $i => $element) : ?>
 		<?php
 		$title = $element->getTitle();
 		$elemId = $id . '-' . $i;

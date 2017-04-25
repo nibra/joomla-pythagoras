@@ -19,8 +19,8 @@ $sectionClass   = " class=\"bg-{$background} text-{$alignment} {$height}-height 
 $containerClass = $content->getParameter('class');
 
 $renderer->write(<<<HTML
-<{$tag} id=\"{$id}\"{$sectionClass}>
-    <div class=\"container $containerClass\">
+<{$tag} id="{$id}"{$sectionClass}>
+    <div class="container {$containerClass}">
 HTML
 );
 
@@ -31,6 +31,6 @@ foreach ($content->getChildren() as $child)
 
 $renderer->write(<<<HTML
     </div>
-<{$tag}>
+</{$tag}>
 HTML
 );

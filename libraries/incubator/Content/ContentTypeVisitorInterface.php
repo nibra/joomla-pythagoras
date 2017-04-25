@@ -97,11 +97,11 @@ interface ContentTypeVisitorInterface
 	/**
 	 * Dump an item
 	 *
-	 * @param   ContentTypeInterface $dump The dump
+	 * @param   Dump $dump The dump
 	 *
 	 * @return  void
 	 */
-	public function visitDump(ContentTypeInterface $dump);
+	public function visitDump(Dump $dump);
 
 	/**
 	 * Render a headline.

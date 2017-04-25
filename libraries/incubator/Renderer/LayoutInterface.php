@@ -22,7 +22,7 @@ interface LayoutInterface
 	 *
 	 * @param RendererInterface $renderer
 	 *
-	 * @return int
+	 * @return void
 	 */
 	public function render(RendererInterface $renderer);
 }

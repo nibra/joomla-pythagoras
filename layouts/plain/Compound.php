@@ -26,7 +26,7 @@ class Compound implements LayoutInterface
 	 *
 	 * @param RendererInterface $renderer
 	 *
-	 * @return int
+	 * @return void
 	 */
 	public function render(RendererInterface $renderer)
 	{
@@ -36,15 +36,13 @@ class Compound implements LayoutInterface
 		$class = $this->content->getParameter('class');
 		$class = empty($class) ? "" : " class=\"{$class}\"";
 
-		$len = $renderer->write("<{$tag}{$id}{$class}>");
+		$renderer->write("<{$tag}{$id}{$class}>");
 
 		foreach ($this->content->getChildren() as $child)
 		{
-			$len .= $child->accept($renderer);
+			$child->accept($renderer);
 		}
 
-		$len .= $renderer->write("</{$tag}>");
-
-		return $len;
+		$renderer->write("</{$tag}>");
 	}
 }

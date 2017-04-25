@@ -73,7 +73,7 @@ class LayoutWrapper implements LayoutInterface
 	 *
 	 * @param Renderer|RendererInterface $renderer
 	 *
-	 * @return int
+	 * @return void
 	 */
 	public function render(RendererInterface $renderer)
 	{
@@ -94,6 +94,6 @@ class LayoutWrapper implements LayoutInterface
 			echo "\n<!-- EOF {$this->layoutFile} -->\n\n";
 		}
 
-		return $renderer->write(ob_get_clean());
+		$renderer->write(ob_get_clean());
 	}
 }

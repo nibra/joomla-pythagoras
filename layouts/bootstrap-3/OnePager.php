@@ -8,6 +8,7 @@
 
 namespace Joomla\Layout\Bootstrap3;
 
+use Joomla\Renderer\JavascriptAwareInterface;
 use Joomla\Renderer\LayoutInterface;
 use Joomla\Renderer\RendererInterface;
 
@@ -26,15 +27,15 @@ class OnePager implements LayoutInterface
 	 *
 	 * @param RendererInterface $renderer
 	 *
-	 * @return int
+	 * @return void
 	 */
 	public function render(RendererInterface $renderer)
 	{
 		$content = $this->content;
-		$id = $content->getId();
-		$title = $content->getTitle();
+		$id      = $content->getId();
+		$title   = $content->getTitle();
 
-		$len = $renderer->write(<<<HTML
+		$renderer->write(<<<HTML
 <nav id="{$id}-nav" class="navbar navbar-default navbar-fixed-top">
     <div class="container">
         <div class="navbar-header">
@@ -57,10 +58,10 @@ HTML
 			$childId    = $child->getId();
 			$childTitle = $child->getTitle();
 
-			$len += $renderer->write("                <li><a class=\"page-scroll\" href=\"#{$childId}\">{$childTitle}</a></li>\n");
+			$renderer->write("                <li><a class=\"page-scroll\" href=\"#{$childId}\">{$childTitle}</a></li>\n");
 		}
 
-		$len += $renderer->write(<<<HTML
+		$renderer->write(<<<HTML
             </ul>
         </div>
     </div>
@@ -70,10 +71,12 @@ HTML
 
 		foreach ($content->getChildren() as $child)
 		{
-			$len += $child->accept($renderer);
+			$child->accept($renderer);
 		}
 
-		$renderer->embedJavascript('.navbar', <<<JS
+		if ($renderer instanceof JavascriptAwareInterface)
+		{
+			$renderer->embedJavascript('.navbar', <<<JS
 (function($) {
 	"use strict";
 	$(document).ready(function() {
@@ -108,8 +111,7 @@ HTML
 })(jQuery);
 
 JS
-		);
-
-		return $len;
+			);
+		}
 	}
 }

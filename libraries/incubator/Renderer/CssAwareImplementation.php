@@ -81,14 +81,8 @@ trait CssAwareImplementation
 		$embedded .= implode("\n", $this->cssAwareEmbedded);
 		$embedded .= '</style>';
 
-		/** @var StreamInterface $this */
-		$this->rewind();
-		$output = $this->getContents();
-		$this->dump('output (before replace)', $output);
-		$output = str_replace('</head>', $remote . '</head>', $output);
-		$output = str_replace('</head>', $embedded . '</head>', $output);
-		$this->rewind();
-		$this->dump('output (after replace)', $output);
-		$this->write($output);
+		/** @var Renderer $this */
+		$this->output = str_replace('</head>', $remote . '</head>', $this->output);
+		$this->output = str_replace('</head>', $embedded . '</head>', $this->output);
 	}
 }

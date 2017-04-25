@@ -18,6 +18,14 @@ use Joomla\Content\ContentTypeInterface;
  */
 abstract class AbstractContentType implements ContentTypeInterface
 {
+	/**
+	 * Pre-rendered HTML
+	 *
+	 * @deprecated
+	 * @var string
+	 */
+	public $html = null;
+
 	/** @var  string The identifier */
 	private $id;
 

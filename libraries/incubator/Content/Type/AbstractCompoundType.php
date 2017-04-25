@@ -55,7 +55,7 @@ abstract class AbstractCompoundType extends AbstractContentType implements Compo
 	/**
 	 * Get all children
 	 *
-	 * @return  ContentTypeInterface[]
+	 * @return  ContentTypeInterface[]|AbstractContentType[]
 	 */
 	public function getChildren()
 	{

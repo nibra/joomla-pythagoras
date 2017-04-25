@@ -74,12 +74,8 @@ trait JavascriptAwareImplementation
 		$embedded .= implode("\n", $this->javascriptAwareEmbedded);
 		$embedded .= '</script>';
 
-		/** @var StreamInterface $this */
-		$this->rewind();
-		$output = $this->getContents();
-		$output = str_replace('</head>', $remote . '</head>', $output);
-		$output = str_replace('</body>', $embedded . '</body>', $output);
-		$this->rewind();
-		$this->write($output);
+		/** @var Renderer $this */
+		$this->output = str_replace('</head>', $remote . '</head>', $this->output);
+		$this->output = str_replace('</body>', $embedded . '</body>', $this->output);
 	}
 }
