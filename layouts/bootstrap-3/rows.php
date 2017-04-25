@@ -9,11 +9,13 @@
  * @codingStandardsIgnoreStart
  */
 
+$id    = $content->getId();
+$grid  = $content->getParameter('grid', []);
+$class = $content->getParameter('class', '');
 ?>
-<div id="<?php echo $content->getId(); ?>" class="container">
-	<?php foreach ($content->elements as $i => $element) : ?>
-		<?php $class = isset($element->getParameters()->class) ? $element->getParameters()->class : ''; ?>
-		<div class="clearfix <?php echo $class; ?>">
+<div id="<?php echo $id; ?>" class="container <?php echo $class; ?>">
+	<?php foreach ($content->getChildren() as $i => $element) : ?>
+		<div class="clearfix <?php echo $element->getParameter('class', ''); ?>">
 			<?php echo $element->html; ?>
 		</div>
 	<?php endforeach; ?>

@@ -16,7 +16,7 @@ use Joomla\Content\ContentTypeVisitorInterface;
  * @package  Joomla/Content
  * @since    __DEPLOY_VERSION__
  */
-class Columns extends Compound
+class Columns extends AbstractCompoundType
 {
 	/**
 	 * Visits the content type.

@@ -47,6 +47,7 @@ class HtmlTestCase extends \PHPUnit_Framework_TestCase
 			'force-output'    => true,
 			'show-body-only'  => true,
 			'output-html'     => true,
+		    'new-blocklevel-tags' => 'header,footer,section,main,nav',
 		]);
 		$tidy->cleanRepair();
 

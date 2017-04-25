@@ -10,9 +10,11 @@
  * @codingStandardsIgnoreStart
  */
 
+$id   = $content->getId();
 $grid = $content->getParameter('grid', []);
+$class = $content->getParameter('class', '');
 ?>
-<div id="<?php echo $content->getId(); ?>" class="row container-fluid">
+<div id="<?php echo $id; ?>" class="row container-fluid <?php echo $class; ?>">
 	<?php foreach ($content->getChildren() as $i => $element) : ?>
 		<div<?php echo isset($grid[$i]) ? " class=\"col-md-{$grid[$i]}\"" : ''; ?>>
 			<?php echo $element->html; ?>

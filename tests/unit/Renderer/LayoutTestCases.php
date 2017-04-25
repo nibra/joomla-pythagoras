@@ -8,32 +8,26 @@
 
 namespace Joomla\Tests\Unit\Renderer;
 
-use Joomla\Content\ContentTypeInterface;
+use Joomla\Content\CompoundTypeInterface;
 use Joomla\Content\Type\Accordion;
+use Joomla\Content\Type\Columns;
 use Joomla\Content\Type\Compound;
 use Joomla\Content\Type\Headline;
 use Joomla\Content\Type\Paragraph;
+use Joomla\Content\Type\Rows;
 use Joomla\Content\Type\Span;
 use Joomla\DI\Container;
 use Joomla\Renderer\HtmlRenderer;
-use Joomla\Renderer\LayoutFactory;
 
 class LayoutTestCases extends HtmlTestCase
 {
-	/**
-	 * @var string
-	 */
-	protected $layoutPath;
-	/**
-	 * @var LayoutFactory
-	 */
-	protected $layoutFactory;
+	/** @var  HtmlRenderer */
 	private $renderer;
 
 	public function setUp()
 	{
-		$this->renderer      = new HtmlRenderer([], new Container());
-		$this->layoutFactory = new LayoutFactory([$this->layoutPath]);
+		$this->renderer = new HtmlRenderer([], new Container());
+		$this->renderer->setTemplate(__DIR__ . '/fixtures/bootstrap3');
 	}
 
 	/**
@@ -41,15 +35,12 @@ class LayoutTestCases extends HtmlTestCase
 	 */
 	public function testAccordion()
 	{
-		$accordion = new Accordion('Accordion Title', 'accordion-id', ['class' => 'special']);
+		$content = new Accordion('Accordion Title', 'accordion-id', ['class' => 'special']);
 
-		for ($i = 0; $i < 3; $i++)
-		{
-			$compound = new Compound('div', 'Title ' . $i, null, []);
-			$accordion->addChild($compound);
-		}
+		$this->addChildren($content);
 
-		$html = $this->renderAs('Accordion', $accordion);
+		$content->accept($this->renderer);
+		$html = (string) $this->renderer;
 
 		$this->assertHtmlHasRoot('div', $html);
 		$this->assertHtmlRootHasId('accordion-id', $html);
@@ -57,18 +48,15 @@ class LayoutTestCases extends HtmlTestCase
 	}
 
 	/**
-	 * Render as a specific content type using the Layout.
-	 *
-	 * @param string               $layout
-	 * @param ContentTypeInterface $content
-	 *
-	 * @return string
+	 * @param CompoundTypeInterface $content
 	 */
-	protected function renderAs($layout, $content)
+	protected function addChildren($content)
 	{
-		$this->layoutFactory->createLayout($layout, $content)->render($this->renderer);
-
-		return (string) $this->renderer;
+		for ($i = 0; $i < 3; $i++)
+		{
+			$compound = new Compound('div', 'Title ' . $i, null, []);
+			$content->addChild($compound);
+		}
 	}
 
 	public function testArticle()
@@ -81,14 +69,36 @@ class LayoutTestCases extends HtmlTestCase
 		$this->markTestIncomplete('Not implemented');
 	}
 
+	/**
+	 * @testdox Columns: Enclosed in a div with the given id and an optional class
+	 */
 	public function testColumns()
 	{
-		$this->markTestIncomplete('Not implemented');
+		$content = new Columns('Columns Title', 'columns-id', ['class' => 'special']);
+		$this->addChildren($content);
+
+		$content->accept($this->renderer);
+		$html = (string) $this->renderer;
+
+		$this->assertHtmlHasRoot('div', $html);
+		$this->assertHtmlRootHasId('columns-id', $html);
+		$this->assertHtmlRootHasClass('special', $html);
 	}
 
+	/**
+	 * @testdox Compound: Enclosed in the given tag with the given id and an optional class
+	 */
 	public function testCompound()
 	{
-		$this->markTestIncomplete('Not implemented');
+		$content = new Compound('pre', 'Ttile', 'compound-id', ['class' => 'special']);
+		$this->addChildren($content);
+
+		$content->accept($this->renderer);
+		$html = (string) $this->renderer;
+
+		$this->assertHtmlHasRoot('pre', $html);
+		$this->assertHtmlRootHasId('compound-id', $html);
+		$this->assertHtmlRootHasClass('special', $html);
 	}
 
 	public function testDefaultMenu()
@@ -103,7 +113,9 @@ class LayoutTestCases extends HtmlTestCase
 	{
 		$content = new Headline('Hello World!', 2);
 		$id      = $content->getId();
-		$html    = $this->renderAs('Headline', $content);
+
+		$content->accept($this->renderer);
+		$html = (string) $this->renderer;
 
 		$this->assertHtmlEquals("<h2 id=\"{$id}\">Hello World!</h2>", $html);
 	}
@@ -115,7 +127,9 @@ class LayoutTestCases extends HtmlTestCase
 	{
 		$content = new Headline('Hello World!');
 		$id      = $content->getId();
-		$html    = $this->renderAs('Headline', $content);
+
+		$content->accept($this->renderer);
+		$html = (string) $this->renderer;
 
 		$this->assertHtmlEquals("<h1 id=\"{$id}\">Hello World!</h1>", $html);
 	}
@@ -127,7 +141,9 @@ class LayoutTestCases extends HtmlTestCase
 	{
 		$content = new Headline('Hello World!', 2, ['class' => 'title']);
 		$id      = $content->getId();
-		$html    = $this->renderAs('Headline', $content);
+
+		$content->accept($this->renderer);
+		$html = (string) $this->renderer;
 
 		$this->assertHtmlEquals("<h2 id=\"{$id}\" class=\"title\">Hello World!</h2>", $html);
 	}
@@ -164,7 +180,9 @@ class LayoutTestCases extends HtmlTestCase
 	{
 		$content = new Paragraph('Copy Text');
 		$id      = $content->getId();
-		$html    = $this->renderAs('Paragraph', $content);
+
+		$content->accept($this->renderer);
+		$html = (string) $this->renderer;
 
 		$this->assertHtmlEquals("<p id=\"{$id}\">Copy Text</p>", $html);
 	}
@@ -176,7 +194,9 @@ class LayoutTestCases extends HtmlTestCase
 	{
 		$content = new Paragraph('Copy Text', Paragraph::EMPHASISED);
 		$id      = $content->getId();
-		$html    = $this->renderAs('Paragraph', $content);
+
+		$content->accept($this->renderer);
+		$html = (string) $this->renderer;
 
 		$this->assertHtmlEquals("<p id=\"{$id}\"><em>Copy Text</em></p>", $html);
 	}
@@ -188,14 +208,27 @@ class LayoutTestCases extends HtmlTestCase
 	{
 		$content = new Paragraph('Copy Text', Paragraph::PLAIN, ['class' => 'special']);
 		$id      = $content->getId();
-		$html    = $this->renderAs('Paragraph', $content);
+
+		$content->accept($this->renderer);
+		$html = (string) $this->renderer;
 
 		$this->assertHtmlEquals("<p id=\"{$id}\" class=\"special\">Copy Text</p>", $html);
 	}
 
+	/**
+	 * @testdox Rows: Enclosed in a div with the given id and an optional class
+	 */
 	public function testRows()
 	{
-		$this->markTestIncomplete('Not implemented');
+		$content = new Rows('Rows Title', 'rows-id', ['class' => 'special']);
+		$this->addChildren($content);
+
+		$content->accept($this->renderer);
+		$html = (string) $this->renderer;
+
+		$this->assertHtmlHasRoot('div', $html);
+		$this->assertHtmlRootHasId('rows-id', $html);
+		$this->assertHtmlRootHasClass('special', $html);
 	}
 
 	public function testSlider()
@@ -210,7 +243,9 @@ class LayoutTestCases extends HtmlTestCase
 	{
 		$content = new Span('Text', ['class' => 'special']);
 		$id      = $content->getId();
-		$html    = $this->renderAs('Span', $content);
+
+		$content->accept($this->renderer);
+		$html = (string) $this->renderer;
 
 		$this->assertHtmlEquals("<span id=\"{$id}\" class=\"special\">Text</span>", $html);
 	}

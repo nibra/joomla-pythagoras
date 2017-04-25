@@ -104,8 +104,6 @@ class HtmlRenderer extends Renderer implements JavascriptAwareInterface, CssAwar
 	 */
 	public function visitAccordion(Accordion $accordion)
 	{
-		$accordion->setId('accordion-' . spl_object_hash($accordion));
-
 		$this->preRenderChildElements($accordion);
 
 		$this->applyLayout('Accordion', $accordion);
@@ -367,8 +365,6 @@ class HtmlRenderer extends Renderer implements JavascriptAwareInterface, CssAwar
 	 */
 	public function visitSlider(Slider $slider)
 	{
-		$slider->setId('slider-' . spl_object_hash($slider));
-
 		$this->preRenderChildElements($slider);
 
 		$this->applyLayout('Slider', $slider);
@@ -419,8 +415,6 @@ class HtmlRenderer extends Renderer implements JavascriptAwareInterface, CssAwar
 	 */
 	public function visitTabs(Tabs $tabs)
 	{
-		$tabs->setId('tabs-' . spl_object_hash($tabs));
-
 		$this->preRenderChildElements($tabs);
 
 		$this->applyLayout('Tabs', $tabs);
@@ -518,8 +512,6 @@ class HtmlRenderer extends Renderer implements JavascriptAwareInterface, CssAwar
 	 */
 	public function visitTree(Tree $tree)
 	{
-		$tree->setId('tree-' . spl_object_hash($tree));
-
 		$this->preRenderChildElements($tree);
 
 		$this->applyLayout('Tree', $tree);
