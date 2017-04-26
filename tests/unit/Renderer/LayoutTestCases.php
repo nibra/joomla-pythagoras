@@ -15,19 +15,24 @@ use Joomla\Content\Type\Compound;
 use Joomla\Content\Type\Headline;
 use Joomla\Content\Type\Paragraph;
 use Joomla\Content\Type\Rows;
+use Joomla\Content\Type\Slider;
 use Joomla\Content\Type\Span;
+use Joomla\Content\Type\Tabs;
 use Joomla\DI\Container;
 use Joomla\Renderer\HtmlRenderer;
 
 class LayoutTestCases extends HtmlTestCase
 {
+	/** @var string Must be set accordingly in child classes*/
+	protected $layoutPath = null;
+
 	/** @var  HtmlRenderer */
-	private $renderer;
+	protected $renderer;
 
 	public function setUp()
 	{
 		$this->renderer = new HtmlRenderer([], new Container());
-		$this->renderer->setTemplate(__DIR__ . '/fixtures/bootstrap3');
+		$this->renderer->setTemplate(__DIR__ . '/fixtures/template');
 	}
 
 	/**
@@ -57,16 +62,6 @@ class LayoutTestCases extends HtmlTestCase
 			$compound = new Compound('div', 'Title ' . $i, null, []);
 			$content->addChild($compound);
 		}
-	}
-
-	public function testArticle()
-	{
-		$this->markTestIncomplete('Not implemented');
-	}
-
-	public function testAttribution()
-	{
-		$this->markTestIncomplete('Not implemented');
 	}
 
 	/**
@@ -99,11 +94,6 @@ class LayoutTestCases extends HtmlTestCase
 		$this->assertHtmlHasRoot('pre', $html);
 		$this->assertHtmlRootHasId('compound-id', $html);
 		$this->assertHtmlRootHasClass('special', $html);
-	}
-
-	public function testDefaultMenu()
-	{
-		$this->markTestIncomplete('Not implemented');
 	}
 
 	/**
@@ -146,31 +136,6 @@ class LayoutTestCases extends HtmlTestCase
 		$html = (string) $this->renderer;
 
 		$this->assertHtmlEquals("<h2 id=\"{$id}\" class=\"title\">Hello World!</h2>", $html);
-	}
-
-	public function testIcon()
-	{
-		$this->markTestIncomplete('Not implemented');
-	}
-
-	public function testImage()
-	{
-		$this->markTestIncomplete('Not implemented');
-	}
-
-	public function testLink()
-	{
-		$this->markTestIncomplete('Not implemented');
-	}
-
-	public function testOnepager()
-	{
-		$this->markTestIncomplete('Not implemented');
-	}
-
-	public function testOnepagerSection()
-	{
-		$this->markTestIncomplete('Not implemented');
 	}
 
 	/**
@@ -231,9 +196,20 @@ class LayoutTestCases extends HtmlTestCase
 		$this->assertHtmlRootHasClass('special', $html);
 	}
 
+	/**
+	 * @testdox Slider: Enclosed in a div with the given id and an optional class
+	 */
 	public function testSlider()
 	{
-		$this->markTestIncomplete('Not implemented');
+		$content = new Slider('Slider Title', 'slider-id', ['class' => 'special']);
+		$this->addChildren($content);
+
+		$content->accept($this->renderer);
+		$html = (string) $this->renderer;
+
+		$this->assertHtmlHasRoot('div', $html);
+		$this->assertHtmlRootHasId('slider-id', $html);
+		$this->assertHtmlRootHasClass('special', $html);
 	}
 
 	/**
@@ -250,18 +226,19 @@ class LayoutTestCases extends HtmlTestCase
 		$this->assertHtmlEquals("<span id=\"{$id}\" class=\"special\">Text</span>", $html);
 	}
 
+	/**
+	 * @testdox Tabs: Enclosed in a div with the given id and an optional class
+	 */
 	public function testTabs()
 	{
-		$this->markTestIncomplete('Not implemented');
-	}
+		$content = new Tabs('Tabs Title', 'tabs-id', ['class' => 'special']);
+		$this->addChildren($content);
 
-	public function testTeaser()
-	{
-		$this->markTestIncomplete('Not implemented');
-	}
+		$content->accept($this->renderer);
+		$html = (string) $this->renderer;
 
-	public function testTree()
-	{
-		$this->markTestIncomplete('Not implemented');
+		$this->assertHtmlHasRoot('div', $html);
+		$this->assertHtmlRootHasId('tabs-id', $html);
+		$this->assertHtmlRootHasClass('special', $html);
 	}
 }
