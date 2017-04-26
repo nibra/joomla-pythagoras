@@ -47,7 +47,7 @@ interface RendererInterface extends ContentTypeVisitorInterface
 	/**
 	 * Write data to the output.
 	 *
-	 * @param   ContentTypeInterface|string $content The string that is to be written.
+	 * @param   ContentTypeInterface|string $content The content that is to be written.
 	 *
 	 * @return  void
 	 */
