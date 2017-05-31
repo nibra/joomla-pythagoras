@@ -1,6 +1,6 @@
 # HTML Assertions
 
-Tesing HTML output can be very tedious. The Joomla! test environment offers a convenient alternative. It adds a couple of methods and especially assertions to the default PHPUnit test case using a class `HtmlTestCase`. This testcase class itself is 100% unit tested, so it can be considered to be reliable.
+Testing HTML output can be very tedious. The Joomla! test environment offers a convenient alternative. It adds a couple of methods and especially assertions to the default PHPUnit test case using a class `HtmlTestCase`. This testcase class itself is 100% unit tested, so it can be considered to be reliable.
 
 ## Methods
 
